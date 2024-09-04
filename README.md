@@ -2,7 +2,7 @@
 
 ## A web-based application to manage your DnD campaigns and characters.
 
-Built with Nuxt.
+Built with Nuxt, NuxtUI and Tailwind CSS.
 
 ### Nuxt 3 Minimal Starter
 
