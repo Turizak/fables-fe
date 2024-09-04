@@ -1,11 +1,10 @@
 <template>
   <nav>
-    <nav className="bg-black text-white">
-      <ul className="flex justify-between">
-        <li className="p-2 h-12"></li>
-        <div className="flex">
-          <li className="p-2"></li>
-          <li className="p-2"></li>
+    <nav>
+      <ul class="flex justify-between bg-green-400 text-black">
+        <li class="p-2 h-12"></li>
+        <div class="flex">
+          <li class="p-2"></li>
         </div>
       </ul>
     </nav>
