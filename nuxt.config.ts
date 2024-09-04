@@ -2,10 +2,13 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: "Fables"
+      title: "Fables",
+      style: [
+        "@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap')"
+      ]
     },
   },
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxt/ui'],
 })

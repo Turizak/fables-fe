@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/ui": "^2.18.4",
     "autoprefixer": "^10.4.20",
     "nuxt": "^3.13.0",
     "postcss": "^8.4.44",
