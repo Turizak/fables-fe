@@ -31,24 +31,22 @@ async function onSubmit(event: FormSubmitEvent<any>) {
   buttonText.loginButton = "Logging In..."
   buttonText.createAccountButton = ""
   error.value = null;
-  setTimeout(() => {
-    try {
-      const response = $fetch('', {
-        method: 'POST',
-        body: {
-          email: event.data.email,
-          password: event.data.password
-        }
-      })
-    } catch (err: any) {
-      error.value = err.message || 'An error occurred';
-    } finally {
-      loading.value = false;
-      buttonText.loginButton = "Login"
-      buttonText.createAccountButton = "Create Account"
-      router.push('/')
-    }
-  }, 5000)
+  try {
+    const response = await $fetch('', {
+      method: 'POST',
+      body: {
+        email: event.data.email,
+        password: event.data.password
+      }
+    })
+  } catch (err: any) {
+    error.value = err.message || 'An error occurred';
+  } finally {
+    loading.value = false;
+    buttonText.loginButton = "Login"
+    buttonText.createAccountButton = "Create Account"
+    router.push('/')
+  }
 }
 </script>
 <template>
