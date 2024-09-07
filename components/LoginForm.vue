@@ -1,20 +1,22 @@
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/authStore';
 import type { FormError, FormSubmitEvent } from '#ui/types';
-import { useRouter } from 'nuxt/app';
 
-const router = useRouter();
+const config = useRuntimeConfig();
+const authStore = useAuthStore();
+
 const state = reactive({
   email: undefined,
   password: undefined,
 });
 
 const buttonText = reactive({
-  loginButton: "Login",
-  createAccountButton: "Create Account"
-})
+  loginButton: 'Login',
+  createAccountButton: 'Create Account',
+});
 
 const loading = ref(false);
-const error = ref(null);
+const error = ref<string | null>(null);
 
 const validate = (state: any): FormError[] => {
   const errors = [];
@@ -28,31 +30,50 @@ const validate = (state: any): FormError[] => {
 
 async function onSubmit(event: FormSubmitEvent<any>) {
   loading.value = true;
-  buttonText.loginButton = "Logging In..."
-  buttonText.createAccountButton = ""
+  buttonText.loginButton = 'Logging In...';
+  buttonText.createAccountButton = '';
   error.value = null;
   try {
-    const response = await $fetch('', {
-      method: 'POST',
-      body: {
-        email: event.data.email,
-        password: event.data.password
+    const response: any = await $fetch(
+      config.public.baseURL + '/account/login',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          email: event.data.email,
+          password: event.data.password,
+        },
       }
-    })
+    );
+    authStore.setToken(response.data.token);
+    authStore.setRefreshToken(response.data.refreshToken);
+    await navigateTo('/');
   } catch (err: any) {
-    error.value = err.message || 'An error occurred';
+    if (err instanceof Error) {
+      error.value = err.message;
+    } else if (typeof err === 'object' && err !== null) {
+      error.value = err.data?.message || 'An error occurred during login';
+    } else {
+      error.value = 'An unexpected error occurred';
+    }
+    console.error('Login error:', err);
   } finally {
     loading.value = false;
-    buttonText.loginButton = "Login"
-    buttonText.createAccountButton = "Create Account"
-    router.push('/')
+    buttonText.loginButton = 'Login';
+    buttonText.createAccountButton = 'Create Account';
   }
 }
 </script>
 <template>
   <div class="flex justify-center">
-    <UForm class="w-[260px] mt-2" :validate="validate" :state="state" @submit.prevent="onSubmit">
-
+    <UForm
+      class="w-[260px] mt-2"
+      :validate="validate"
+      :state="state"
+      @submit.prevent="onSubmit"
+    >
       <!-- Error Message -->
       <div v-if="error" class="mb-2">
         <UButton disabled>Error: {{ error }}</UButton>
@@ -66,15 +87,21 @@ async function onSubmit(event: FormSubmitEvent<any>) {
         <UInput v-model="state.password" type="password" />
       </UFormGroup>
 
-      <UButton type="submit"
+      <UButton
+        type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading">
-        {{ buttonText.loginButton }}</UButton>
+        :loading="loading"
+      >
+        {{ buttonText.loginButton }}</UButton
+      >
       <NuxtLink to="/createAccount">
-        <UButton type="submit"
+        <UButton
+          type="submit"
           class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-          :loading="loading">
-          {{ buttonText.createAccountButton }}</UButton>
+          :loading="loading"
+        >
+          {{ buttonText.createAccountButton }}</UButton
+        >
       </NuxtLink>
     </UForm>
   </div>
