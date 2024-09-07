@@ -49,7 +49,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     );
     authStore.setToken(response.data.token);
     authStore.setRefreshToken(response.data.refreshToken);
-    navigateTo('/');
+    await navigateTo('/');
   } catch (err: any) {
     if (err instanceof Error) {
       error.value = err.message;

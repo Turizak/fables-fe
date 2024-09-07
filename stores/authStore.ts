@@ -3,6 +3,8 @@ import { ref, computed } from 'vue';
 import jwtDecode from 'jwt-decode';
 
 export const useAuthStore = defineStore('auth', () => {
+  const config = useRuntimeConfig();
+
   // Helper function to check if we're in the client
   const isClient = () => typeof window !== 'undefined';
 
@@ -39,7 +41,6 @@ export const useAuthStore = defineStore('auth', () => {
     if (isClient()) {
       localStorage.setItem('authToken', newToken);
     }
-    // Decode the new token and store it
     decodeToken(newToken);
   };
 
@@ -47,6 +48,44 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken.value = newRefreshToken;
     if (isClient()) {
       localStorage.setItem('refreshToken', newRefreshToken);
+    }
+  };
+
+    // Check if token is expired
+    const isTokenExpired = () => {
+      if (!decodedToken.value?.exp) return true;
+  
+      // Check if the token expiration time has passed
+      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+      return decodedToken.value.exp < currentTime;
+    };
+
+    // Function to refresh the token
+  const refreshAuthToken = async () => {
+    if (!refreshToken.value) return;
+
+    try {
+      const response: any = await $fetch(config.public.baseURL + '/account/token/refresh',  {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          refreshToken: refreshToken.value,
+        },
+      });
+      const newToken = response.data.token;
+      setToken(newToken);
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      clearTokens();
+    }
+  };
+
+  // Function to handle token refresh if expired
+  const ensureValidToken = async () => {
+    if (isTokenExpired()) {
+      await refreshAuthToken(); // Refresh token if expired
     }
   };
 
@@ -70,5 +109,6 @@ export const useAuthStore = defineStore('auth', () => {
     setRefreshToken,
     clearTokens,
     isAuthenticated,
+    ensureValidToken,
   };
 });
