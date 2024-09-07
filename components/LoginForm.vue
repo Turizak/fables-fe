@@ -47,7 +47,6 @@ async function onSubmit(event: FormSubmitEvent<any>) {
         },
       }
     );
-    console.log('Login successful:', response);
     authStore.setToken(response.data.token);
     authStore.setRefreshToken(response.data.refreshToken);
     navigateTo('/');
