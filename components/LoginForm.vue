@@ -47,8 +47,8 @@ async function onSubmit(event: FormSubmitEvent<any>) {
         },
       }
     );
-    authStore.setToken(response.data.token);
-    authStore.setRefreshToken(response.data.refreshToken);
+    authStore.setToken(response.data.tokens.accessToken);
+    authStore.setRefreshToken(response.data.tokens.refreshToken);
     await navigateTo('/');
   } catch (err: any) {
     if (err instanceof Error) {
