@@ -1,6 +1,10 @@
 <script setup>
 import { useAuthStore } from '~/stores/authStore';
 
+definePageMeta({
+  middleware: 'fresh-token',
+});
+
 const authStore = useAuthStore();
 const config = useRuntimeConfig();
 
@@ -73,6 +77,13 @@ const refreshAuthToken = async () => {
         {{ buttonText }}</UButton
       >
       <p class="mt-2 text-l">Expiration: {{ formattedExpirationTime }}</p>
+      <UButton
+        class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
+        :loading="loading"
+        @click="navigateTo('/test')"
+      >
+        Go to Test Page</UButton
+      >
     </div>
   </div>
 </template>

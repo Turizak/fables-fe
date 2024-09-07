@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import jwtDecode from 'jwt-decode';
+import  jwtDecode from 'jwt-decode';
+import type { JwtPayload } from 'jwt-decode';
 
 export const useAuthStore = defineStore('auth', () => {
   const config = useRuntimeConfig();
@@ -9,19 +10,19 @@ export const useAuthStore = defineStore('auth', () => {
   const isClient = () => typeof window !== 'undefined';
 
   // Get initial tokens from localStorage if available
-  const getInitialToken = () =>
+  const getInitialToken = (): string | null =>
     isClient() ? localStorage.getItem('authToken') : null;
-  const getInitialRefreshToken = () =>
+  const getInitialRefreshToken = (): string | null =>
     isClient() ? localStorage.getItem('refreshToken') : null;
 
   const token = ref<string | null>(getInitialToken());
   const refreshToken = ref<string | null>(getInitialRefreshToken());
-  const decodedToken = ref<any>(null);
+  const decodedToken = ref<JwtPayload | null>(null);
 
   // Decode the token if it exists when the store initializes
   if (token.value) {
     try {
-      decodedToken.value = jwtDecode(token.value);
+      decodedToken.value = jwtDecode<JwtPayload>(token.value);
     } catch (error) {
       console.error('Invalid token at store initialization:', error);
     }
@@ -30,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
   // Function to decode and store the token
   const decodeToken = (newToken: string) => {
     try {
-      decodedToken.value = jwtDecode(newToken);
+      decodedToken.value = jwtDecode<JwtPayload>(newToken);
     } catch (error) {
       console.error('Invalid token:', error);
     }
@@ -51,34 +52,37 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
-    // Check if token is expired
-    const isTokenExpired = () => {
-      if (!decodedToken.value?.exp) return true;
-  
-      // Check if the token expiration time has passed
-      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      return decodedToken.value.exp < currentTime;
-    };
+  // Check if token is expired
+  const isTokenExpired = (): boolean => {
+    if (!decodedToken.value?.exp) return true;
 
-    // Function to refresh the token
+    // Check if the token expiration time has passed
+    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    return decodedToken.value.exp < currentTime;
+  };
+
+  // Function to refresh the token
   const refreshAuthToken = async () => {
     if (!refreshToken.value) return;
 
     try {
-      const response: any = await $fetch(config.public.baseURL + '/account/token/refresh',  {
+      const response: any = await $fetch(config.public.baseURL + '/account/token/refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: {
+        body: JSON.stringify({
           refreshToken: refreshToken.value,
-        },
+        }),
       });
+
       const newToken = response.data.token;
       setToken(newToken);
+      console.log('Token refreshed successfully');
     } catch (error) {
       console.error('Failed to refresh token:', error);
       clearTokens();
+      await navigateTo('/login');
     }
   };
 
@@ -86,7 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
   const ensureValidToken = async () => {
     if (isTokenExpired()) {
       await refreshAuthToken(); // Refresh token if expired
-    }
+    } else console.log('Token is not expired')
   };
 
   const clearTokens = () => {
