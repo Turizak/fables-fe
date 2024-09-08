@@ -64,7 +64,6 @@ export const useAuthStore = defineStore('auth', () => {
   // Function to refresh the token
   const refreshAuthToken = async () => {
     if (!refreshToken.value) return;
-
     try {
       const response: any = await $fetch(config.public.baseURL + '/account/token/refresh', {
         method: 'POST',
@@ -75,9 +74,10 @@ export const useAuthStore = defineStore('auth', () => {
           refreshToken: refreshToken.value,
         }),
       });
-
-      const newToken = response.data.token;
+      const newToken = response.data.tokens.accessToken;
+      const newRefreshToken = response.data.tokens.refreshToken;
       setToken(newToken);
+      setRefreshToken(newRefreshToken)
       console.log('Token refreshed successfully');
     } catch (error) {
       console.error('Failed to refresh token:', error);

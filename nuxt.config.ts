@@ -16,7 +16,6 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: '2024-04-03',
-  css: ['~/assets/css/tailwind.css'],
   devtools: { enabled: true },
   modules: ['@nuxt/ui', '@pinia/nuxt'],
   runtimeConfig: {
