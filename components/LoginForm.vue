@@ -2,6 +2,19 @@
 import { useAuthStore } from '~/stores/authStore';
 import type { FormError, FormSubmitEvent } from '#ui/types';
 
+type AuthResponse = {
+  data: {
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
+  };
+  message: string;
+  status: number;
+  statusText: string;
+  timestamp: string;
+};
+
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
@@ -34,7 +47,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
   buttonText.createAccountButton = '';
   error.value = null;
   try {
-    const response: any = await $fetch(
+    const response: AuthResponse = await $fetch(
       config.public.baseURL + '/account/login',
       {
         method: 'POST',

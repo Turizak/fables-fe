@@ -1,5 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { useAuthStore } from '~/stores/authStore';
+
+type AuthResponse = {
+  data: {
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
+  };
+  message: string;
+  status: number;
+  statusText: string;
+  timestamp: string;
+};
 
 definePageMeta({
   middleware: 'fresh-token',
@@ -7,12 +20,11 @@ definePageMeta({
 
 const authStore = useAuthStore();
 const config = useRuntimeConfig();
-
 const buttonText = ref('Refresh Token');
 const loading = ref(false);
 
 // Function to format the UNIX timestamp
-const formatUnixTimestamp = (unixTimestamp) => {
+const formatUnixTimestamp = (unixTimestamp: number) => {
   if (!unixTimestamp) return 'Invalid timestamp';
   const date = new Date(unixTimestamp * 1000); // Convert UNIX timestamp to milliseconds
   return date.toLocaleString(); // Customize the formatting as needed
@@ -27,7 +39,7 @@ const refreshAuthToken = async () => {
   loading.value = true;
   buttonText.value = 'Refreshing';
   try {
-    const response = await $fetch(
+    const response: AuthResponse = await $fetch(
       config.public.baseURL + '/account/token/refresh',
       {
         method: 'POST',
@@ -39,7 +51,7 @@ const refreshAuthToken = async () => {
         },
       }
     );
-    const newToken = response.data.token;
+    const newToken = response.data.tokens.accessToken;
     authStore.setToken(newToken);
   } catch (error) {
     console.error('Failed to refresh token:', error);
