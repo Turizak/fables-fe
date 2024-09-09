@@ -3,6 +3,7 @@ import type { FormError, FormSubmitEvent } from '#ui/types';
 import { useAuthStore } from '~/stores/authStore';
 
 const authStore = useAuthStore();
+const config = useRuntimeConfig();
 const toast = useToast();
 
 const state = reactive({
@@ -26,24 +27,36 @@ async function onSubmit(event: FormSubmitEvent<any>) {
   loading.value = true;
   buttonText.value = 'Creating...';
   try {
-    const response: any = await $fetch('https://httpbin.org/post', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: {
-        name: event.data.name,
-        description: event.data.description,
-      },
-    });
+    const response: any = await $fetch(
+      config.public.baseURL + '/campaign/create',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: {
+          name: event.data.name,
+          description: event.data.description,
+        },
+      }
+    );
     console.log(response);
     buttonText.value = 'Success!';
-    toast.add({ title: 'Campaign Created!' });
+    toast.add({
+      title: 'Campaign Created!',
+      icon: 'i-heroicons-check-circle-solid',
+    });
   } catch (err: any) {
     console.error(err);
+    toast.add({
+      title: 'There was an error - please try again',
+      color: 'red',
+      icon: 'i-heroicons-x-circle-solid',
+    });
   } finally {
     loading.value = false;
+    disabled.value = false;
     state.name = undefined;
     state.description = undefined;
     buttonText.value = 'Create Campaign';
