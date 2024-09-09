@@ -1,6 +1,5 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: 'container' as 'default',
   middleware: 'fresh-token',
 });
 </script>
