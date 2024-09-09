@@ -12,7 +12,6 @@ const state = reactive({
 });
 
 const loading = ref(false);
-const badgeText = ref(undefined);
 const disabled = ref(false);
 const buttonText = ref('Create Campaign');
 
