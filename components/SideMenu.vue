@@ -3,7 +3,12 @@ const isOpen = ref(false);
 </script>
 
 <template>
-  <USlideover v-model="isOpen" :overlay="false" side="left" width="5xl">
+  <USlideover
+    v-model="isOpen"
+    :overlay="false"
+    :ui="{ width: 'w-screen max-w-xs' }"
+    side="left"
+  >
     <div class="flex flex-col">
       <ul>
         <li class="h-6"></li>
