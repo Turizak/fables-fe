@@ -22,7 +22,7 @@ async function logout() {
     <ul class="flex justify-between bg-green-400 text-black">
       <div class="flex">
         <li class="p-2">
-          <UButton @click="openSlideover">
+          <UButton label="Open" @click="openSlideover">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"

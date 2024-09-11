@@ -29,6 +29,7 @@ const buttonText = reactive({
 });
 
 const loading = ref(false);
+const disabled = ref(false);
 const error = ref<string | null>(null);
 
 const validate = (state: any): FormError[] => {
@@ -46,6 +47,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
   buttonText.loginButton = 'Logging In...';
   buttonText.createAccountButton = '';
   error.value = null;
+  disabled.value = true;
   try {
     const response: AuthResponse = await $fetch(
       config.public.baseURL + '/account/login',
@@ -93,11 +95,11 @@ async function onSubmit(event: FormSubmitEvent<any>) {
       </div>
 
       <UFormGroup label="Email" name="email" class="mb-4">
-        <UInput v-model="state.email" />
+        <UInput :disabled="disabled" v-model="state.email" type="email" />
       </UFormGroup>
 
       <UFormGroup label="Password" name="password">
-        <UInput v-model="state.password" type="password" />
+        <UInput :disabled="disabled" v-model="state.password" type="password" />
       </UFormGroup>
 
       <UButton

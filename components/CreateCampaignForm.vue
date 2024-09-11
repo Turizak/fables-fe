@@ -28,6 +28,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
   disabled.value = true;
   loading.value = true;
   buttonText.value = 'Creating...';
+  await authStore.ensureValidToken();
   try {
     const response: any = await $fetch(
       config.public.baseURL + '/campaign/create',
@@ -39,7 +40,8 @@ async function onSubmit(event: FormSubmitEvent<any>) {
         },
         body: {
           name: event.data.name,
-          description: event.data.description,
+          ruleset: event.data.ruleset,
+          maxPlayers: event.data.maxPlayers,
         },
       }
     );
