@@ -12,7 +12,6 @@ export default defineNuxtConfig({
           rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg',
         }
       ], 
-      
     },
   },
   compatibilityDate: '2024-04-03',
@@ -24,5 +23,4 @@ export default defineNuxtConfig({
       baseURL: process.env.BASE_URL
     }
   },
-  
 });

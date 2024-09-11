@@ -4,6 +4,7 @@ import { useAuthStore } from '~/stores/authStore';
 
 const authStore = useAuthStore();
 const config = useRuntimeConfig();
+const appConfig = useAppConfig();
 const toast = useToast();
 
 const state = reactive({
@@ -28,23 +29,26 @@ async function onSubmit(event: FormSubmitEvent<any>) {
   disabled.value = true;
   loading.value = true;
   buttonText.value = 'Creating...';
+  await authStore.ensureValidToken();
   try {
-    const response: any = await $fetch(
-      config.public.baseURL + '/campaign/create',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-          'Content-Type': 'application/json',
-        },
-        body: {
-          name: event.data.name,
-          description: event.data.description,
-        },
-      }
-    );
-    console.log(response);
-    buttonText.value = 'Success!';
+    // const response: any = await $fetch(
+    //   config.public.baseURL + '/campaign/create',
+    //   {
+    //     method: 'POST',
+    //     headers: {
+    //       Authorization: `Bearer ${authStore.token}`,
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: {
+    //       name: event.data.name,
+    //       ruleset: event.data.ruleset,
+    //       maxPlayers: event.data.maxPlayers,
+    //     },
+    //   }
+    // );
+    // console.log(response);
+    // buttonText.value = 'Success!';
+    console.log(appConfig.ui);
     toast.add({
       title: 'Campaign Created!',
       icon: 'i-heroicons-check-circle-solid',

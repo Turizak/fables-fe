@@ -4,6 +4,8 @@
       <NuxtPage />
     </NuxtLayout>
     <USlideovers />
-    <UNotifications />
+    <UNotifications
+      :ui="{ strategy: 'override', position: 'top-10 right-0' }"
+    />
   </div>
 </template>
