@@ -1,30 +1,30 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import  jwtDecode from 'jwt-decode';
-import type { JwtPayload } from 'jwt-decode';
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import jwtDecode from "jwt-decode";
+import type { JwtPayload } from "jwt-decode";
 
 type AuthResponse = {
-    tokens: {
-      accessToken: string;
-      refreshToken: string;
-    };
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
   message: string;
   status: number;
   statusText: string;
   timestamp: string;
 };
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
   const config = useRuntimeConfig();
 
   // Helper function to check if we're in the client
-  const isClient = () => typeof window !== 'undefined';
+  const isClient = () => typeof window !== "undefined";
 
   // Get initial tokens from localStorage if available
   const getInitialToken = (): string | null =>
-    isClient() ? localStorage.getItem('authToken') : null;
+    isClient() ? localStorage.getItem("authToken") : null;
   const getInitialRefreshToken = (): string | null =>
-    isClient() ? localStorage.getItem('refreshToken') : null;
+    isClient() ? localStorage.getItem("refreshToken") : null;
 
   const token = ref<string | null>(getInitialToken());
   const refreshToken = ref<string | null>(getInitialRefreshToken());
@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       decodedToken.value = jwtDecode<JwtPayload>(token.value);
     } catch (error) {
-      console.error('Invalid token at store initialization:', error);
+      console.error("Invalid token at store initialization:", error);
     }
   }
 
@@ -44,14 +44,14 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       decodedToken.value = jwtDecode<JwtPayload>(newToken);
     } catch (error) {
-      console.error('Invalid token:', error);
+      console.error("Invalid token:", error);
     }
   };
 
   const setToken = (newToken: string) => {
     token.value = newToken;
     if (isClient()) {
-      localStorage.setItem('authToken', newToken);
+      localStorage.setItem("authToken", newToken);
     }
     decodeToken(newToken);
   };
@@ -59,7 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
   const setRefreshToken = (newRefreshToken: string) => {
     refreshToken.value = newRefreshToken;
     if (isClient()) {
-      localStorage.setItem('refreshToken', newRefreshToken);
+      localStorage.setItem("refreshToken", newRefreshToken);
     }
   };
 
@@ -76,10 +76,14 @@ export const useAuthStore = defineStore('auth', () => {
   const refreshAuthToken = async () => {
     if (!refreshToken.value) return;
     try {
-      const response = await $fetch<{ status: string; message: string; data: AuthResponse }>(config.public.baseURL + '/account/token/refresh', {
-        method: 'POST',
+      const response = await $fetch<{
+        status: string;
+        message: string;
+        data: AuthResponse;
+      }>(config.public.baseURL + "/account/token/refresh", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           refreshToken: refreshToken.value,
@@ -88,12 +92,12 @@ export const useAuthStore = defineStore('auth', () => {
       const newToken = response.data.tokens.accessToken;
       const newRefreshToken = response.data.tokens.refreshToken;
       setToken(newToken);
-      setRefreshToken(newRefreshToken)
-      console.log('Token refreshed successfully');
+      setRefreshToken(newRefreshToken);
+      console.log("Token refreshed successfully");
     } catch (error) {
-      console.error('Failed to refresh token:', error);
+      console.error("Failed to refresh token:", error);
       clearTokens();
-      await navigateTo('/login');
+      await navigateTo("/login");
     }
   };
 
@@ -101,7 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
   const ensureValidToken = async () => {
     if (isTokenExpired()) {
       await refreshAuthToken(); // Refresh token if expired
-    } else console.log('Token is not expired')
+    } else console.log("Token is not expired");
   };
 
   const clearTokens = () => {
@@ -109,8 +113,8 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken.value = null;
     decodedToken.value = null;
     if (isClient()) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('refreshToken');
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("refreshToken");
     }
   };
 

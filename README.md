@@ -3,11 +3,11 @@
 Built With:
 
 ![Vue.js](https://img.shields.io/badge/vue-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)  
-![Nuxtjs](https://img.shields.io/badge/Nuxt-002E3B?style=for-the-badge&logo=nuxtdotjs&logoColor=#00DC82)  
+![Nuxtjs](https://img.shields.io/badge/Nuxt-002E3B?style=for-the-badge&logo=nuxtdotjs&logoColor=#00DC82)
 
 ## 📖 What is Fables?
 
-A web-based application to manage your DnD campaigns and characters. 
+A web-based application to manage your DnD campaigns and characters.
 
 More info to come..
 

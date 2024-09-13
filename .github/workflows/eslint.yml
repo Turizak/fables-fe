@@ -2,24 +2,24 @@ name: ESLint
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18' # Adjust if needed
-        cache: 'npm'
-    - name: Install project dependencies 
-      run: npm install 
-    - name: Install @nuxt/eslint
-      run: npm install @nuxt/eslint@0.5.7 # Or latest compatible version
-    - name: Run ESLint
-      run: npx eslint . # Adjust the command based on your project setup
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18" # Adjust if needed
+          cache: "npm"
+      - name: Install project dependencies
+        run: npm install
+      - name: Install @nuxt/eslint
+        run: npm install @nuxt/eslint@0.5.7 # Or latest compatible version
+      - name: Run ESLint
+        run: npx eslint . # Adjust the command based on your project setup

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/authStore';
+import { useAuthStore } from "~/stores/authStore";
 
 type AuthResponse = {
   data: {
@@ -15,50 +15,50 @@ type AuthResponse = {
 };
 
 definePageMeta({
-  middleware: 'fresh-token',
+  middleware: "fresh-token",
 });
 
 const authStore = useAuthStore();
 const config = useRuntimeConfig();
-const buttonText = ref('Refresh Token');
+const buttonText = ref("Refresh Token");
 const loading = ref(false);
 
 // Function to format the UNIX timestamp
 const formatUnixTimestamp = (unixTimestamp: number) => {
-  if (!unixTimestamp) return 'Invalid timestamp';
+  if (!unixTimestamp) return "Invalid timestamp";
   const date = new Date(unixTimestamp * 1000); // Convert UNIX timestamp to milliseconds
   return date.toLocaleString(); // Customize the formatting as needed
 };
 
 const formattedExpirationTime = computed(() => {
   const exp = authStore.decodedToken?.exp;
-  return exp ? formatUnixTimestamp(exp) : 'Token not available';
+  return exp ? formatUnixTimestamp(exp) : "Token not available";
 });
 
 const refreshAuthToken = async () => {
   loading.value = true;
-  buttonText.value = 'Refreshing';
+  buttonText.value = "Refreshing";
   try {
     const response: AuthResponse = await $fetch(
-      config.public.baseURL + '/account/token/refresh',
+      config.public.baseURL + "/account/token/refresh",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: {
           refreshToken: authStore.refreshToken,
         },
-      }
+      },
     );
     const newToken = response.data.tokens.accessToken;
     authStore.setToken(newToken);
   } catch (error) {
-    console.error('Failed to refresh token:', error);
+    console.error("Failed to refresh token:", error);
     authStore.clearTokens();
   } finally {
     loading.value = false;
-    buttonText.value = 'Refresh Token';
+    buttonText.value = "Refresh Token";
   }
 };
 
