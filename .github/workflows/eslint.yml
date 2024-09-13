@@ -21,5 +21,7 @@ jobs:
         run: npm install
       - name: Install @nuxt/eslint
         run: npm install @nuxt/eslint@0.5.7 # Or latest compatible version
+      - name: Run Prettier
+        run: npx prettier . --write
       - name: Run ESLint
-        run: npx eslint . # Adjust the command based on your project setup
+        run: npx eslint .
