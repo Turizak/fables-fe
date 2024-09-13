@@ -12,7 +12,7 @@ const slideover = useSlideover();
   >
     <div class="flex flex-col">
       <ul>
-        <li class="h-6"></li>
+        <li class="h-6" />
         <li>
           <NuxtLink to="/">
             <div
