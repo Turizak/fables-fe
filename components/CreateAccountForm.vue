@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent } from '#ui/types';
+import type { FormError, FormSubmitEvent } from "#ui/types";
 
 type FormType = {
-  email: string,
-  createPassword: string,
-  confirmPassword: string | undefined
-}
+  email: string;
+  createPassword: string;
+  confirmPassword: string | undefined;
+};
 
 const state = reactive({
   email: undefined,
@@ -18,20 +18,20 @@ const validate = (state: FormType): FormError[] => {
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{12,}$/;
   const errors = [];
-  if (!state.email) errors.push({ path: 'email', message: 'Required' });
+  if (!state.email) errors.push({ path: "email", message: "Required" });
   if (!emailRegex.test(state.email))
-    errors.push({ path: 'email', message: 'Invalid email address' });
+    errors.push({ path: "email", message: "Invalid email address" });
   if (!state.createPassword)
-    errors.push({ path: 'createPassword', message: 'Required' });
+    errors.push({ path: "createPassword", message: "Required" });
   if (!passwordRegex.test(state.createPassword))
     errors.push({
-      path: 'createPassword',
-      message: 'Password does not meet requirements',
+      path: "createPassword",
+      message: "Password does not meet requirements",
     });
   if (!state.confirmPassword)
-    errors.push({ path: 'confirmPassword', message: 'Required' });
+    errors.push({ path: "confirmPassword", message: "Required" });
   if (state.confirmPassword !== state.createPassword)
-    errors.push({ path: 'confirmPassword', message: 'Passwords do not match' });
+    errors.push({ path: "confirmPassword", message: "Passwords do not match" });
   return errors;
 };
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useAuthStore } from '~/stores/authStore';
-import type { FormError, FormSubmitEvent } from '#ui/types';
+import { useAuthStore } from "~/stores/authStore";
+import type { FormError, FormSubmitEvent } from "#ui/types";
 
 type AuthResponse = {
   data: {
@@ -16,9 +16,9 @@ type AuthResponse = {
 };
 
 type FormData = {
-  email: string,
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
@@ -29,8 +29,8 @@ const state = reactive({
 });
 
 const buttonText = reactive({
-  loginButton: 'Login',
-  createAccountButton: 'Create Account',
+  loginButton: "Login",
+  createAccountButton: "Create Account",
 });
 
 const loading = ref(false);
@@ -40,44 +40,44 @@ const error = ref<string | null>(null);
 const validate = (state: FormData): FormError[] => {
   const errors = [];
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!state.email) errors.push({ path: 'email', message: 'Required' });
+  if (!state.email) errors.push({ path: "email", message: "Required" });
   if (!emailRegex.test(state.email))
-    errors.push({ path: 'email', message: 'Invalid email address' });
-  if (!state.password) errors.push({ path: 'password', message: 'Required' });
+    errors.push({ path: "email", message: "Invalid email address" });
+  if (!state.password) errors.push({ path: "password", message: "Required" });
   return errors;
 };
 
 async function onSubmit(event: FormSubmitEvent<FormData>) {
   loading.value = true;
-  buttonText.loginButton = 'Logging In...';
-  buttonText.createAccountButton = '';
+  buttonText.loginButton = "Logging In...";
+  buttonText.createAccountButton = "";
   error.value = null;
   disabled.value = true;
   try {
     const response: AuthResponse = await $fetch(
-      config.public.baseURL + '/account/login',
+      config.public.baseURL + "/account/login",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: {
           email: event.data.email,
           password: event.data.password,
         },
-      }
+      },
     );
     authStore.setToken(response.data.tokens.accessToken);
     authStore.setRefreshToken(response.data.tokens.refreshToken);
-    await navigateTo('/');
+    await navigateTo("/");
   } catch (err) {
     if (err instanceof Error) {
-    console.error('Login error:', err);
-  }
- } finally {
+      console.error("Login error:", err);
+    }
+  } finally {
     loading.value = false;
-    buttonText.loginButton = 'Login';
-    buttonText.createAccountButton = 'Create Account';
+    buttonText.loginButton = "Login";
+    buttonText.createAccountButton = "Create Account";
   }
 }
 </script>
@@ -95,11 +95,11 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
       </div>
 
       <UFormGroup label="Email" name="email" class="mb-4">
-        <UInput v-model="state.email" :disabled="disabled"  type="email" />
+        <UInput v-model="state.email" :disabled="disabled" type="email" />
       </UFormGroup>
 
       <UFormGroup label="Password" name="password">
-        <UInput v-model="state.password" :disabled="disabled"  type="password" />
+        <UInput v-model="state.password" :disabled="disabled" type="password" />
       </UFormGroup>
 
       <UButton

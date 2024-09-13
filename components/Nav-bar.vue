@@ -1,6 +1,6 @@
 <script setup>
-import { useAuthStore } from '~/stores/authStore';
-import SideMenu from './SideMenu.vue';
+import { useAuthStore } from "~/stores/authStore";
+import SideMenu from "./SideMenu.vue";
 
 const slideover = useSlideover();
 const authStore = useAuthStore();
@@ -13,7 +13,7 @@ function openSlideover() {
 
 async function logout() {
   authStore.clearTokens();
-  await navigateTo('/login');
+  await navigateTo("/login");
 }
 </script>
 
