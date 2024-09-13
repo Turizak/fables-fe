@@ -25,6 +25,4 @@ jobs:
         run: npx prettier . --write
       - name: Run ESLint
         run: npx eslint .
-      - name: OSSF Scorecard action
-        uses: ossf/scorecard-action@v2.4.0
             
