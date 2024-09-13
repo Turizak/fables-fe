@@ -3,6 +3,17 @@ import { ref, computed } from 'vue';
 import  jwtDecode from 'jwt-decode';
 import type { JwtPayload } from 'jwt-decode';
 
+type AuthResponse = {
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+    };
+  message: string;
+  status: number;
+  statusText: string;
+  timestamp: string;
+};
+
 export const useAuthStore = defineStore('auth', () => {
   const config = useRuntimeConfig();
 
@@ -65,7 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
   const refreshAuthToken = async () => {
     if (!refreshToken.value) return;
     try {
-      const response: any = await $fetch(config.public.baseURL + '/account/token/refresh', {
+      const response = await $fetch<{ status: string; message: string; data: AuthResponse }>(config.public.baseURL + '/account/token/refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

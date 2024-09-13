@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '#ui/types';
 
+type FormType = {
+  email: string,
+  createPassword: string,
+  confirmPassword: string | undefined
+}
+
 const state = reactive({
   email: undefined,
   createPassword: undefined,
   confirmPassword: undefined,
 });
 
-const validate = (state: any): FormError[] => {
+const validate = (state: FormType): FormError[] => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{12,}$/;
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{12,}$/;
   const errors = [];
   if (!state.email) errors.push({ path: 'email', message: 'Required' });
   if (!emailRegex.test(state.email))
@@ -29,7 +35,7 @@ const validate = (state: any): FormError[] => {
   return errors;
 };
 
-async function onSubmit(event: FormSubmitEvent<any>) {
+async function onSubmit(event: FormSubmitEvent<FormType>) {
   console.log(event.data);
 }
 </script>

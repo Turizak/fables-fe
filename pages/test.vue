@@ -5,6 +5,7 @@ definePageMeta({
 </script>
 
 <template>
+  <div>
   <h1 class="p-2 mb-4 text-5xl">This is a test page!</h1>
   <UCard>
     <template #header>
@@ -15,4 +16,5 @@ definePageMeta({
       <p class="h-8">Card Footer</p>
     </template>
   </UCard>
+</div>
 </template>

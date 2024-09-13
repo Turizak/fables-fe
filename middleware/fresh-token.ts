@@ -1,6 +1,6 @@
 import { useAuthStore } from '~/stores/authStore';
 
-export default defineNuxtRouteMiddleware(async (to, from) => {
+export default defineNuxtRouteMiddleware(async () => {
   const authStore = useAuthStore();
   try {
     await authStore.ensureValidToken();

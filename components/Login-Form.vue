@@ -15,6 +15,11 @@ type AuthResponse = {
   timestamp: string;
 };
 
+type FormData = {
+  email: string,
+  password: string
+}
+
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
@@ -32,7 +37,7 @@ const loading = ref(false);
 const disabled = ref(false);
 const error = ref<string | null>(null);
 
-const validate = (state: any): FormError[] => {
+const validate = (state: FormData): FormError[] => {
   const errors = [];
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!state.email) errors.push({ path: 'email', message: 'Required' });
@@ -42,7 +47,7 @@ const validate = (state: any): FormError[] => {
   return errors;
 };
 
-async function onSubmit(event: FormSubmitEvent<any>) {
+async function onSubmit(event: FormSubmitEvent<FormData>) {
   loading.value = true;
   buttonText.loginButton = 'Logging In...';
   buttonText.createAccountButton = '';
@@ -65,16 +70,11 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     authStore.setToken(response.data.tokens.accessToken);
     authStore.setRefreshToken(response.data.tokens.refreshToken);
     await navigateTo('/');
-  } catch (err: any) {
+  } catch (err) {
     if (err instanceof Error) {
-      error.value = err.message;
-    } else if (typeof err === 'object' && err !== null) {
-      error.value = err.data?.message || 'An error occurred during login';
-    } else {
-      error.value = 'An unexpected error occurred';
-    }
     console.error('Login error:', err);
-  } finally {
+  }
+ } finally {
     loading.value = false;
     buttonText.loginButton = 'Login';
     buttonText.createAccountButton = 'Create Account';
@@ -95,11 +95,11 @@ async function onSubmit(event: FormSubmitEvent<any>) {
       </div>
 
       <UFormGroup label="Email" name="email" class="mb-4">
-        <UInput :disabled="disabled" v-model="state.email" type="email" />
+        <UInput v-model="state.email" :disabled="disabled"  type="email" />
       </UFormGroup>
 
       <UFormGroup label="Password" name="password">
-        <UInput :disabled="disabled" v-model="state.password" type="password" />
+        <UInput v-model="state.password" :disabled="disabled"  type="password" />
       </UFormGroup>
 
       <UButton
