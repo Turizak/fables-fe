@@ -69,15 +69,26 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
     authStore.setToken(response.data.tokens.accessToken);
     authStore.setRefreshToken(response.data.tokens.refreshToken);
     await navigateTo("/");
-  } catch (Error: any) {
-    toast.add({
-      title: `${Error.response._data.message}`,
-      color: "red",
-      icon: "i-heroicons-x-circle-solid",
-    });
-    console.error(
-      `Error: ${Error.response._data.status}, ${Error.response._data.statusText}`,
-    );
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const errResponse = (
+        error as {
+          response: {
+            _data: { message: string; status: number; statusText: string };
+          };
+        }
+      ).response;
+      toast.add({
+        title: `${errResponse._data.message}`,
+        color: "red",
+        icon: "i-heroicons-x-circle-solid",
+      });
+      console.error(
+        `Error: ${errResponse._data.status}, ${errResponse._data.statusText}`,
+      );
+    } else {
+      console.error(error);
+    }
   } finally {
     loading.value = false;
     disabled.value = false;
