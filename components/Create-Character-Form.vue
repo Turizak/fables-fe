@@ -10,66 +10,30 @@ type CharacterForm = {
 const authStore = useAuthStore();
 const toast = useToast();
 
+const classes = [
+  "Barbarian",
+  "Bard",
+  "Cleric",
+  "Druid",
+  "Fighter",
+  "Monk",
+  "Paladin",
+  "Ranger",
+  "Rogue",
+  "Sorcerer",
+  "Warlock",
+  "Wizard",
+];
+
 const state = reactive({
   name: undefined,
   ruleset: "5e",
   class: undefined,
 });
 
-const options = [
-  {
-    value: "barbarian",
-    label: "Barbarian",
-  },
-  {
-    value: "bard",
-    label: "Bard",
-  },
-  {
-    value: "cleric",
-    label: "Cleric",
-  },
-  {
-    value: "druid",
-    label: "Druid",
-  },
-  {
-    value: "fighter",
-    label: "Fighter",
-  },
-  {
-    value: "monk",
-    label: "Monk",
-  },
-  {
-    value: "paladin",
-    label: "Paladin",
-  },
-  {
-    value: "ranger",
-    label: "Ranger",
-  },
-  {
-    value: "rogue",
-    label: "Rogue",
-  },
-  {
-    value: "sorcerer",
-    label: "Sorcerer",
-  },
-  {
-    value: "warlock",
-    label: "Warlock",
-  },
-  {
-    value: "wizard",
-    label: "Wizard",
-  },
-];
-
 const disabled = ref(false);
 const loading = ref(false);
-const buttonText = ref("Create Character");
+const buttonText = ref("Next Step");
 
 const validate = (state: CharacterForm): FormError[] => {
   const errors = [];
@@ -115,7 +79,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
   } finally {
     loading.value = false;
     disabled.value = false;
-    buttonText.value = "Create Character";
+    buttonText.value = "Next Step";
     state.name = undefined;
   }
 }
@@ -135,7 +99,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       />
     </UFormGroup>
     <UFormGroup label="Class" name="class">
-      <URadioGroup v-model="state.class" :options="options" />
+      <USelect v-model="state.class" :options="classes" required />
     </UFormGroup>
     <UButton
       type="submit"
