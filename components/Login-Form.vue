@@ -22,6 +22,7 @@ type FormData = {
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
+const toast = useToast();
 
 const state = reactive({
   email: undefined,
@@ -70,10 +71,15 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
     authStore.setToken(response.data.tokens.accessToken);
     authStore.setRefreshToken(response.data.tokens.refreshToken);
     await navigateTo("/");
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error("Login error:", err);
-    }
+  } catch (Error: any) {
+    toast.add({
+      title: `${Error.response._data.message}`,
+      color: "red",
+      icon: "i-heroicons-x-circle-solid",
+    });
+    console.error(
+      `Error: ${Error.response._data.status}, ${Error.response._data.statusText}`,
+    );
   } finally {
     loading.value = false;
     buttonText.loginButton = "Login";

@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col min-h-screen">
-    <Navbar />
+    <Nav-bar />
     <UContainer>
       <slot />
     </UContainer>
-    <Footer />
+    <Footer-component />
   </div>
 </template>
