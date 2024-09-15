@@ -22,6 +22,7 @@ type FormData = {
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
+const toast = useToast();
 
 const state = reactive({
   email: undefined,
@@ -35,7 +36,6 @@ const buttonText = reactive({
 
 const loading = ref(false);
 const disabled = ref(false);
-const error = ref<string | null>(null);
 
 const validate = (state: FormData): FormError[] => {
   const errors = [];
@@ -49,10 +49,9 @@ const validate = (state: FormData): FormError[] => {
 
 async function onSubmit(event: FormSubmitEvent<FormData>) {
   loading.value = true;
+  disabled.value = true;
   buttonText.loginButton = "Logging In...";
   buttonText.createAccountButton = "";
-  error.value = null;
-  disabled.value = true;
   try {
     const response: AuthResponse = await $fetch(
       config.public.baseURL + "/account/login",
@@ -70,12 +69,29 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
     authStore.setToken(response.data.tokens.accessToken);
     authStore.setRefreshToken(response.data.tokens.refreshToken);
     await navigateTo("/");
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error("Login error:", err);
+  } catch (error: unknown) {
+    if (error && typeof error === "object" && "response" in error) {
+      const errResponse = (
+        error as {
+          response: {
+            _data: { message: string; status: number; statusText: string };
+          };
+        }
+      ).response;
+      toast.add({
+        title: `${errResponse._data.message}`,
+        color: "red",
+        icon: "i-heroicons-x-circle-solid",
+      });
+      console.error(
+        `Error: ${errResponse._data.status}, ${errResponse._data.statusText}`,
+      );
+    } else {
+      console.error(error);
     }
   } finally {
     loading.value = false;
+    disabled.value = false;
     buttonText.loginButton = "Login";
     buttonText.createAccountButton = "Create Account";
   }
@@ -89,11 +105,6 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
       :state="state"
       @submit.prevent="onSubmit"
     >
-      <!-- Error Message -->
-      <div v-if="error" class="mb-2">
-        <UButton disabled>Error: {{ error }}</UButton>
-      </div>
-
       <UFormGroup label="Email" name="email" class="mb-4">
         <UInput v-model="state.email" :disabled="disabled" type="email" />
       </UFormGroup>

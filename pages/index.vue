@@ -61,20 +61,6 @@ const refreshAuthToken = async () => {
     buttonText.value = "Refresh Token";
   }
 };
-
-// const fetchProtectedData = async () => {
-//   await authStore.ensureValidToken();
-//   try {
-//     const data = await $fetch('/api/protected', {
-//       headers: {
-//         Authorization: `Bearer ${authStore.token}`,
-//       },
-//     });
-//     console.log(data);
-//   } catch (error) {
-//     console.error('Failed to fetch protected data:', error);
-//   }
-// };
 </script>
 
 <template>

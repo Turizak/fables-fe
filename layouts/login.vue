@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col min-h-screen">
-    <LoginHeader />
+    <Login-Header />
     <slot />
-    <Footer />
+    <Footer-component />
   </div>
 </template>
