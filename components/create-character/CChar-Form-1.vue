@@ -1,3 +1,5 @@
+// Name and Class
+
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
 import { useAuthStore } from "#imports";
@@ -33,7 +35,7 @@ const state = reactive({
 
 const disabled = ref(false);
 const loading = ref(false);
-const buttonText = ref("Next Step");
+const buttonText = ref("Next Step: Details");
 
 const validate = (state: CharacterForm): FormError[] => {
   const errors = [];
@@ -65,10 +67,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       },
     });
     console.log(response);
-    toast.add({
-      title: "Character Created!",
-      icon: "i-heroicons-check-circle-solid",
-    });
+    await navigateTo("/cchar/cchar-2");
   } catch (err) {
     console.error(err);
     toast.add({

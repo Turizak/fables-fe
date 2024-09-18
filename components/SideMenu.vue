@@ -56,7 +56,7 @@ const slideover = useSlideover();
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink to="/create-character">
+          <NuxtLink to="/cchar/cchar-1">
             <div
               class="flex p-2 text-xl hover:bg-green-400 hover:text-black hover:cursor-pointer"
             >
