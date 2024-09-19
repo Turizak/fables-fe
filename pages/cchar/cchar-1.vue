@@ -6,7 +6,7 @@ definePageMeta({
 
 <template>
   <div>
-    <h1 class="p-2 mb-2 text-5xl">Create Character</h1>
-    <Create-Character-Form />
+    <h1 class="flex justify-center p-2 mb-2 text-5xl">Create Character</h1>
+    <CreateCharacterCCharForm1 />
   </div>
 </template>
