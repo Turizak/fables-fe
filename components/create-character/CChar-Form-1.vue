@@ -8,6 +8,8 @@ type CharacterForm = {
   name: string;
   ruleset: string;
   class: string;
+  alignment: string;
+  race: string;
 };
 const authStore = useAuthStore();
 const toast = useToast();
@@ -27,21 +29,70 @@ const classes = [
   "Wizard",
 ];
 
+const alignments = [
+  "Chaotic Evil",
+  "Chaotic Good",
+  "Chaotic Neutral",
+  "Lawful Evil",
+  "Lawful Good",
+  "Lawful Neutral",
+  "Neutral",
+  "Neutral Evil",
+  "Neutral Good",
+];
+
+const races = [
+  { name: "Dragonborn", value: "dragonborn" },
+  { name: "Half-Elf", value: "half-elf" },
+  { name: "Half-Orc", value: "half-orc" },
+  { name: "Human", value: "human" },
+  { name: "Tiefling", value: "tiefling" },
+  { name: "---", value: "", disabled: true },
+  {
+    name: "Dwarves",
+    children: [
+      { name: "Dwarf", value: "dwarf" },
+      { name: "Hill Dwarf", value: "hill-dwarf" },
+      { name: "Mountain Dwarf", value: "mountain-dwarf" },
+    ],
+  },
+  {
+    name: "Elves",
+    children: [
+      { name: "Elf", value: "elf" },
+      { name: "Dark Elf (Drow)", value: "dark-elf" },
+      { name: "High Elf", value: "high-elf" },
+      { name: "Wood Elf", value: "wood-elf" },
+    ],
+  },
+  {
+    name: "Gnomes",
+    children: [
+      { name: "Gnome", value: "gnome" },
+      { name: "Forest Gnome", value: "forest-gnome" },
+      { name: "Rock Gnome", value: "rock-gnome" },
+    ],
+  },
+];
+
 const state = reactive({
   name: undefined,
   ruleset: "5e",
   class: undefined,
+  alignment: undefined,
+  race: undefined,
 });
 
 const disabled = ref(false);
 const loading = ref(false);
-const buttonText = ref("Next Step: Details");
+const buttonText = ref("Next Step: Appearance");
 
 const validate = (state: CharacterForm): FormError[] => {
   const errors = [];
   if (!state.name) errors.push({ path: "name", message: "Required" });
   if (state.name && state.name.length > 25)
     errors.push({ path: "name", message: "Must be less than 25 characters" });
+  if (!state.alignment) errors.push({ path: "alignment", message: "Required" });
   return errors;
 };
 
@@ -64,6 +115,8 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
         name: event.data.name,
         ruleset: event.data.ruleset,
         class: event.data.class,
+        alignment: event.data.alignment,
+        race: event.data.race,
       },
     });
     console.log(response);
@@ -78,8 +131,9 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
   } finally {
     loading.value = false;
     disabled.value = false;
-    buttonText.value = "Next Step";
+    buttonText.value = "Next Step: Appearance";
     state.name = undefined;
+    state.alignment = undefined;
   }
 }
 </script>
@@ -87,7 +141,13 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
 <template>
   <UForm :validate="validate" :state="state" @submit.prevent="onSubmit">
     <UFormGroup label="Character Name" name="name" class="mb-4">
-      <UInput v-model="state.name" :disabled="disabled" type="text" required />
+      <UInput
+        v-model="state.name"
+        placeholder="Must be less than 25 characters"
+        :disabled="disabled"
+        type="text"
+        required
+      />
     </UFormGroup>
     <UFormGroup label="Ruleset" name="ruleset" class="mb-4">
       <USelect
@@ -97,8 +157,32 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
         placeholder="5e"
       />
     </UFormGroup>
-    <UFormGroup label="Class" name="class">
-      <USelect v-model="state.class" :options="classes" required />
+    <UFormGroup label="Class" name="class" class="mb-4">
+      <USelect
+        v-model="state.class"
+        placeholder="Select a class..."
+        :options="classes"
+        required
+      />
+    </UFormGroup>
+    <UFormGroup label="Race" name="race" class="mb-4">
+      <USelect
+        v-model="state.race"
+        placeholder="Select a race..."
+        :options="races"
+        :disabled="disabled"
+        option-attribute="name"
+        required
+      />
+    </UFormGroup>
+    <UFormGroup label="Alignment" name="alignment">
+      <USelect
+        v-model="state.alignment"
+        placeholder="Select an alignment..."
+        :options="alignments"
+        :disabled="disabled"
+        required
+      />
     </UFormGroup>
     <UButton
       type="submit"
