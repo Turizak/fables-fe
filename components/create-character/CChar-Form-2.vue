@@ -67,10 +67,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       },
     });
     console.log(response);
-    toast.add({
-      title: "Character Created!",
-      icon: "i-heroicons-check-circle-solid",
-    });
+    await navigateTo("/cchar/cchar-3");
   } catch (err) {
     console.error(err);
     toast.add({
