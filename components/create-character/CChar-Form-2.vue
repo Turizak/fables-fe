@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
-import { useAuthStore } from "#imports";
+import { useAuthStore, useFormStore } from "#imports";
 
 type CharacterForm = {
   hair: string;
@@ -14,6 +14,7 @@ type CharacterForm = {
   gender: string;
 };
 const authStore = useAuthStore();
+const formStore = useFormStore();
 const toast = useToast();
 const router = useRouter();
 
@@ -53,15 +54,31 @@ const validate = (state: CharacterForm): FormError[] => {
   return errors;
 };
 
+function updateFormStore(fields: CharacterForm) {
+  Object.entries(fields).forEach(([field, value]) => {
+    formStore.updateFormField(field, value);
+  });
+}
+
 async function goBack() {
   await authStore.ensureValidToken();
   router.back();
 }
 
 async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
+  const eventData = {
+    hair: event.data.hair,
+    skin: event.data.skin,
+    eyes: event.data.eyes,
+    age: event.data.age,
+    height: event.data.height,
+    weight: event.data.weight,
+    gender: event.data.gender,
+  };
   disabled.value = true;
   loading.value = true;
   await authStore.ensureValidToken();
+  updateFormStore(eventData);
   try {
     const response = await $fetch<{
       status: string;
@@ -73,15 +90,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
         Authorization: `Bearer ${authStore.token}`,
         "Content-Type": "application/json",
       },
-      body: {
-        hair: event.data.hair,
-        skin: event.data.skin,
-        eyes: event.data.eyes,
-        age: event.data.age,
-        height: event.data.height,
-        weight: event.data.weight,
-        gender: event.data.gender,
-      },
+      body: formStore.formData,
     });
     console.log(response);
     toast.add({
