@@ -2,18 +2,20 @@
 
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
-import { useAuthStore } from "#imports";
+import { useAuthStore, useFormStore } from "#imports";
 
 type CharacterForm = {
   hair: string;
   skin: string;
   eyes: string;
-  height: string;
+  height: number;
   weight: number;
   age: number;
   gender: string;
 };
+const config = useRuntimeConfig();
 const authStore = useAuthStore();
+const formStore = useFormStore();
 const toast = useToast();
 const router = useRouter();
 
@@ -42,8 +44,8 @@ const validate = (state: CharacterForm): FormError[] => {
     errors.push({ path: "skin", message: "Must be less than 25 characters" });
   if (state.eyes && state.eyes.length > 25)
     errors.push({ path: "eyes", message: "Must be less than 25 characters" });
-  if (state.height && state.height.length > 25)
-    errors.push({ path: "height", message: "Must be less than 25 characters" });
+  if (state.height && state.height < 1)
+    errors.push({ path: "height", message: "Must be at least 12 inches" });
   if (state.gender && state.gender.length > 25)
     errors.push({ path: "gender", message: "Must be less than 25 characters" });
   if (state.age && state.age < 1)
@@ -53,35 +55,44 @@ const validate = (state: CharacterForm): FormError[] => {
   return errors;
 };
 
+function updateFormStore(fields: CharacterForm) {
+  Object.entries(fields).forEach(([field, value]) => {
+    formStore.updateFormField(field, value);
+  });
+}
+
 async function goBack() {
   await authStore.ensureValidToken();
   router.back();
 }
 
 async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
+  const uuid = "506bdf8b-4906-48ea-ad18-4e65a8a02e59";
+  const eventData = {
+    hair: event.data.hair,
+    skin: event.data.skin,
+    eyes: event.data.eyes,
+    age: event.data.age,
+    height: event.data.height,
+    weight: event.data.weight,
+    gender: event.data.gender,
+  };
   disabled.value = true;
   loading.value = true;
   await authStore.ensureValidToken();
+  updateFormStore(eventData);
   try {
     const response = await $fetch<{
       status: string;
       message: string;
       data: CharacterForm;
-    }>("https://httpbin.org/post", {
+    }>(config.public.baseURL + "/campaign/" + uuid + "/character/create", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${authStore.token}`,
         "Content-Type": "application/json",
       },
-      body: {
-        hair: event.data.hair,
-        skin: event.data.skin,
-        eyes: event.data.eyes,
-        age: event.data.age,
-        height: event.data.height,
-        weight: event.data.weight,
-        gender: event.data.gender,
-      },
+      body: formStore.formData,
     });
     console.log(response);
     toast.add({
@@ -127,8 +138,8 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       <UFormGroup label="Age (years)" name="age">
         <UInput v-model="state.age" :disabled="disabled" type="number" />
       </UFormGroup>
-      <UFormGroup label="Height" name="height">
-        <UInput v-model="state.height" :disabled="disabled" type="text" />
+      <UFormGroup label="Height (inches)" name="height">
+        <UInput v-model="state.height" :disabled="disabled" type="number" />
       </UFormGroup>
       <UFormGroup label="Weight (lbs)" name="weight" class="mb-4">
         <UInput v-model="state.weight" :disabled="disabled" type="number" />

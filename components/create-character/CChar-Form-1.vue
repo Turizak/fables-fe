@@ -2,7 +2,7 @@
 
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
-import { useAuthStore } from "#imports";
+import { useAuthStore, useFormStore } from "#imports";
 
 type CharacterForm = {
   name: string;
@@ -12,37 +12,38 @@ type CharacterForm = {
   race: string;
 };
 const authStore = useAuthStore();
-const toast = useToast();
+const formStore = useFormStore();
 
 const classes = [
-  "Barbarian",
-  "Bard",
-  "Cleric",
-  "Druid",
-  "Fighter",
-  "Monk",
-  "Paladin",
-  "Ranger",
-  "Rogue",
-  "Sorcerer",
-  "Warlock",
-  "Wizard",
+  { name: "Barbarian", value: "barbarian" },
+  { name: "Bard", value: "bard" },
+  { name: "Cleric", value: "cleric" },
+  { name: "Druid", value: "druid" },
+  { name: "Fighter", value: "fighter" },
+  { name: "Monk", value: "monk" },
+  { name: "Paladin", value: "paladin" },
+  { name: "Ranger", value: "ranger" },
+  { name: "Rogue", value: "rogue" },
+  { name: "Sorcerer", value: "sorcerer" },
+  { name: "Warlock", value: "warlock" },
+  { name: "Wizard", value: "wizard" },
 ];
 
 const alignments = [
-  "Chaotic Evil",
-  "Chaotic Good",
-  "Chaotic Neutral",
-  "Lawful Evil",
-  "Lawful Good",
-  "Lawful Neutral",
-  "Neutral",
-  "Neutral Evil",
-  "Neutral Good",
+  { name: "Chaotic Evil", value: "chaotic-evil" },
+  { name: "Chaotic Good", value: "chaotic-good" },
+  { name: "Chaotic Neutral", value: "chaotic-neutral" },
+  { name: "Lawful Evil", value: "lawful-evil" },
+  { name: "Lawful Good", value: "lawful-good" },
+  { name: "Lawful Neutral", value: "lawful-neutral" },
+  { name: "Neutral", value: "neutral" },
+  { name: "Neutral Evil", value: "neutral-evil" },
+  { name: "Neutral Good", value: "neutral-good" },
 ];
 
 const races = [
   { name: "Dragonborn", value: "dragonborn" },
+  { name: "Halfling", value: "halfling" },
   { name: "Half-Elf", value: "half-elf" },
   { name: "Half-Orc", value: "half-orc" },
   { name: "Human", value: "human" },
@@ -96,45 +97,25 @@ const validate = (state: CharacterForm): FormError[] => {
   return errors;
 };
 
+function updateFormStore(fields: CharacterForm) {
+  Object.entries(fields).forEach(([field, value]) => {
+    formStore.updateFormField(field, value);
+  });
+}
+
 async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
+  const eventData = {
+    name: event.data.name,
+    ruleset: event.data.ruleset,
+    class: event.data.class,
+    alignment: event.data.alignment,
+    race: event.data.race,
+  };
   disabled.value = true;
   loading.value = true;
   await authStore.ensureValidToken();
-  try {
-    const response = await $fetch<{
-      status: string;
-      message: string;
-      data: CharacterForm;
-    }>("https://httpbin.org/post", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-        "Content-Type": "application/json",
-      },
-      body: {
-        name: event.data.name,
-        ruleset: event.data.ruleset,
-        class: event.data.class,
-        alignment: event.data.alignment,
-        race: event.data.race,
-      },
-    });
-    console.log(response);
-    await navigateTo("/cchar/cchar-2");
-  } catch (err) {
-    console.error(err);
-    toast.add({
-      title: "There was an error - please try again",
-      color: "red",
-      icon: "i-heroicons-x-circle-solid",
-    });
-  } finally {
-    loading.value = false;
-    disabled.value = false;
-    buttonText.value = "Next Step: Appearance";
-    state.name = undefined;
-    state.alignment = undefined;
-  }
+  updateFormStore(eventData);
+  await navigateTo("/cchar/cchar-2");
 }
 </script>
 
@@ -161,6 +142,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       <USelect
         v-model="state.class"
         placeholder="Select a class..."
+        option-attribute="name"
         :options="classes"
         required
       />
@@ -179,6 +161,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       <USelect
         v-model="state.alignment"
         placeholder="Select an alignment..."
+        option-attribute="name"
         :options="alignments"
         :disabled="disabled"
         required
