@@ -43,6 +43,7 @@ const alignments = [
 
 const races = [
   { name: "Dragonborn", value: "dragonborn" },
+  { name: "Halfling", value: "halfling" },
   { name: "Half-Elf", value: "half-elf" },
   { name: "Half-Orc", value: "half-orc" },
   { name: "Human", value: "human" },

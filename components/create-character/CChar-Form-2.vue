@@ -8,11 +8,12 @@ type CharacterForm = {
   hair: string;
   skin: string;
   eyes: string;
-  height: string;
+  height: number;
   weight: number;
   age: number;
   gender: string;
 };
+const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const formStore = useFormStore();
 const toast = useToast();
@@ -43,8 +44,8 @@ const validate = (state: CharacterForm): FormError[] => {
     errors.push({ path: "skin", message: "Must be less than 25 characters" });
   if (state.eyes && state.eyes.length > 25)
     errors.push({ path: "eyes", message: "Must be less than 25 characters" });
-  if (state.height && state.height.length > 25)
-    errors.push({ path: "height", message: "Must be less than 25 characters" });
+  if (state.height && state.height < 1)
+    errors.push({ path: "height", message: "Must be at least 12 inches" });
   if (state.gender && state.gender.length > 25)
     errors.push({ path: "gender", message: "Must be less than 25 characters" });
   if (state.age && state.age < 1)
@@ -66,6 +67,7 @@ async function goBack() {
 }
 
 async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
+  const uuid = "506bdf8b-4906-48ea-ad18-4e65a8a02e59";
   const eventData = {
     hair: event.data.hair,
     skin: event.data.skin,
@@ -84,7 +86,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       status: string;
       message: string;
       data: CharacterForm;
-    }>("https://httpbin.org/post", {
+    }>(config.public.baseURL + "/campaign/" + uuid + "/character/create", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${authStore.token}`,
@@ -136,8 +138,8 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       <UFormGroup label="Age (years)" name="age">
         <UInput v-model="state.age" :disabled="disabled" type="number" />
       </UFormGroup>
-      <UFormGroup label="Height" name="height">
-        <UInput v-model="state.height" :disabled="disabled" type="text" />
+      <UFormGroup label="Height (inches)" name="height">
+        <UInput v-model="state.height" :disabled="disabled" type="number" />
       </UFormGroup>
       <UFormGroup label="Weight (lbs)" name="weight" class="mb-4">
         <UInput v-model="state.weight" :disabled="disabled" type="number" />
