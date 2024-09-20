@@ -5,7 +5,8 @@ import type { FormError, FormSubmitEvent } from "#ui/types";
 import { useAuthStore, useFormStore } from "#imports";
 
 type CharacterForm = {
-  name: string;
+  firstName: string;
+  lastName: string;
   ruleset: string;
   class: string;
   alignment: string;
@@ -77,7 +78,8 @@ const races = [
 ];
 
 const state = reactive({
-  name: undefined,
+  firstName: undefined,
+  lastName: undefined,
   ruleset: "5e",
   class: undefined,
   alignment: undefined,
@@ -90,9 +92,18 @@ const buttonText = ref("Next Step: Appearance");
 
 const validate = (state: CharacterForm): FormError[] => {
   const errors = [];
-  if (!state.name) errors.push({ path: "name", message: "Required" });
-  if (state.name && state.name.length > 25)
-    errors.push({ path: "name", message: "Must be less than 25 characters" });
+  if (!state.firstName) errors.push({ path: "firstName", message: "Required" });
+  if (state.firstName && state.firstName.length > 25)
+    errors.push({
+      path: "firstName",
+      message: "Must be less than 25 characters",
+    });
+  if (!state.lastName) errors.push({ path: "lastName", message: "Required" });
+  if (state.lastName && state.lastName.length > 25)
+    errors.push({
+      path: "firstName",
+      message: "Must be less than 25 characters",
+    });
   if (!state.alignment) errors.push({ path: "alignment", message: "Required" });
   return errors;
 };
@@ -105,7 +116,8 @@ function updateFormStore(fields: CharacterForm) {
 
 async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
   const eventData = {
-    name: event.data.name,
+    firstName: event.data.firstName,
+    lastName: event.data.lastName,
     ruleset: event.data.ruleset,
     class: event.data.class,
     alignment: event.data.alignment,
@@ -121,9 +133,18 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
 
 <template>
   <UForm :validate="validate" :state="state" @submit.prevent="onSubmit">
-    <UFormGroup label="Character Name" name="name" class="mb-4">
+    <UFormGroup label="Character First Name" name="firstName" class="mb-4">
       <UInput
-        v-model="state.name"
+        v-model="state.firstName"
+        placeholder="Must be less than 25 characters"
+        :disabled="disabled"
+        type="text"
+        required
+      />
+    </UFormGroup>
+    <UFormGroup label="Character Last Name" name="lastName" class="mb-4">
+      <UInput
+        v-model="state.lastName"
         placeholder="Must be less than 25 characters"
         :disabled="disabled"
         type="text"
