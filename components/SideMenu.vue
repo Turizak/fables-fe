@@ -67,10 +67,23 @@ const slideover = useSlideover();
               class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
             >
               <UIcon
-                name="material-symbols:person-book"
+                name="material-symbols:add-box"
                 class="w-5 h-5 mt-1 ml-4"
               />
               <p class="text-lg">Create a Character</p>
+            </div>
+          </NuxtLink>
+        </li>
+        <li>
+          <NuxtLink to="/view-characters" @click="slideover.close">
+            <div
+              class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
+            >
+              <UIcon
+                name="material-symbols:folder-open-rounded"
+                class="w-5 h-5 mt-1 ml-4"
+              />
+              <p class="text-lg">View Characters</p>
             </div>
           </NuxtLink>
         </li>
