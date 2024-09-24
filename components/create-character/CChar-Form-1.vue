@@ -3,6 +3,7 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
 import { useAuthStore, useFormStore } from "#imports";
+
 type Timestamp = {
   time: string;
   valid: boolean;
@@ -72,7 +73,7 @@ if (error.value) {
 const campaignsOptions = computed(
   () =>
     apiResponse.value?.data.campaigns.map((campaign) => ({
-      label: campaign.name, // Assuming each campaign has a name
+      label: campaign.name,
       value: campaign.uuid,
     })) ?? [],
 );
@@ -125,6 +126,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
           v-model="state.campaign"
           :options="campaignsOptions"
           label="Select a Campaign"
+          class="w-full"
         />
         <UTooltip text="A character must belong to a campaign.">
           <UIcon name="material-symbols:help-rounded" class="w-5 h-5 mt-1" />
