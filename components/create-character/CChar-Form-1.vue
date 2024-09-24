@@ -4,107 +4,84 @@
 import type { FormError, FormSubmitEvent } from "#ui/types";
 import { useAuthStore, useFormStore } from "#imports";
 
-type CharacterForm = {
-  firstName: string;
-  lastName: string;
-  ruleset: string;
-  class: string;
-  alignment: string;
-  race: string;
+type Timestamp = {
+  time: string;
+  valid: boolean;
 };
+
+type Campaign = {
+  uuid: string;
+  name: string;
+  creatorUuid: string;
+  dmUuid: string;
+  partyUuids: string[];
+  completed: boolean;
+  active: boolean;
+  ruleset: string;
+  maxPlayers: number;
+  created: Timestamp;
+  lastUpdated: Timestamp | null;
+};
+
+type ApiResponse = {
+  data: {
+    campaign: Campaign;
+  };
+  message: string;
+  status: number;
+  statusText: string;
+  timestamp: string;
+};
+
+type CharacterForm = {
+  ruleset: string;
+  campaign: string;
+};
+
+const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const formStore = useFormStore();
 
-const classes = [
-  { name: "Barbarian", value: "barbarian" },
-  { name: "Bard", value: "bard" },
-  { name: "Cleric", value: "cleric" },
-  { name: "Druid", value: "druid" },
-  { name: "Fighter", value: "fighter" },
-  { name: "Monk", value: "monk" },
-  { name: "Paladin", value: "paladin" },
-  { name: "Ranger", value: "ranger" },
-  { name: "Rogue", value: "rogue" },
-  { name: "Sorcerer", value: "sorcerer" },
-  { name: "Warlock", value: "warlock" },
-  { name: "Wizard", value: "wizard" },
-];
-
-const alignments = [
-  { name: "Chaotic Evil", value: "chaotic-evil" },
-  { name: "Chaotic Good", value: "chaotic-good" },
-  { name: "Chaotic Neutral", value: "chaotic-neutral" },
-  { name: "Lawful Evil", value: "lawful-evil" },
-  { name: "Lawful Good", value: "lawful-good" },
-  { name: "Lawful Neutral", value: "lawful-neutral" },
-  { name: "Neutral", value: "neutral" },
-  { name: "Neutral Evil", value: "neutral-evil" },
-  { name: "Neutral Good", value: "neutral-good" },
-];
-
-const races = [
-  { name: "Dragonborn", value: "dragonborn" },
-  { name: "Halfling", value: "halfling" },
-  { name: "Half-Elf", value: "half-elf" },
-  { name: "Half-Orc", value: "half-orc" },
-  { name: "Human", value: "human" },
-  { name: "Tiefling", value: "tiefling" },
-  { name: "---", value: "", disabled: true },
-  {
-    name: "Dwarves",
-    children: [
-      { name: "Dwarf", value: "dwarf" },
-      { name: "Hill Dwarf", value: "hill-dwarf" },
-      { name: "Mountain Dwarf", value: "mountain-dwarf" },
-    ],
-  },
-  {
-    name: "Elves",
-    children: [
-      { name: "Elf", value: "elf" },
-      { name: "Dark Elf (Drow)", value: "dark-elf" },
-      { name: "High Elf", value: "high-elf" },
-      { name: "Wood Elf", value: "wood-elf" },
-    ],
-  },
-  {
-    name: "Gnomes",
-    children: [
-      { name: "Gnome", value: "gnome" },
-      { name: "Forest Gnome", value: "forest-gnome" },
-      { name: "Rock Gnome", value: "rock-gnome" },
-    ],
-  },
-];
-
 const state = reactive({
-  firstName: undefined,
-  lastName: undefined,
   ruleset: "5e",
-  class: undefined,
-  alignment: undefined,
-  race: undefined,
+  campaign: undefined,
+});
+
+const buttonText = reactive({
+  nextBtn: "Next Step: Details",
+  campaignBtn: "Create Campaign",
 });
 
 const disabled = ref(false);
 const loading = ref(false);
-const buttonText = ref("Next Step: Appearance");
+
+const { data: apiResponse, error } = await useFetch<ApiResponse>(
+  "/account/campaigns",
+  {
+    baseURL: config.public.baseURL,
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+      "Content-Type": "application/json",
+    },
+  },
+);
+
+if (error.value) {
+  console.error("Error fetching campaigns:", error.value);
+}
+
+const campaignsOptions = computed(
+  () =>
+    apiResponse.value?.data.campaigns.map((campaign) => ({
+      label: campaign.name,
+      value: campaign.uuid,
+    })) ?? [],
+);
 
 const validate = (state: CharacterForm): FormError[] => {
   const errors = [];
-  if (!state.firstName) errors.push({ path: "firstName", message: "Required" });
-  if (state.firstName && state.firstName.length > 25)
-    errors.push({
-      path: "firstName",
-      message: "Must be less than 25 characters",
-    });
-  if (!state.lastName) errors.push({ path: "lastName", message: "Required" });
-  if (state.lastName && state.lastName.length > 25)
-    errors.push({
-      path: "firstName",
-      message: "Must be less than 25 characters",
-    });
-  if (!state.alignment) errors.push({ path: "alignment", message: "Required" });
+  if (!state.ruleset) errors.push({ path: "ruleset", message: "Required" });
+  if (!state.campaign) errors.push({ path: "campaign", message: "Required" });
   return errors;
 };
 
@@ -114,14 +91,15 @@ function updateFormStore(fields: CharacterForm) {
   });
 }
 
+async function goBack() {
+  await authStore.ensureValidToken();
+  await navigateTo("/create-campaign");
+}
+
 async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
   const eventData = {
-    firstName: event.data.firstName,
-    lastName: event.data.lastName,
     ruleset: event.data.ruleset,
-    class: event.data.class,
-    alignment: event.data.alignment,
-    race: event.data.race,
+    campaign: event.data.campaign,
   };
   disabled.value = true;
   loading.value = true;
@@ -133,24 +111,6 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
 
 <template>
   <UForm :validate="validate" :state="state" @submit.prevent="onSubmit">
-    <UFormGroup label="Character First Name" name="firstName" class="mb-4">
-      <UInput
-        v-model="state.firstName"
-        placeholder="Must be less than 25 characters"
-        :disabled="disabled"
-        type="text"
-        required
-      />
-    </UFormGroup>
-    <UFormGroup label="Character Last Name" name="lastName" class="mb-4">
-      <UInput
-        v-model="state.lastName"
-        placeholder="Must be less than 25 characters"
-        :disabled="disabled"
-        type="text"
-        required
-      />
-    </UFormGroup>
     <UFormGroup label="Ruleset" name="ruleset" class="mb-4">
       <USelect
         v-model="state.ruleset"
@@ -159,41 +119,39 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
         placeholder="5e"
       />
     </UFormGroup>
-    <UFormGroup label="Class" name="class" class="mb-4">
-      <USelect
-        v-model="state.class"
-        placeholder="Select a class..."
-        option-attribute="name"
-        :options="classes"
-        required
-      />
+    <UFormGroup label="Campaign" name="campaign" class="mb-4">
+      <div class="flex gap-4">
+        <USelect
+          v-if="campaignsOptions.length > 0"
+          v-model="state.campaign"
+          :options="campaignsOptions"
+          label="Select a Campaign"
+          class="w-full"
+        />
+        <UTooltip text="A character must belong to a campaign.">
+          <UIcon name="material-symbols:help-rounded" class="w-5 h-5 mt-1" />
+        </UTooltip>
+      </div>
     </UFormGroup>
-    <UFormGroup label="Race" name="race" class="mb-4">
-      <USelect
-        v-model="state.race"
-        placeholder="Select a race..."
-        :options="races"
-        :disabled="disabled"
-        option-attribute="name"
-        required
-      />
-    </UFormGroup>
-    <UFormGroup label="Alignment" name="alignment">
-      <USelect
-        v-model="state.alignment"
-        placeholder="Select an alignment..."
-        option-attribute="name"
-        :options="alignments"
-        :disabled="disabled"
-        required
-      />
-    </UFormGroup>
-    <UButton
-      type="submit"
-      class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-      :loading="loading"
-    >
-      {{ buttonText }}</UButton
-    >
+    <div class="flex flex-col justify-center mb-4">
+      <UButton
+        block
+        color="amber"
+        variant="solid"
+        class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
+        :loading="loading"
+        @click="goBack"
+      >
+        {{ buttonText.campaignBtn }}</UButton
+      >
+      <UButton
+        block
+        type="submit"
+        class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
+        :loading="loading"
+      >
+        {{ buttonText.nextBtn }}</UButton
+      >
+    </div>
   </UForm>
 </template>
