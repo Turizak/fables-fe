@@ -1,4 +1,4 @@
-name: ESLint
+name: Formatting
 
 on:
   push:
@@ -7,9 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  linting:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -18,7 +17,7 @@ jobs:
           node-version: "18" # Adjust if needed
           cache: "npm"
       - name: Install project dependencies
-        run: npm install
+        run: npm ci
       - name: Install @nuxt/eslint
         run: npm install @nuxt/eslint@0.5.7 # Or latest compatible version
       - name: Run Prettier
