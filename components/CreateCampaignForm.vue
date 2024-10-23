@@ -1,12 +1,7 @@
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent } from "#ui/types";
 import { useAuthStore } from "~/stores/authStore";
-
-type CampaignForm = {
-  name: string | undefined;
-  ruleset: string;
-  maxPlayers: number;
-};
+import type { FormError, FormSubmitEvent } from "#ui/types";
+import type { CampaignForm } from "~/types/types";
 
 const authStore = useAuthStore();
 const config = useRuntimeConfig();

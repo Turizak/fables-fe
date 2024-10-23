@@ -1,28 +1,8 @@
 <script setup lang="ts">
-type Timestamp = {
-  time: string;
-  valid: boolean;
-};
+import type { Campaign, Props } from "~/types/types";
 
-type Campaign = {
-  uuid: string;
-  name: string;
-  creatorUuid: string;
-  dmUuid: string;
-  partyUuids: string[];
-  completed: boolean;
-  active: boolean;
-  ruleset: string;
-  maxPlayers: number;
-  created: Timestamp;
-  lastUpdated: Timestamp | null;
-};
-
-type Props = {
-  campaign: Campaign;
-};
-
-const { campaign } = defineProps<Props>();
+const { data } = defineProps<Props<{ data: Campaign }>>();
+const campaign = data.data;
 </script>
 
 <template>

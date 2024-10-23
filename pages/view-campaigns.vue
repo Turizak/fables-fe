@@ -1,32 +1,5 @@
 <script setup lang="ts">
-type Timestamp = {
-  time: string;
-  valid: boolean;
-};
-
-type Campaign = {
-  uuid: string;
-  name: string;
-  creatorUuid: string;
-  dmUuid: string;
-  partyUuids: string[];
-  completed: boolean;
-  active: boolean;
-  ruleset: string;
-  maxPlayers: number;
-  created: Timestamp;
-  lastUpdated: Timestamp | null;
-};
-
-type ApiResponse = {
-  data: {
-    campaign: Campaign;
-  };
-  message: string;
-  status: number;
-  statusText: string;
-  timestamp: string;
-};
+import type { ApiResponse, Campaign } from "~/types/types";
 
 definePageMeta({
   middleware: "fresh-token",
@@ -35,16 +8,15 @@ definePageMeta({
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
-const { data: apiResponse } = await useFetch<ApiResponse>(
-  "/account/campaigns",
-  {
-    baseURL: config.public.baseURL,
-    headers: {
-      Authorization: `Bearer ${authStore.token}`,
-      "Content-Type": "application/json",
-    },
+const { data: apiResponse } = await useFetch<
+  ApiResponse<{ campaigns: Campaign[] }>
+>("/account/campaigns", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
   },
-);
+});
 
 const campaigns = computed(() => apiResponse.value?.data.campaigns ?? []);
 </script>

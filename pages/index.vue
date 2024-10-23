@@ -1,18 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore";
-
-type AuthResponse = {
-  data: {
-    tokens: {
-      accessToken: string;
-      refreshToken: string;
-    };
-  };
-  message: string;
-  status: number;
-  statusText: string;
-  timestamp: string;
-};
+import type { AuthResponse } from "~/types/types";
 
 definePageMeta({
   middleware: "fresh-token",
