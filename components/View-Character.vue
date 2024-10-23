@@ -1,32 +1,8 @@
 <script setup lang="ts">
-type Character = {
-  uuid: string;
-  campaignUuid: string;
-  creatorUuid: string;
-  ownerUuid: string;
-  firstName: string;
-  lastName: string;
-  race: string;
-  class: string;
-  age: number;
-  height: number;
-  weight: number;
-  eyeColor: string;
-  skinColor: string;
-  hairColor: string;
-  ruleset: string;
-  created: {
-    time: string;
-    valid: boolean;
-  };
-  lastUpdated: null | string;
-};
+import type { Character, Props } from "~/types/types";
 
-type Props = {
-  character: Character;
-};
-
-const { character } = defineProps<Props>();
+const { data } = defineProps<Props<{ data: Character }>>();
+const character = data.data;
 </script>
 
 <template>

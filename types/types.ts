@@ -55,6 +55,23 @@ export type ApiResponse<T> = {
     };
     lastUpdated: null | string;
   };
+  
+  export type CampaignForm = {
+    name: string | undefined;
+    ruleset: string;
+    maxPlayers: number;
+  };
+
+  export type FormData = {
+    email: string;
+    password: string;
+  };  
+
+ export type FormType = {
+    email: string;
+    createPassword: string;
+    confirmPassword: string | undefined;
+  };
 
   export type Timestamp = {
     time: string;

@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
-
-type FormType = {
-  email: string;
-  createPassword: string;
-  confirmPassword: string | undefined;
-};
+import type { FormType } from "~/types/types";
 
 const state = reactive({
   email: undefined,
