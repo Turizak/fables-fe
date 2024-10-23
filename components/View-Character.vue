@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import type { Character, Props } from "~/types/types";
+import type { Character } from "~/types/types";
 
-const { data } = defineProps<Props<{ data: Character }>>();
-const character = data.data;
+type Props<T> = {
+  character: T;
+};
+
+const { character } = defineProps<Props<Character>>();
 </script>
 
 <template>

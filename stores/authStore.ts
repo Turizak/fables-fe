@@ -63,23 +63,63 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   // Function to refresh the token
+  // const refreshAuthToken = async () => {
+  //   if (!refreshToken.value) return;
+  //   try {
+  //     const response = await $fetch<AuthResponse>(config.public.baseURL + "/account/token/refresh", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         refreshToken: refreshToken.value,
+  //       }),
+  //     });
+  //     const newToken = response.data.tokens.accessToken;
+  //     const newRefreshToken = response.data.tokens.refreshToken;
+  //     setToken(newToken);
+  //     setRefreshToken(newRefreshToken);
+  //     console.log("Token refreshed successfully");
+  //   } catch (error) {
+  //     console.error("Failed to refresh token:", error);
+  //     clearTokens();
+  //     await navigateTo("/login");
+  //   }
+  // };
+
   const refreshAuthToken = async () => {
     if (!refreshToken.value) return;
+  
     try {
-      const response = await $fetch<AuthResponse>(config.public.baseURL + "/account/token/refresh", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          refreshToken: refreshToken.value,
-        }),
-      });
-      const newToken = response.data.tokens.accessToken;
-      const newRefreshToken = response.data.tokens.refreshToken;
-      setToken(newToken);
-      setRefreshToken(newRefreshToken);
-      console.log("Token refreshed successfully");
+      const { data, error } = await useFetch<AuthResponse>(
+        config.public.baseURL + "/account/token/refresh", 
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refreshToken: refreshToken.value,
+          }),
+        }
+      );
+  
+      if (error.value) {
+        console.error("Failed to refresh token:", error.value);
+        clearTokens();
+        await navigateTo("/login");
+        return;
+      }
+  
+      // Use data.value since useFetch returns a Ref
+      const newToken = data.value?.data.tokens.accessToken;
+      const newRefreshToken = data.value?.data.tokens.refreshToken;
+  
+      if (newToken && newRefreshToken) {
+        setToken(newToken);
+        setRefreshToken(newRefreshToken);
+        console.log("Token refreshed successfully");
+      }
     } catch (error) {
       console.error("Failed to refresh token:", error);
       clearTokens();
