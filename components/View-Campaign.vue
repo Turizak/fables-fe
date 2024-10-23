@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import type { Campaign, Props } from "~/types/types";
+import type { Campaign } from "~/types/types";
 
-const { data } = defineProps<Props<{ data: Campaign }>>();
-const campaign = data.data;
+type Props<T> = {
+  campaign: T;
+};
+
+const { campaign } = defineProps<Props<Campaign>>();
 </script>
 
 <template>
