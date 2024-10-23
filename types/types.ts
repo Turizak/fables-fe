@@ -73,6 +73,10 @@ export type ApiResponse<T> = {
     confirmPassword: string | undefined;
   };
 
+  export type Props<T> = {
+    data: T;
+  }
+
   export type Timestamp = {
     time: string;
     valid: boolean;
