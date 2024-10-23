@@ -1,36 +1,5 @@
 <script setup lang="ts">
-type Character = {
-  uuid: string;
-  campaignUuid: string;
-  creatorUuid: string;
-  ownerUuid: string;
-  firstName: string;
-  lastName: string;
-  race: string;
-  class: string;
-  age: number;
-  height: number;
-  weight: number;
-  eyeColor: string;
-  skinColor: string;
-  hairColor: string;
-  ruleset: string;
-  created: {
-    time: string;
-    valid: boolean;
-  };
-  lastUpdated: null | string;
-};
-
-type ApiResponse = {
-  data: {
-    characters: Character;
-  };
-  message: string;
-  status: number;
-  statusText: string;
-  timestamp: string;
-};
+import type { ApiResponse, Character } from "~/types/types";
 
 definePageMeta({
   middleware: "fresh-token",
@@ -38,16 +7,15 @@ definePageMeta({
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
-const { data: apiResponse } = await useFetch<ApiResponse>(
-  "/account/owned-characters",
-  {
-    baseURL: config.public.baseURL,
-    headers: {
-      Authorization: `Bearer ${authStore.token}`,
-      "Content-Type": "application/json",
-    },
+const { data: apiResponse } = await useFetch<
+  ApiResponse<{ characters: Character[] }>
+>("/account/owned-characters", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
   },
-);
+});
 
 const characters = computed(() => apiResponse.value?.data.characters ?? []);
 </script>
