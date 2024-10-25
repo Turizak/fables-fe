@@ -46,7 +46,7 @@ const locations = computed(() => apiResponse.value?.data.locations ?? []);
 </script>
 
 <template>
-  <div class="p-2">
+  <div class="text-center p-2">
     <UCard>
       <template #header>
         <h2 class="text-5xl">{{ campaign.name }}</h2>
@@ -59,7 +59,10 @@ const locations = computed(() => apiResponse.value?.data.locations ?? []);
         </template>
 
         <template #characters>
-          <div v-if="characters.length > 0">
+          <div
+            v-if="characters.length > 0"
+            class="flex flex-row flex-wrap flex-grow-0 gap-2"
+          >
             <div
               v-for="character in characters"
               :key="character.uuid"
@@ -69,7 +72,7 @@ const locations = computed(() => apiResponse.value?.data.locations ?? []);
                 <template #text>
                   <p>{{ character.race + " " + character.class }}</p>
                 </template>
-                <UButton class="text-lg">
+                <UButton class="text-lg mb-2">
                   {{ character.firstName + " " + character.lastName }}
                 </UButton>
               </UTooltip>
@@ -78,7 +81,10 @@ const locations = computed(() => apiResponse.value?.data.locations ?? []);
           <p v-else>No characters found.</p>
         </template>
         <template #locations>
-          <div v-if="locations.length > 0">
+          <div
+            v-if="locations.length > 0"
+            class="flex flex-row flex-wrap flex-grow-0 gap-2"
+          >
             <UButton
               v-for="location in locations"
               :key="location.uuid"
