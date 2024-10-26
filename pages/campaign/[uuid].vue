@@ -27,21 +27,18 @@ const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
 const items = [
   {
     label: "Characters",
-    size: "xl",
     icon: "i-material-symbols:groups",
     defaultOpen: false,
     slot: "characters",
   },
   {
     label: "Locations",
-    size: "xl",
     icon: "i-material-symbols:location-on",
     defaultOpen: false,
     slot: "locations",
   },
   {
     label: "NPCs",
-    size: "xl",
     icon: "i-material-symbols-light:chat-bubble",
     defaultOpen: false,
     slot: "npcs",
