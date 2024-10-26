@@ -25,6 +25,7 @@
     "vue": "latest"
   },
   "devDependencies": {
+    "@iconify-json/material-symbols-light": "^1.2.5",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
