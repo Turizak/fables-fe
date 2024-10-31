@@ -11,6 +11,7 @@ Built With:
 
 A web-based application to manage your DnD campaigns and characters.
 
+* D&D 5e Ruleset
 * Share Player Notes
 * Track Quests
 * Log NPCs
