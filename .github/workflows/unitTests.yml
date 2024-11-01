@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@7e953739526488673297d770b29397efd5cf2a20
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@7e953739526488673297d770b29397efd5cf2a20
         with:
           node-version: '18'
 
