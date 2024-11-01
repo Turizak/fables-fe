@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore";
-import type { FormError, FormSubmitEvent } from "#ui/types";
+import { validate } from "~/utils/login-validation";
+import type { FormSubmitEvent } from "#ui/types";
 import type { AuthResponse, FormData } from "~/types/types";
 
 const config = useRuntimeConfig();
@@ -20,15 +21,15 @@ const buttonText = reactive({
 const loading = ref(false);
 const disabled = ref(false);
 
-const validate = (state: FormData): FormError[] => {
-  const errors = [];
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!state.email) errors.push({ path: "email", message: "Required" });
-  if (!emailRegex.test(state.email))
-    errors.push({ path: "email", message: "Invalid email address" });
-  if (!state.password) errors.push({ path: "password", message: "Required" });
-  return errors;
-};
+// const validate = (state: FormData): FormError[] => {
+//   const errors = [];
+//   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+//   if (!state.email) errors.push({ path: "email", message: "Required" });
+//   if (!emailRegex.test(state.email))
+//     errors.push({ path: "email", message: "Invalid email address" });
+//   if (!state.password) errors.push({ path: "password", message: "Required" });
+//   return errors;
+// };
 
 async function onSubmit(event: FormSubmitEvent<FormData>) {
   loading.value = true;
