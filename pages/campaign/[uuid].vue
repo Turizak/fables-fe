@@ -24,16 +24,34 @@ const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
   },
 );
 
+const links = [
+  {
+    label: "Character",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+  },
+  {
+    label: "Location",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+  },
+  {
+    label: "NPC",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+  },
+];
+
 const items = [
   {
     label: "Characters",
-    icon: "i-material-symbols:groups",
+    icon: "i-material-symbols-light:groups",
     defaultOpen: false,
     slot: "characters",
   },
   {
     label: "Locations",
-    icon: "i-material-symbols:location-on",
+    icon: "i-material-symbols-light:location-on",
     defaultOpen: false,
     slot: "locations",
   },
@@ -52,6 +70,10 @@ const locations = computed(() => apiResponse.value?.data.locations ?? []);
 
 <template>
   <div class="text-center p-2">
+    <UHorizontalNavigation
+      :links="links"
+      class="border-gray-200 dark:border-gray-800"
+    />
     <UCard>
       <template #header>
         <h2 v-if="campaign" class="text-5xl">{{ campaign.name }}</h2>
