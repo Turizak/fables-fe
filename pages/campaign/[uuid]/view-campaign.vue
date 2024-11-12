@@ -115,7 +115,12 @@ const locations = computed(() => apiResponse.value?.data.locations ?? []);
               :key="location.uuid"
               class="text-md my-2"
             >
-              {{ location.name }}
+              <UTooltip>
+                <template #text>
+                  <p>{{ location.description }}</p>
+                </template>
+                {{ location.name }}
+              </UTooltip>
             </UButton>
           </div>
           <p v-else>No locations found.</p>
