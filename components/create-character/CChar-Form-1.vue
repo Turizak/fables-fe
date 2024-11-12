@@ -2,41 +2,8 @@
 
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
+import type { CharacterForm, ApiResponse, Campaign } from "~/types/types";
 import { useAuthStore, useFormStore } from "#imports";
-
-type Timestamp = {
-  time: string;
-  valid: boolean;
-};
-
-type Campaign = {
-  uuid: string;
-  name: string;
-  creatorUuid: string;
-  dmUuid: string;
-  partyUuids: string[];
-  completed: boolean;
-  active: boolean;
-  ruleset: string;
-  maxPlayers: number;
-  created: Timestamp;
-  lastUpdated: Timestamp | null;
-};
-
-type ApiResponse = {
-  data: {
-    campaign: Campaign;
-  };
-  message: string;
-  status: number;
-  statusText: string;
-  timestamp: string;
-};
-
-type CharacterForm = {
-  ruleset: string;
-  campaign: string;
-};
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
@@ -55,16 +22,15 @@ const buttonText = reactive({
 const disabled = ref(false);
 const loading = ref(false);
 
-const { data: apiResponse, error } = await useFetch<ApiResponse>(
-  "/account/campaigns",
-  {
-    baseURL: config.public.baseURL,
-    headers: {
-      Authorization: `Bearer ${authStore.token}`,
-      "Content-Type": "application/json",
-    },
+const { data: apiResponse, error } = await useFetch<
+  ApiResponse<{ campaigns: Campaign[] }>
+>("/account/campaigns", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
   },
-);
+});
 
 if (error.value) {
   console.error("Error fetching campaigns:", error.value);
