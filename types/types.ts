@@ -133,6 +133,16 @@ export type CampaignForm = {
   maxPlayers: number;
 };
 
+export type CharacterForm = {
+  ruleset: string;
+  campaign: string;
+};
+
+export type LocationForm = {
+  location: string;
+  description: string;
+}
+
 export type FormData = {
   email: string;
   password: string;

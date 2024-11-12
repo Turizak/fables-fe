@@ -34,6 +34,7 @@ const links = [
     label: "Location",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${uuid}/add-location`,
   },
   {
     label: "NPC",

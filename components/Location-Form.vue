@@ -1,48 +1,48 @@
 <script setup lang="ts">
-import { useAuthStore } from "~/stores/authStore";
-import { validate } from "~/utils/login-validation";
+import { useRoute } from "vue-router";
+import { locationValidate } from "~/utils/location-validation";
 import type { FormSubmitEvent } from "#ui/types";
-import type { AuthResponse, FormData } from "~/types/types";
+import type { AuthResponse, LocationForm } from "~/types/types";
 
-const config = useRuntimeConfig();
+// const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const toast = useToast();
 
-const state = reactive({
-  email: undefined,
-  password: undefined,
-});
+const route = useRoute();
+const uuid = route.params.uuid;
 
-const buttonText = reactive({
-  loginButton: "Login",
-  createAccountButton: "Create Account",
+const state = reactive({
+  campaign: `${uuid}`,
+  location: undefined,
+  description: undefined,
 });
 
 const loading = ref(false);
 const disabled = ref(false);
+const buttonText = ref("Add Location");
 
-async function onSubmit(event: FormSubmitEvent<FormData>) {
+async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   loading.value = true;
   disabled.value = true;
-  buttonText.loginButton = "Logging In...";
-  buttonText.createAccountButton = "";
+  buttonText.value = "Adding...";
   try {
     const response: AuthResponse = await $fetch(
-      config.public.baseURL + "/account/login",
+      // config.public.baseURL + "/api/campaign/" + uuid + "/location/create",
+      "https://httpbin.org/post",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: {
-          email: event.data.email,
-          password: event.data.password,
+          name: event.data.location,
+          description: event.data.description,
         },
       },
     );
     authStore.setToken(response.data.tokens.accessToken);
     authStore.setRefreshToken(response.data.tokens.refreshToken);
-    await navigateTo("/");
+    await navigateTo(`/campaign/${uuid}/view-campaign`);
   } catch (error: unknown) {
     if (error && typeof error === "object" && "response" in error) {
       const errResponse = (
@@ -66,8 +66,7 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
   } finally {
     loading.value = false;
     disabled.value = false;
-    buttonText.loginButton = "Login";
-    buttonText.createAccountButton = "Create Account";
+    buttonText.value = "Add Location";
   }
 }
 </script>
@@ -75,16 +74,16 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
   <div class="flex justify-center">
     <UForm
       class="w-[260px] mt-2"
-      :validate="validate"
+      :validate="locationValidate"
       :state="state"
       @submit.prevent="onSubmit"
     >
-      <UFormGroup label="Email" name="email" class="mb-4">
-        <UInput v-model="state.email" :disabled="disabled" type="email" />
+      <UFormGroup label="Location Name" name="location" class="mb-4">
+        <UInput v-model="state.location" :disabled="disabled" />
       </UFormGroup>
 
-      <UFormGroup label="Password" name="password">
-        <UInput v-model="state.password" :disabled="disabled" type="password" />
+      <UFormGroup label="Description" name="description" class="mb-4">
+        <UTextarea v-model="state.description" :disabled="disabled" />
       </UFormGroup>
 
       <UButton
@@ -92,17 +91,8 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
         :loading="loading"
       >
-        {{ buttonText.loginButton }}</UButton
+        {{ buttonText }}</UButton
       >
-      <NuxtLink to="/create-account">
-        <UButton
-          type="submit"
-          class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-          :loading="loading"
-        >
-          {{ buttonText.createAccountButton }}</UButton
-        >
-      </NuxtLink>
     </UForm>
   </div>
 </template>

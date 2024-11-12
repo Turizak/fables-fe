@@ -23,7 +23,9 @@ const { campaign } = defineProps<Props<Campaign>>();
     </div>
 
     <template #footer>
-      <UButton block @click="navigateTo(`/campaign/${campaign.uuid}`)"
+      <UButton
+        block
+        @click="navigateTo(`/campaign/${campaign.uuid}/view-campaign`)"
         >View Details</UButton
       >
     </template>
