@@ -23,14 +23,17 @@ async function logout() {
       <div class="flex p-2">
         <li>
           <UButton label="Open" @click="openSlideover">
-            <UIcon name="material-symbols:density-medium" class="w-5 h-5" />
+            <UIcon
+              name="material-symbols-light:density-medium"
+              class="w-5 h-5"
+            />
           </UButton>
         </li>
         <li><p class="text-xl px-2">Fables</p></li>
       </div>
       <li class="p-2">
         <UButton @click="logout">
-          <UIcon name="material-symbols:logout" class="w-5 h-5" />
+          <UIcon name="material-symbols-light:logout" class="w-5 h-5" />
         </UButton>
       </li>
     </ul>
