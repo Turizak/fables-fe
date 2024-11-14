@@ -138,6 +138,15 @@ export type CharacterForm = {
   campaign: string;
 };
 
+export type NPCForm = {
+  firstName: string;
+  lastName: string;
+  race: string;
+  class: string;
+  description: string;
+  isQuestBoss: boolean;
+}
+
 export type LocationForm = {
   location: string;
   description: string;

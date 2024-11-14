@@ -40,6 +40,7 @@ const links = [
     label: "NPC",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${uuid}/add-npc`,
   },
 ];
 
@@ -67,6 +68,7 @@ const items = [
 const campaign = computed(() => apiResponse.value?.data.campaign ?? null);
 const characters = computed(() => apiResponse.value?.data.characters ?? []);
 const locations = computed(() => apiResponse.value?.data.locations ?? []);
+const npcs = computed(() => apiResponse.value?.data.npcs ?? []);
 </script>
 
 <template>
@@ -124,6 +126,22 @@ const locations = computed(() => apiResponse.value?.data.locations ?? []);
             </UButton>
           </div>
           <p v-else>No locations found.</p>
+        </template>
+        <template #npcs>
+          <div
+            v-if="npcs.length > 0"
+            class="flex flex-row flex-wrap flex-grow-0 gap-2"
+          >
+            <UButton v-for="npc in npcs" :key="npc.uuid" class="text-md mt-2">
+              <UTooltip>
+                <template #text>
+                  <p>{{ npc.description }}</p>
+                </template>
+                {{ npc.firstName + " " + npc.lastName }}
+              </UTooltip>
+            </UButton>
+          </div>
+          <p v-else>No NPCs found.</p>
         </template>
       </UAccordion>
     </UCard>
