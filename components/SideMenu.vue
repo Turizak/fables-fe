@@ -18,14 +18,14 @@ const slideover = useSlideover();
             <div
               class="flex p-2 ml-2 gap-2 md:hover:bg-green-400 hover:text-black hover:cursor-pointer"
             >
-              <UIcon name="material-symbols:home" class="w-5 h-5 mt-1" />
+              <UIcon name="material-symbols-light:home" class="w-5 h-5 mt-1" />
               <p class="text-xl">Home</p>
             </div>
           </NuxtLink>
         </li>
         <li>
           <div class="flex p-2 ml-2 gap-2 bg-gray-700">
-            <UIcon name="material-symbols:globe" class="w-5 h-5 mt-1" />
+            <UIcon name="material-symbols-light:globe" class="w-5 h-5 mt-1" />
             <p class="text-xl">Campaigns</p>
           </div>
         </li>
@@ -35,7 +35,7 @@ const slideover = useSlideover();
               class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
             >
               <UIcon
-                name="material-symbols:add-box"
+                name="material-symbols-light:add-box"
                 class="w-5 h-5 mt-1 ml-4"
               />
               <p class="text-lg">Create a Campaign</p>
@@ -48,7 +48,7 @@ const slideover = useSlideover();
               class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
             >
               <UIcon
-                name="material-symbols:folder-open-rounded"
+                name="material-symbols-light:folder-open-rounded"
                 class="w-5 h-5 mt-1 ml-4"
               />
               <p class="text-lg">View Campaigns</p>
@@ -67,7 +67,7 @@ const slideover = useSlideover();
               class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
             >
               <UIcon
-                name="material-symbols:add-box"
+                name="material-symbols-light:add-box"
                 class="w-5 h-5 mt-1 ml-4"
               />
               <p class="text-lg">Create a Character</p>
@@ -80,7 +80,7 @@ const slideover = useSlideover();
               class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
             >
               <UIcon
-                name="material-symbols:folder-open-rounded"
+                name="material-symbols-light:folder-open-rounded"
                 class="w-5 h-5 mt-1 ml-4"
               />
               <p class="text-lg">View Characters</p>
@@ -92,7 +92,7 @@ const slideover = useSlideover();
             class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
           >
             <UIcon
-              name="material-symbols:account-circle"
+              name="material-symbols-light:account-circle"
               class="w-5 h-5 mt-1"
             />
             <p class="text-xl">My Profile</p>

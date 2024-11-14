@@ -34,6 +34,7 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   disabled.value = true;
   buttonText.submitButton = "Adding...";
   buttonText.backButton = "";
+  await authStore.ensureValidToken();
   try {
     const response: AuthResponse = await $fetch(
       config.public.baseURL + "/campaign/" + uuid + "/location/create",
