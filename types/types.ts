@@ -44,11 +44,8 @@ export type CampaignAll = {
     active: boolean;
     ruleset: string;
     maxPlayers: number;
-    created: {
-      time: string;
-      valid: boolean;
-    };
-    lastUpdated: string | null;
+    created: Timestamp
+    lastUpdated: Timestamp | null
   };
   characters: Array<{
     uuid: string;
@@ -68,11 +65,8 @@ export type CampaignAll = {
     ruleset: string;
     public: boolean;
     gender: string | null;
-    created: {
-      time: string;
-      valid: boolean;
-    };
-    lastUpdated: string | null;
+    created: Timestamp,
+    lastUpdated: Timestamp | null
   }>;
   locations: Array<{
     uuid: string;
@@ -80,11 +74,8 @@ export type CampaignAll = {
     creatorUuid: string;
     name: string;
     description: string;
-    created: {
-      time: string;
-      valid: boolean;
-    };
-    lastUpdated: string | null;
+    created: Timestamp
+    lastUpdated: Timestamp | null
   }>;
   npcs: Array<{
     uuid: string;
@@ -96,12 +87,19 @@ export type CampaignAll = {
     class: string;
     description: string;
     isQuestBoss: boolean;
-    created: {
-      time: string;
-      valid: boolean;
-    };
-    lastUpdated: string | null;
+    created: Timestamp
+    lastUpdated: Timestamp | null
   }>;
+  sessions: Array<{
+      sessionId: number,
+      uuid: string,
+      campaignUuid: string,
+      creatorUuid: string,
+      partyUuids: string[],
+      dateOccured: Timestamp,
+      created: Timestamp,
+      lastUpdated: Timestamp | null
+}>
 };
 
 export type Character = {
@@ -120,11 +118,8 @@ export type Character = {
   skinColor: string;
   hairColor: string;
   ruleset: string;
-  created: {
-    time: string;
-    valid: boolean;
-  };
-  lastUpdated: null | string;
+  created: Timestamp
+  lastUpdated: Timestamp | null
 };
 
 export type CampaignForm = {
@@ -150,6 +145,11 @@ export type NPCForm = {
 export type LocationForm = {
   location: string;
   description: string;
+}
+
+export type SessionForm = {
+  partyUuids: string[];
+  dateOccured: string;
 }
 
 export type FormData = {
