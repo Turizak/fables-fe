@@ -42,6 +42,12 @@ const links = [
     icon: "i-material-symbols-light:add-circle",
     to: `/campaign/${uuid}/add-npc`,
   },
+  {
+    label: "Session",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${uuid}/add-session`,
+  },
 ];
 
 const items = [
@@ -63,12 +69,19 @@ const items = [
     defaultOpen: false,
     slot: "npcs",
   },
+  {
+    label: "Sessions",
+    icon: "i-material-symbols-light:calendar-month",
+    defaultOpen: false,
+    slot: "sessions",
+  },
 ];
 
 const campaign = computed(() => apiResponse.value?.data.campaign ?? null);
 const characters = computed(() => apiResponse.value?.data.characters ?? []);
 const locations = computed(() => apiResponse.value?.data.locations ?? []);
 const npcs = computed(() => apiResponse.value?.data.npcs ?? []);
+const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
 </script>
 
 <template>
@@ -142,6 +155,21 @@ const npcs = computed(() => apiResponse.value?.data.npcs ?? []);
             </UButton>
           </div>
           <p v-else>No NPCs found.</p>
+        </template>
+        <template #sessions>
+          <div
+            v-if="sessions.length > 0"
+            class="flex flex-row flex-wrap flex-grow-0 gap-2"
+          >
+            <UButton
+              v-for="session in sessions"
+              :key="session.uuid"
+              class="text-md mt-2"
+            >
+              <p>{{ session.sessionId }}</p>
+            </UButton>
+          </div>
+          <p v-else>No sessions found.</p>
         </template>
       </UAccordion>
     </UCard>
