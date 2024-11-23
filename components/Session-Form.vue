@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
+import { format } from "date-fns";
 import type { FormSubmitEvent } from "#ui/types";
 import type {
   ApiResponse,
@@ -11,12 +12,11 @@ import type {
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const toast = useToast();
-
 const route = useRoute();
 const uuid = route.params.uuid;
 
 const state = reactive({
-  dateOccured: undefined,
+  dateOccured: new Date(),
 });
 
 const buttonText = reactive({
@@ -84,21 +84,39 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
   } finally {
     loading.value = false;
     disabled.value = false;
-    buttonText.submitButton = "Add Location";
+    buttonText.submitButton = "Add Session";
     buttonText.backButton = "View Campaign";
     partyUuids.value = [];
-    state.dateOccured = undefined;
+    state.dateOccured = new Date();
   }
 }
 </script>
 <template>
   <div class="flex justify-center">
     <UForm class="w-[260px] mt-2" :state="state" @submit.prevent="onSubmit">
-      <UFormGroup>
-        <div
-          v-if="characters.length > 0"
-          class="flex flex-row flex-wrap flex-grow-0 gap-2"
-        >
+      <UFormGroup
+        label="Date Occured"
+        name="dateOccured"
+        class="mb-4"
+        size="xl"
+      >
+        <UPopover :popper="{ placement: 'bottom-start' }">
+          <UButton
+            icon="i-material-symbols-light:calendar-month"
+            :label="format(state.dateOccured, 'MMM d, yyy')"
+          />
+
+          <template #panel="{ close }">
+            <DatePicker
+              v-model="state.dateOccured"
+              is-required
+              @close="close"
+            />
+          </template>
+        </UPopover>
+      </UFormGroup>
+      <UFormGroup label="Select Characters" name="characters" size="xl">
+        <div v-if="characters.length > 0" class="grid grid-cols-2 gap-2 my-4">
           <div v-for="character in characters" :key="character.uuid">
             <UCheckbox
               v-model="partyUuids"
@@ -111,9 +129,6 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
         <p v-else>No characters found.</p>
       </UFormGroup>
 
-      <UFormGroup label="Date Occured" name="dateOccured" class="mb-4">
-        <UInput v-model="state.dateOccured" :disabled="disabled" />
-      </UFormGroup>
       <UButton
         block
         color="amber"
