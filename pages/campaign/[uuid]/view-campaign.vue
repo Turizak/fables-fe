@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ApiResponse, CampaignAll } from "~/types/types";
+import { format } from "date-fns";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
 
@@ -88,11 +89,13 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
   <div class="text-center p-2">
     <UHorizontalNavigation
       :links="links"
-      class="border-gray-200 dark:border-gray-800"
+      class="flex justify-around border-gray-200 dark:border-gray-800"
     />
     <UCard>
       <template #header>
-        <h2 v-if="campaign" class="text-5xl">{{ campaign.name }}</h2>
+        <h2 v-if="campaign" class="text-5xl">
+          {{ campaign.name }}
+        </h2>
         <p v-else>Loading campaign data...</p>
       </template>
       <UAccordion multiple :items="items">
@@ -166,7 +169,9 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
               :key="session.uuid"
               class="text-md mt-2"
             >
-              <p>{{ session.sessionId }}</p>
+              <p>
+                {{ format(new Date(session.dateOccured.time), "MMM-dd, yyyy") }}
+              </p>
             </UButton>
           </div>
           <p v-else>No sessions found.</p>

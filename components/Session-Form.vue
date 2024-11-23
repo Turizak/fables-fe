@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
+import { format } from "date-fns";
 import type { FormSubmitEvent } from "#ui/types";
 import type {
   ApiResponse,
@@ -11,22 +12,17 @@ import type {
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const toast = useToast();
-
 const route = useRoute();
 const uuid = route.params.uuid;
 
 const state = reactive({
   dateOccured: undefined,
-});
-
-const buttonText = reactive({
+  partyUuids: [] as string[],
   submitButton: "Add Session",
   backButton: "View Campaign",
+  loading: false,
+  disabled: false,
 });
-
-const partyUuids = ref<string[]>([]);
-const loading = ref(false);
-const disabled = ref(false);
 
 const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
   `/campaign/${uuid}/all`,
@@ -46,16 +42,27 @@ async function goBack() {
   await navigateTo(`/campaign/${uuid}/view-campaign`);
 }
 
+function setToStartOfDayUTC(dateInput: string | number | Date): string {
+  const date = new Date(dateInput); // Convert input to Date
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date input"); // Handle invalid dates
+  }
+  // Ensure the time is set to 00:00:00 UTC
+  date.setUTCHours(0, 0, 0, 0);
+  // Format the date as an ISO string in UTC
+  return date.toISOString();
+}
+
 async function onSubmit(event: FormSubmitEvent<SessionForm>) {
-  loading.value = true;
-  disabled.value = true;
-  buttonText.submitButton = "Adding...";
-  buttonText.backButton = "";
+  state.loading = true;
+  state.disabled = true;
+  state.submitButton = "Adding...";
+  state.backButton = "";
+  const dateOccured = setToStartOfDayUTC(event.data.dateOccured);
   await authStore.ensureValidToken();
   try {
     const response: AuthResponse = await $fetch(
-      // config.public.baseURL + "/campaign/" + uuid + "/session/create",
-      "https://httpbin.org/post",
+      config.public.baseURL + "/campaign/" + uuid + "/session/create",
       {
         method: "POST",
         headers: {
@@ -63,15 +70,15 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
           "Content-Type": "application/json",
         },
         body: {
-          partyUuids: partyUuids.value,
-          dateOccured: event.data.dateOccured,
+          partyUuids: state.partyUuids,
+          dateOccured: dateOccured,
         },
       },
     );
     console.log(response);
-    buttonText.submitButton = "Success!";
+    state.submitButton = "Success!";
     toast.add({
-      title: "Location Added!",
+      title: "Session Added!",
       icon: "i-heroicons-check-circle-solid",
     });
   } catch (err) {
@@ -82,26 +89,54 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
       icon: "i-heroicons-x-circle-solid",
     });
   } finally {
-    loading.value = false;
-    disabled.value = false;
-    buttonText.submitButton = "Add Location";
-    buttonText.backButton = "View Campaign";
-    partyUuids.value = [];
+    state.loading = false;
+    state.disabled = false;
+    state.submitButton = "Add Session";
+    state.backButton = "View Campaign";
+    state.partyUuids = [];
     state.dateOccured = undefined;
   }
 }
 </script>
 <template>
   <div class="flex justify-center">
-    <UForm class="w-[260px] mt-2" :state="state" @submit.prevent="onSubmit">
-      <UFormGroup>
-        <div
-          v-if="characters.length > 0"
-          class="flex flex-row flex-wrap flex-grow-0 gap-2"
-        >
+    <UForm
+      class="w-[260px] mt-2"
+      :validate="sessionValidate"
+      :state="state"
+      @submit.prevent="onSubmit"
+    >
+      <UFormGroup
+        label="Date Occured"
+        name="dateOccured"
+        class="mb-4"
+        size="xl"
+      >
+        <UPopover :popper="{ placement: 'bottom-start' }">
+          <UButton
+            icon="i-material-symbols-light:calendar-month"
+            class="mt-2"
+            :label="
+              state.dateOccured
+                ? format(new Date(state.dateOccured), 'MMM d, yyy')
+                : 'Choose a date'
+            "
+          />
+
+          <template #panel="{ close }">
+            <DatePicker
+              v-model="state.dateOccured"
+              is-required
+              @close="close"
+            />
+          </template>
+        </UPopover>
+      </UFormGroup>
+      <UFormGroup label="Select Characters" name="characters" size="xl">
+        <div v-if="characters.length > 0" class="grid grid-cols-2 gap-2 my-4">
           <div v-for="character in characters" :key="character.uuid">
             <UCheckbox
-              v-model="partyUuids"
+              v-model="state.partyUuids"
               :name="character.uuid"
               :value="character.uuid"
               :label="character.firstName + ' ' + character.lastName"
@@ -111,26 +146,23 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
         <p v-else>No characters found.</p>
       </UFormGroup>
 
-      <UFormGroup label="Date Occured" name="dateOccured" class="mb-4">
-        <UInput v-model="state.dateOccured" :disabled="disabled" />
-      </UFormGroup>
       <UButton
         block
         color="amber"
         variant="solid"
         class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
         @click="goBack"
       >
-        {{ buttonText.backButton }}</UButton
+        {{ state.backButton }}</UButton
       >
 
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
       >
-        {{ buttonText.submitButton }}</UButton
+        {{ state.submitButton }}</UButton
       >
     </UForm>
   </div>
