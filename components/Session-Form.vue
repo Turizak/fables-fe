@@ -16,17 +16,13 @@ const route = useRoute();
 const uuid = route.params.uuid;
 
 const state = reactive({
-  dateOccured: new Date(),
-});
-
-const buttonText = reactive({
+  dateOccured: undefined,
+  partyUuids: [] as string[],
   submitButton: "Add Session",
   backButton: "View Campaign",
+  loading: false,
+  disabled: false,
 });
-
-const partyUuids = ref<string[]>([]);
-const loading = ref(false);
-const disabled = ref(false);
 
 const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
   `/campaign/${uuid}/all`,
@@ -58,17 +54,15 @@ function setToStartOfDayUTC(dateInput: string | number | Date): string {
 }
 
 async function onSubmit(event: FormSubmitEvent<SessionForm>) {
-  loading.value = true;
-  disabled.value = true;
-  buttonText.submitButton = "Adding...";
-  buttonText.backButton = "";
+  state.loading = true;
+  state.disabled = true;
+  state.submitButton = "Adding...";
+  state.backButton = "";
   const dateOccured = setToStartOfDayUTC(event.data.dateOccured);
-  console.log(dateOccured);
   await authStore.ensureValidToken();
   try {
     const response: AuthResponse = await $fetch(
-      // config.public.baseURL + "/campaign/" + uuid + "/session/create",
-      "https://httpbin.org/post",
+      config.public.baseURL + "/campaign/" + uuid + "/session/create",
       {
         method: "POST",
         headers: {
@@ -76,15 +70,15 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
           "Content-Type": "application/json",
         },
         body: {
-          partyUuids: partyUuids.value,
+          partyUuids: state.partyUuids,
           dateOccured: dateOccured,
         },
       },
     );
     console.log(response);
-    buttonText.submitButton = "Success!";
+    state.submitButton = "Success!";
     toast.add({
-      title: "Location Added!",
+      title: "Session Added!",
       icon: "i-heroicons-check-circle-solid",
     });
   } catch (err) {
@@ -95,18 +89,23 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
       icon: "i-heroicons-x-circle-solid",
     });
   } finally {
-    loading.value = false;
-    disabled.value = false;
-    buttonText.submitButton = "Add Session";
-    buttonText.backButton = "View Campaign";
-    partyUuids.value = [];
-    state.dateOccured = new Date();
+    state.loading = false;
+    state.disabled = false;
+    state.submitButton = "Add Session";
+    state.backButton = "View Campaign";
+    state.partyUuids = [];
+    state.dateOccured = undefined;
   }
 }
 </script>
 <template>
   <div class="flex justify-center">
-    <UForm class="w-[260px] mt-2" :state="state" @submit.prevent="onSubmit">
+    <UForm
+      class="w-[260px] mt-2"
+      :validate="sessionValidate"
+      :state="state"
+      @submit.prevent="onSubmit"
+    >
       <UFormGroup
         label="Date Occured"
         name="dateOccured"
@@ -116,7 +115,12 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
             icon="i-material-symbols-light:calendar-month"
-            :label="format(state.dateOccured, 'MMM d, yyy')"
+            class="mt-2"
+            :label="
+              state.dateOccured
+                ? format(new Date(state.dateOccured), 'MMM d, yyy')
+                : 'Choose a date'
+            "
           />
 
           <template #panel="{ close }">
@@ -132,7 +136,7 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
         <div v-if="characters.length > 0" class="grid grid-cols-2 gap-2 my-4">
           <div v-for="character in characters" :key="character.uuid">
             <UCheckbox
-              v-model="partyUuids"
+              v-model="state.partyUuids"
               :name="character.uuid"
               :value="character.uuid"
               :label="character.firstName + ' ' + character.lastName"
@@ -147,18 +151,18 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
         color="amber"
         variant="solid"
         class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
         @click="goBack"
       >
-        {{ buttonText.backButton }}</UButton
+        {{ state.backButton }}</UButton
       >
 
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
       >
-        {{ buttonText.submitButton }}</UButton
+        {{ state.submitButton }}</UButton
       >
     </UForm>
   </div>
