@@ -46,11 +46,24 @@ async function goBack() {
   await navigateTo(`/campaign/${uuid}/view-campaign`);
 }
 
+function setToStartOfDayUTC(dateInput: string | number | Date): string {
+  const date = new Date(dateInput); // Convert input to Date
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid date input"); // Handle invalid dates
+  }
+  // Ensure the time is set to 00:00:00 UTC
+  date.setUTCHours(0, 0, 0, 0);
+  // Format the date as an ISO string in UTC
+  return date.toISOString();
+}
+
 async function onSubmit(event: FormSubmitEvent<SessionForm>) {
   loading.value = true;
   disabled.value = true;
   buttonText.submitButton = "Adding...";
   buttonText.backButton = "";
+  const dateOccured = setToStartOfDayUTC(event.data.dateOccured);
+  console.log(dateOccured);
   await authStore.ensureValidToken();
   try {
     const response: AuthResponse = await $fetch(
@@ -64,7 +77,7 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
         },
         body: {
           partyUuids: partyUuids.value,
-          dateOccured: event.data.dateOccured,
+          dateOccured: dateOccured,
         },
       },
     );
