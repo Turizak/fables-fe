@@ -1,8 +1,7 @@
-// Name and Class
-
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent } from "#ui/types";
+import type { FormSubmitEvent } from "#ui/types";
 import type { CharacterForm, ApiResponse, Campaign } from "~/types/types";
+import { characterValidate } from "~/utils/character-validation";
 import { useAuthStore, useFormStore } from "#imports";
 
 const config = useRuntimeConfig();
@@ -40,13 +39,6 @@ const campaignsOptions = computed(
     })) ?? [],
 );
 
-const validate = (state: CharacterForm): FormError[] => {
-  const errors = [];
-  if (!state.ruleset) errors.push({ path: "ruleset", message: "Required" });
-  if (!state.campaign) errors.push({ path: "campaign", message: "Required" });
-  return errors;
-};
-
 function updateFormStore(fields: CharacterForm) {
   Object.entries(fields).forEach(([field, value]) => {
     formStore.updateFormField(field, value);
@@ -72,7 +64,11 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
 </script>
 
 <template>
-  <UForm :validate="validate" :state="state" @submit.prevent="onSubmit">
+  <UForm
+    :validate="characterValidate"
+    :state="state"
+    @submit.prevent="onSubmit"
+  >
     <UFormGroup label="Ruleset" name="ruleset" class="mb-4">
       <USelect
         v-model="state.ruleset"
