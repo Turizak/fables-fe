@@ -14,15 +14,11 @@ const uuid = route.params.uuid;
 const state = reactive({
   location: undefined,
   description: undefined,
-});
-
-const buttonText = reactive({
   submitButton: "Add Location",
   backButton: "View Campaign",
+  loading: false,
+  disabled: false,
 });
-
-const loading = ref(false);
-const disabled = ref(false);
 
 async function goBack() {
   await authStore.ensureValidToken();
@@ -30,10 +26,10 @@ async function goBack() {
 }
 
 async function onSubmit(event: FormSubmitEvent<LocationForm>) {
-  loading.value = true;
-  disabled.value = true;
-  buttonText.submitButton = "Adding...";
-  buttonText.backButton = "";
+  state.loading = true;
+  state.disabled = true;
+  state.submitButton = "Adding...";
+  state.backButton = "";
   await authStore.ensureValidToken();
   try {
     const response: AuthResponse = await $fetch(
@@ -51,7 +47,7 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
       },
     );
     console.log(response);
-    buttonText.submitButton = "Success!";
+    state.submitButton = "Success!";
     toast.add({
       title: "Location Added!",
       icon: "i-heroicons-check-circle-solid",
@@ -64,10 +60,10 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
       icon: "i-heroicons-x-circle-solid",
     });
   } finally {
-    loading.value = false;
-    disabled.value = false;
-    buttonText.submitButton = "Add Location";
-    buttonText.backButton = "View Campaign";
+    state.loading = false;
+    state.disabled = false;
+    state.submitButton = "Add Location";
+    state.backButton = "View Campaign";
     state.location = undefined;
     state.description = undefined;
   }
@@ -82,29 +78,29 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
       @submit.prevent="onSubmit"
     >
       <UFormGroup label="Location Name" name="location" class="mb-4">
-        <UInput v-model="state.location" :disabled="disabled" />
+        <UInput v-model="state.location" :disabled="state.disabled" />
       </UFormGroup>
 
       <UFormGroup label="Description" name="description" class="mb-4">
-        <UTextarea v-model="state.description" :disabled="disabled" />
+        <UTextarea v-model="state.description" :disabled="state.disabled" />
       </UFormGroup>
       <UButton
         block
         color="amber"
         variant="solid"
         class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
         @click="goBack"
       >
-        {{ buttonText.backButton }}</UButton
+        {{ state.backButton }}</UButton
       >
 
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
       >
-        {{ buttonText.submitButton }}</UButton
+        {{ state.submitButton }}</UButton
       >
     </UForm>
   </div>

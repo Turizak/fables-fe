@@ -11,21 +11,17 @@ const toast = useToast();
 const state = reactive({
   email: undefined,
   password: undefined,
-});
-
-const buttonText = reactive({
   loginButton: "Login",
   createAccountButton: "Create Account",
+  loading: false,
+  disabled: false,
 });
 
-const loading = ref(false);
-const disabled = ref(false);
-
 async function onSubmit(event: FormSubmitEvent<FormData>) {
-  loading.value = true;
-  disabled.value = true;
-  buttonText.loginButton = "Logging In...";
-  buttonText.createAccountButton = "";
+  state.loading = true;
+  state.disabled = true;
+  state.loginButton = "Logging In...";
+  state.createAccountButton = "";
   try {
     const response: AuthResponse = await $fetch(
       config.public.baseURL + "/account/login",
@@ -64,10 +60,10 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
       console.error(error);
     }
   } finally {
-    loading.value = false;
-    disabled.value = false;
-    buttonText.loginButton = "Login";
-    buttonText.createAccountButton = "Create Account";
+    state.loading = false;
+    state.disabled = false;
+    state.loginButton = "Login";
+    state.createAccountButton = "Create Account";
   }
 }
 </script>
@@ -80,27 +76,31 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
       @submit.prevent="onSubmit"
     >
       <UFormGroup label="Email" name="email" class="mb-4">
-        <UInput v-model="state.email" :disabled="disabled" type="email" />
+        <UInput v-model="state.email" :disabled="state.disabled" type="email" />
       </UFormGroup>
 
       <UFormGroup label="Password" name="password">
-        <UInput v-model="state.password" :disabled="disabled" type="password" />
+        <UInput
+          v-model="state.password"
+          :disabled="state.disabled"
+          type="password"
+        />
       </UFormGroup>
 
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
       >
-        {{ buttonText.loginButton }}</UButton
+        {{ state.loginButton }}</UButton
       >
       <NuxtLink to="/create-account">
         <UButton
           type="submit"
           class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-          :loading="loading"
+          :loading="state.loading"
         >
-          {{ buttonText.createAccountButton }}</UButton
+          {{ state.createAccountButton }}</UButton
         >
       </NuxtLink>
     </UForm>
