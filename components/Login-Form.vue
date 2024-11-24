@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore";
-import { validate } from "~/utils/login-validation";
+import { loginValidate } from "~/utils/login-validation";
 import type { FormSubmitEvent } from "#ui/types";
 import type { AuthResponse, FormData } from "~/types/types";
 
@@ -71,7 +71,7 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
   <div class="flex justify-center">
     <UForm
       class="w-[260px] mt-2"
-      :validate="validate"
+      :validate="loginValidate"
       :state="state"
       @submit.prevent="onSubmit"
     >
