@@ -129,8 +129,19 @@ export type CampaignForm = {
 };
 
 export type CharacterForm = {
-  ruleset: string;
-  campaign: string;
+  ruleset?: string
+  campaign?: string
+  firstName?: string
+  lastName?: string
+  class?: string
+  race?: string
+  hair?: string;
+  skin?: string;
+  eyes?: string;
+  height?: number;
+  weight?: number;
+  age?: number;
+  gender?: string;
 };
 
 export type NPCForm = {
@@ -170,4 +181,105 @@ export type Props<T> = {
 export type Timestamp = {
   time: string;
   valid: boolean;
+};
+
+// Classes
+export type AbilityScore = {
+  url: string;
+  name: string;
+  index: string;
+};
+
+export type Proficiency = {
+  url: string;
+  name: string;
+  index: string;
+};
+
+export type MultiClassingPrerequisite = {
+  ability_score: AbilityScore;
+  minimum_score: number;
+};
+
+export type MultiClassing = {
+  prerequisites: MultiClassingPrerequisite[];
+  proficiencies: Proficiency[];
+};
+
+export type Subclass = {
+  url: string;
+  name: string;
+  index: string;
+};
+
+export type Class = {
+  index: string;
+  name: string;
+  hit_die: number;
+  class_levels: string;  // URL to class levels
+  multi_classing: MultiClassing;
+  subclasses: Subclass[];
+  spellcasting: null | string;  // Could be string or null depending on whether spellcasting is defined
+  spells: string;  // Can be a string, possibly URLs or other data related to spells
+  url: string;
+};
+
+// Race
+
+export type AbilityBonus = {
+  bonus: number;
+  ability_score: AbilityScore;
+};
+
+export type ProficiencyOption = {
+  item: Proficiency;
+  option_type: string;
+};
+
+export type StartingProficiencyOptions = {
+  desc: string;
+  from: {
+    options: ProficiencyOption[];
+    option_set_type: string;
+  };
+  type: string;
+  choose: number;
+};
+
+export type Language = {
+  url: string;
+  name: string;
+  index: string;
+};
+
+export type Trait = {
+  url: string;
+  name: string;
+  index: string;
+};
+
+export type Subrace = {
+  url: string;
+  name: string;
+  index: string;
+};
+
+export type Race = {
+  index: string;
+  name: string;
+  speed: number;
+  ability_bonuses: AbilityBonus[];
+  ability_bonus_options: string | null;
+  alignment: string;
+  age: string;
+  size: string;
+  size_description: string;
+  starting_proficiencies: Proficiency[];
+  starting_proficiency_options: StartingProficiencyOptions;
+  languages: Language[];
+  language_desc: string;
+  language_options: string | null;
+  traits: Trait[];
+  subraces: Subrace[];
+  url: string;
 };
