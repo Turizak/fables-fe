@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore";
-import { campaignValidate } from "~/utils/campaign-validation";
+import { campaignValidate } from "~/utils/validation/campaign-validation";
 import type { FormSubmitEvent } from "#ui/types";
 import type { CampaignForm } from "~/types/types";
 

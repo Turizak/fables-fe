@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { npcValidate } from "~/utils/npc-validation";
+import { npcValidate } from "~/utils/validation/npc-validation";
 import type { FormSubmitEvent } from "#ui/types";
 import type {
   ApiResponse,

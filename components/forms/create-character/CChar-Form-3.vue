@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 import type { CharacterForm } from "~/types/types";
-import { characterValidate3 } from "~/utils/character-validation-3";
+import { characterValidate3 } from "~/utils/validation/character-validation-3";
 import { useAuthStore, useFormStore } from "#imports";
 
 const config = useRuntimeConfig();

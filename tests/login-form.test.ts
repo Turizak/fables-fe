@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { loginValidate } from '../utils/login-validation';
+import { loginValidate } from '../utils/validation/login-validation';
 import type { FormData } from '~/types/types'
 import type { FormError } from "#ui/types";
 

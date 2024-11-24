@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import LocationForm from "~/components/forms/Location-Form.vue";
 definePageMeta({
   middleware: "fresh-token",
 });
@@ -7,6 +8,6 @@ definePageMeta({
 <template>
   <div>
     <h1 class="flex justify-center text-5xl p-2">Add Location</h1>
-    <Location-Form />
+    <LocationForm />
   </div>
 </template>

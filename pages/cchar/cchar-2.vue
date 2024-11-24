@@ -1,4 +1,6 @@
 <script setup>
+import CreateCharacterCCharForm2 from "~/components/forms/create-character/CChar-Form-2.vue";
+
 definePageMeta({
   middleware: "fresh-token",
 });

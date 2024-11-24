@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import CreateAccountForm from "~/components/forms/CreateAccountForm.vue";
+
 definePageMeta({
   layout: "login" as "default",
 });
