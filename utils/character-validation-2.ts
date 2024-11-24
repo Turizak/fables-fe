@@ -1,7 +1,7 @@
 import type { FormError } from "#ui/types";
 import type { CharacterForm } from "~/types/types";
 
-export const characterValidate = (state: CharacterForm): FormError[] => {
+export const characterValidate2 = (state: CharacterForm): FormError[] => {
     const errors = [];
     if (!state.firstName) errors.push({ path: "firstName", message: "Required" });
     if (state.firstName && state.firstName.length > 25)

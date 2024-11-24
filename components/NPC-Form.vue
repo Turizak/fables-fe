@@ -1,65 +1,20 @@
 <script setup lang="ts">
 import { npcValidate } from "~/utils/npc-validation";
 import type { FormSubmitEvent } from "#ui/types";
-import type { AuthResponse, NPCForm } from "~/types/types";
+import type {
+  ApiResponse,
+  AuthResponse,
+  NPCForm,
+  Class,
+  Race,
+} from "~/types/types";
 import { useAuthStore } from "#imports";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const toast = useToast();
-
 const route = useRoute();
 const uuid = route.params.uuid;
-
-const classes = [
-  { name: "Barbarian", value: "barbarian" },
-  { name: "Bard", value: "bard" },
-  { name: "Cleric", value: "cleric" },
-  { name: "Druid", value: "druid" },
-  { name: "Fighter", value: "fighter" },
-  { name: "Monk", value: "monk" },
-  { name: "Paladin", value: "paladin" },
-  { name: "Ranger", value: "ranger" },
-  { name: "Rogue", value: "rogue" },
-  { name: "Sorcerer", value: "sorcerer" },
-  { name: "Warlock", value: "warlock" },
-  { name: "Wizard", value: "wizard" },
-];
-
-const races = [
-  { name: "Dragonborn", value: "dragonborn" },
-  { name: "Halfling", value: "halfling" },
-  { name: "Half-Elf", value: "half-elf" },
-  { name: "Half-Orc", value: "half-orc" },
-  { name: "Human", value: "human" },
-  { name: "Tiefling", value: "tiefling" },
-  { name: "---", value: "", disabled: true },
-  {
-    name: "Dwarves",
-    children: [
-      { name: "Dwarf", value: "dwarf" },
-      { name: "Hill Dwarf", value: "hill-dwarf" },
-      { name: "Mountain Dwarf", value: "mountain-dwarf" },
-    ],
-  },
-  {
-    name: "Elves",
-    children: [
-      { name: "Elf", value: "elf" },
-      { name: "Dark Elf (Drow)", value: "dark-elf" },
-      { name: "High Elf", value: "high-elf" },
-      { name: "Wood Elf", value: "wood-elf" },
-    ],
-  },
-  {
-    name: "Gnomes",
-    children: [
-      { name: "Gnome", value: "gnome" },
-      { name: "Forest Gnome", value: "forest-gnome" },
-      { name: "Rock Gnome", value: "rock-gnome" },
-    ],
-  },
-];
 
 const state = reactive({
   firstName: undefined,
@@ -68,15 +23,55 @@ const state = reactive({
   race: undefined,
   description: undefined,
   isQuestBoss: false,
-});
-
-const buttonText = reactive({
   submitButton: "Add NPC",
-  backButton: "View Campaign",
+  backButton: "Back to Campaign",
+  disabled: false,
+  loading: false,
 });
 
-const disabled = ref(false);
-const loading = ref(false);
+const { data: raceData, error: raceDataError } = await useFetch<
+  ApiResponse<{ races: Race[] }>
+>("/ruleset/5e/races", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
+  },
+});
+
+if (raceDataError.value) {
+  console.error("Error fetching campaigns:", raceDataError.value);
+}
+
+const { data: classData, error: classDataError } = await useFetch<
+  ApiResponse<{ classes: Class[] }>
+>("/ruleset/5e/classes", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
+  },
+});
+
+if (classDataError.value) {
+  console.error("Error fetching campaigns:", classDataError.value);
+}
+
+const races = computed(
+  () =>
+    raceData.value?.data.races.map((race) => ({
+      label: race.name,
+      value: race.index,
+    })) ?? [],
+);
+
+const classes = computed(
+  () =>
+    classData.value?.data.classes.map((foo) => ({
+      label: foo.name,
+      value: foo.index,
+    })) ?? [],
+);
 
 async function goBack() {
   await authStore.ensureValidToken();
@@ -84,10 +79,10 @@ async function goBack() {
 }
 
 async function onSubmit(event: FormSubmitEvent<NPCForm>) {
-  loading.value = true;
-  disabled.value = true;
-  buttonText.submitButton = "Adding...";
-  buttonText.backButton = "";
+  state.loading = true;
+  state.disabled = true;
+  state.submitButton = "Adding...";
+  state.backButton = "";
   await authStore.ensureValidToken();
   try {
     const response: AuthResponse = await $fetch(
@@ -109,7 +104,7 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
       },
     );
     console.log(response);
-    buttonText.submitButton = "Success!";
+    state.submitButton = "Success!";
     toast.add({
       title: "NPC Added!",
       icon: "i-heroicons-check-circle-solid",
@@ -122,10 +117,10 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
       icon: "i-heroicons-x-circle-solid",
     });
   } finally {
-    loading.value = false;
-    disabled.value = false;
-    buttonText.submitButton = "Add NPC";
-    buttonText.backButton = "View Campaign";
+    state.loading = false;
+    state.disabled = false;
+    state.submitButton = "Add NPC";
+    state.backButton = "Back to Campaign";
     state.firstName = undefined;
     state.lastName = undefined;
     state.race = undefined;
@@ -143,7 +138,7 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
         <UInput
           v-model="state.firstName"
           placeholder="25 character limit"
-          :disabled="disabled"
+          :disabled="state.disabled"
           type="text"
           required
         />
@@ -152,27 +147,28 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
         <UInput
           v-model="state.lastName"
           placeholder="25 character limit"
-          :disabled="disabled"
+          :disabled="state.disabled"
           type="text"
           required
         />
       </UFormGroup>
       <UFormGroup label="Class" name="class" class="mb-4">
         <USelect
+          v-if="classes.length > 0"
           v-model="state.class"
-          placeholder="Select a class..."
-          option-attribute="name"
           :options="classes"
+          placeholder="Select a class"
+          class="w-full"
           required
         />
       </UFormGroup>
       <UFormGroup label="Race" name="race" class="mb-4">
         <USelect
+          v-if="races.length > 0"
           v-model="state.race"
-          placeholder="Select a race..."
           :options="races"
-          :disabled="disabled"
-          option-attribute="name"
+          placeholder="Select a race"
+          class="w-full"
           required
         />
       </UFormGroup>
@@ -181,7 +177,7 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
       <UTextarea
         v-model="state.description"
         placeholder="100 character limit"
-        :disabled="disabled"
+        :disabled="state.disabled"
       />
     </UFormGroup>
     <UCheckbox
@@ -194,17 +190,17 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
       color="amber"
       variant="solid"
       class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-      :loading="loading"
+      :loading="state.loading"
       @click="goBack"
     >
-      {{ buttonText.backButton }}</UButton
+      {{ state.backButton }}</UButton
     >
     <UButton
       type="submit"
       class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-      :loading="loading"
+      :loading="state.loading"
     >
-      {{ buttonText.submitButton }}</UButton
+      {{ state.submitButton }}</UButton
     >
   </UForm>
 </template>

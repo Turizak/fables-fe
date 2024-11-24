@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore, useFormStore } from "#imports";
-import { characterValidate } from "~/utils/character-validation";
+import { characterValidate2 } from "~/utils/character-validation-2";
 import type { FormSubmitEvent } from "#ui/types";
 import type { ApiResponse, Race, Class, CharacterForm } from "~/types/types";
 
@@ -92,7 +92,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
 
 <template>
   <UForm
-    :validate="characterValidate"
+    :validate="characterValidate2"
     :state="state"
     @submit.prevent="onSubmit"
   >
