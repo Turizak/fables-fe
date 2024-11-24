@@ -1,87 +1,24 @@
-// Details
-
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
+import type { ApiResponse, Race, Class } from "~/types/types";
 import { useAuthStore, useFormStore } from "#imports";
 
 type CharacterForm = {
   firstName: string;
   lastName: string;
   class: string;
-  alignment: string;
   race: string;
 };
+
 const authStore = useAuthStore();
 const formStore = useFormStore();
 const router = useRouter();
-
-const classes = [
-  { name: "Barbarian", value: "barbarian" },
-  { name: "Bard", value: "bard" },
-  { name: "Cleric", value: "cleric" },
-  { name: "Druid", value: "druid" },
-  { name: "Fighter", value: "fighter" },
-  { name: "Monk", value: "monk" },
-  { name: "Paladin", value: "paladin" },
-  { name: "Ranger", value: "ranger" },
-  { name: "Rogue", value: "rogue" },
-  { name: "Sorcerer", value: "sorcerer" },
-  { name: "Warlock", value: "warlock" },
-  { name: "Wizard", value: "wizard" },
-];
-
-const alignments = [
-  { name: "Chaotic Evil", value: "chaotic-evil" },
-  { name: "Chaotic Good", value: "chaotic-good" },
-  { name: "Chaotic Neutral", value: "chaotic-neutral" },
-  { name: "Lawful Evil", value: "lawful-evil" },
-  { name: "Lawful Good", value: "lawful-good" },
-  { name: "Lawful Neutral", value: "lawful-neutral" },
-  { name: "Neutral", value: "neutral" },
-  { name: "Neutral Evil", value: "neutral-evil" },
-  { name: "Neutral Good", value: "neutral-good" },
-];
-
-const races = [
-  { name: "Dragonborn", value: "dragonborn" },
-  { name: "Halfling", value: "halfling" },
-  { name: "Half-Elf", value: "half-elf" },
-  { name: "Half-Orc", value: "half-orc" },
-  { name: "Human", value: "human" },
-  { name: "Tiefling", value: "tiefling" },
-  { name: "---", value: "", disabled: true },
-  {
-    name: "Dwarves",
-    children: [
-      { name: "Dwarf", value: "dwarf" },
-      { name: "Hill Dwarf", value: "hill-dwarf" },
-      { name: "Mountain Dwarf", value: "mountain-dwarf" },
-    ],
-  },
-  {
-    name: "Elves",
-    children: [
-      { name: "Elf", value: "elf" },
-      { name: "Dark Elf (Drow)", value: "dark-elf" },
-      { name: "High Elf", value: "high-elf" },
-      { name: "Wood Elf", value: "wood-elf" },
-    ],
-  },
-  {
-    name: "Gnomes",
-    children: [
-      { name: "Gnome", value: "gnome" },
-      { name: "Forest Gnome", value: "forest-gnome" },
-      { name: "Rock Gnome", value: "rock-gnome" },
-    ],
-  },
-];
+const config = useRuntimeConfig();
 
 const state = reactive({
   firstName: undefined,
   lastName: undefined,
   class: undefined,
-  alignment: undefined,
   race: undefined,
 });
 
@@ -92,6 +29,50 @@ const buttonText = reactive({
 
 const disabled = ref(false);
 const loading = ref(false);
+
+const { data: raceData, error: raceDataError } = await useFetch<
+  ApiResponse<{ races: Race[] }>
+>("/ruleset/5e/races", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
+  },
+});
+
+if (raceDataError.value) {
+  console.error("Error fetching campaigns:", raceDataError.value);
+}
+
+const races = computed(
+  () =>
+    raceData.value?.data.races.map((race) => ({
+      label: race.name,
+      value: race.index,
+    })) ?? [],
+);
+
+const { data: classData, error: classDataError } = await useFetch<
+  ApiResponse<{ classes: Class[] }>
+>("/ruleset/5e/classes", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
+  },
+});
+
+if (classDataError.value) {
+  console.error("Error fetching campaigns:", classDataError.value);
+}
+
+const classes = computed(
+  () =>
+    classData.value?.data.classes.map((foo) => ({
+      label: foo.name,
+      value: foo.index,
+    })) ?? [],
+);
 
 const validate = (state: CharacterForm): FormError[] => {
   const errors = [];
@@ -108,7 +89,6 @@ const validate = (state: CharacterForm): FormError[] => {
       message: "Must be less than 25 characters",
     });
   if (!state.class) errors.push({ path: "class", message: "Required" });
-  if (!state.alignment) errors.push({ path: "alignment", message: "Required" });
   if (!state.race) errors.push({ path: "race", message: "Required" });
   return errors;
 };
@@ -129,7 +109,6 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
     firstName: event.data.firstName,
     lastName: event.data.lastName,
     class: event.data.class,
-    alignment: event.data.alignment,
     race: event.data.race,
   };
   disabled.value = true;
@@ -162,30 +141,21 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
     </UFormGroup>
     <UFormGroup label="Class" name="class" class="mb-4">
       <USelect
+        v-if="classes.length > 0"
         v-model="state.class"
-        placeholder="Select a class..."
-        option-attribute="name"
         :options="classes"
+        placeholder="Select a class"
+        class="w-full"
         required
       />
     </UFormGroup>
     <UFormGroup label="Race" name="race" class="mb-4">
       <USelect
+        v-if="races.length > 0"
         v-model="state.race"
-        placeholder="Select a race..."
         :options="races"
-        :disabled="disabled"
-        option-attribute="name"
-        required
-      />
-    </UFormGroup>
-    <UFormGroup label="Alignment" name="alignment">
-      <USelect
-        v-model="state.alignment"
-        placeholder="Select an alignment..."
-        option-attribute="name"
-        :options="alignments"
-        :disabled="disabled"
+        placeholder="Select a race"
+        class="w-full"
         required
       />
     </UFormGroup>
