@@ -51,7 +51,7 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
       toast.add({
         title: `${errResponse._data.message}`,
         color: "red",
-        icon: "i-heroicons-x-circle-solid",
+        icon: "i-material-symbols-light:cancel",
       });
       console.error(
         `Error: ${errResponse._data.status}, ${errResponse._data.statusText}`,
