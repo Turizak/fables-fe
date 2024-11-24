@@ -12,15 +12,11 @@ const formStore = useFormStore();
 const state = reactive({
   ruleset: "5e",
   campaign: undefined,
-});
-
-const buttonText = reactive({
   nextBtn: "Next Step: Details",
   campaignBtn: "Create Campaign",
+  disabled: false,
+  loading: false,
 });
-
-const disabled = ref(false);
-const loading = ref(false);
 
 const { data: apiResponse, error } = await useFetch<
   ApiResponse<{ campaigns: Campaign[] }>
@@ -67,8 +63,8 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
     ruleset: event.data.ruleset,
     campaign: event.data.campaign,
   };
-  disabled.value = true;
-  loading.value = true;
+  state.disabled = true;
+  state.loading = true;
   await authStore.ensureValidToken();
   updateFormStore(eventData);
   await navigateTo("/cchar/cchar-2");
@@ -105,18 +101,18 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
         color="amber"
         variant="solid"
         class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
         @click="goBack"
       >
-        {{ buttonText.campaignBtn }}</UButton
+        {{ state.campaignBtn }}</UButton
       >
       <UButton
         block
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
       >
-        {{ buttonText.nextBtn }}</UButton
+        {{ state.nextBtn }}</UButton
       >
     </div>
   </UForm>
