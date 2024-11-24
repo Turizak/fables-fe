@@ -86,7 +86,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
     console.log(response);
     toast.add({
       title: "Character Created!",
-      icon: "i-heroicons-check-circle-solid",
+      icon: "i-material-symbols-light:check-circle",
     });
     await navigateTo("/");
   } catch (err) {
@@ -94,7 +94,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
     toast.add({
       title: "There was an error - please try again",
       color: "red",
-      icon: "i-heroicons-x-circle-solid",
+      icon: "i-material-symbols-light:cancel",
     });
   } finally {
     state.loading = false;
