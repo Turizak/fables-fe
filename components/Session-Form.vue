@@ -79,14 +79,14 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
     state.submitButton = "Success!";
     toast.add({
       title: "Session Added!",
-      icon: "i-heroicons-check-circle-solid",
+      icon: "i-material-symbols-light:check-circle",
     });
   } catch (err) {
     console.error(err);
     toast.add({
       title: "There was an error - please try again",
       color: "red",
-      icon: "i-heroicons-x-circle-solid",
+      icon: "i-material-symbols-light:cancel",
     });
   } finally {
     state.loading = false;
