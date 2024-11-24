@@ -19,13 +19,10 @@ const state = reactive({
   height: undefined,
   weight: undefined,
   gender: undefined,
-});
-
-const disabled = ref(false);
-const loading = ref(false);
-const buttonText = reactive({
   nextBtn: "Create Character",
   prevBtn: "Go Back",
+  disabled: false,
+  loading: false,
 });
 
 const validate = (state: CharacterForm): FormError[] => {
@@ -69,8 +66,8 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
     weight: event.data.weight,
     gender: event.data.gender,
   };
-  disabled.value = true;
-  loading.value = true;
+  state.disabled = true;
+  state.loading = true;
   await authStore.ensureValidToken();
   updateFormStore(eventData);
   try {
@@ -100,10 +97,10 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       icon: "i-heroicons-x-circle-solid",
     });
   } finally {
-    loading.value = false;
-    disabled.value = false;
-    buttonText.nextBtn = "Create Character";
-    buttonText.prevBtn = "Back";
+    state.loading = false;
+    state.disabled = false;
+    state.nextBtn = "Create Character";
+    state.prevBtn = "Back";
     state.hair = undefined;
     state.skin = undefined;
     state.eyes = undefined;
@@ -119,26 +116,34 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
   <UForm :validate="validate" :state="state" @submit.prevent="onSubmit">
     <div class="grid grid-cols-2 gap-4">
       <UFormGroup label="Hair" name="hair">
-        <UInput v-model="state.hair" :disabled="disabled" type="text" />
+        <UInput v-model="state.hair" :disabled="state.disabled" type="text" />
       </UFormGroup>
       <UFormGroup label="Skin" name="skin">
-        <UInput v-model="state.skin" :disabled="disabled" type="text" />
+        <UInput v-model="state.skin" :disabled="state.disabled" type="text" />
       </UFormGroup>
       <UFormGroup label="Eyes" name="eyes">
-        <UInput v-model="state.eyes" :disabled="disabled" type="text" />
+        <UInput v-model="state.eyes" :disabled="state.disabled" type="text" />
       </UFormGroup>
       <UFormGroup label="Age (years)" name="age">
-        <UInput v-model="state.age" :disabled="disabled" type="number" />
+        <UInput v-model="state.age" :disabled="state.disabled" type="number" />
       </UFormGroup>
       <UFormGroup label="Height (inches)" name="height">
-        <UInput v-model="state.height" :disabled="disabled" type="number" />
+        <UInput
+          v-model="state.height"
+          :disabled="state.disabled"
+          type="number"
+        />
       </UFormGroup>
       <UFormGroup label="Weight (lbs)" name="weight" class="mb-4">
-        <UInput v-model="state.weight" :disabled="disabled" type="number" />
+        <UInput
+          v-model="state.weight"
+          :disabled="state.disabled"
+          type="number"
+        />
       </UFormGroup>
     </div>
     <UFormGroup label="Gender" name="gender">
-      <UInput v-model="state.gender" :disabled="disabled" type="text" />
+      <UInput v-model="state.gender" :disabled="state.disabled" type="text" />
     </UFormGroup>
 
     <div class="flex flex-col justify-center">
@@ -147,18 +152,18 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
         color="amber"
         variant="solid"
         class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
         @click="goBack"
       >
-        {{ buttonText.prevBtn }}</UButton
+        {{ state.prevBtn }}</UButton
       >
       <UButton
         type="submit"
         block
         class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
       >
-        {{ buttonText.nextBtn }}</UButton
+        {{ state.nextBtn }}</UButton
       >
     </div>
   </UForm>
