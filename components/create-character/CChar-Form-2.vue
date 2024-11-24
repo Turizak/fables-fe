@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent } from "#ui/types";
-import type { ApiResponse, Race, Class, CharacterForm } from "~/types/types";
 import { useAuthStore, useFormStore } from "#imports";
+import { characterValidate } from "~/utils/character-validation";
+import type { FormSubmitEvent } from "#ui/types";
+import type { ApiResponse, Race, Class, CharacterForm } from "~/types/types";
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
@@ -63,25 +64,6 @@ const classes = computed(
     })) ?? [],
 );
 
-const validate = (state: CharacterForm): FormError[] => {
-  const errors = [];
-  if (!state.firstName) errors.push({ path: "firstName", message: "Required" });
-  if (state.firstName && state.firstName.length > 25)
-    errors.push({
-      path: "firstName",
-      message: "Must be less than 25 characters",
-    });
-  if (!state.lastName) errors.push({ path: "lastName", message: "Required" });
-  if (state.lastName && state.lastName.length > 25)
-    errors.push({
-      path: "lastName",
-      message: "Must be less than 25 characters",
-    });
-  if (!state.class) errors.push({ path: "class", message: "Required" });
-  if (!state.race) errors.push({ path: "race", message: "Required" });
-  return errors;
-};
-
 function updateFormStore(fields: CharacterForm) {
   Object.entries(fields).forEach(([field, value]) => {
     formStore.updateFormField(field, value);
@@ -109,7 +91,11 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
 </script>
 
 <template>
-  <UForm :validate="validate" :state="state" @submit.prevent="onSubmit">
+  <UForm
+    :validate="characterValidate"
+    :state="state"
+    @submit.prevent="onSubmit"
+  >
     <UFormGroup label="Character First Name" name="firstName" class="mb-4">
       <UInput
         v-model="state.firstName"
