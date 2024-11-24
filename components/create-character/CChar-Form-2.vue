@@ -15,10 +15,9 @@ const state = reactive({
   race: undefined,
   nextBtn: "Next Step: Appearance",
   prevBtn: "Go Back",
+  disabled: false,
+  loading: false,
 });
-
-const disabled = ref(false);
-const loading = ref(false);
 
 const { data: raceData, error: raceDataError } = await useFetch<
   ApiResponse<{ races: Race[] }>
@@ -101,8 +100,8 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
     class: event.data.class,
     race: event.data.race,
   };
-  disabled.value = true;
-  loading.value = true;
+  state.disabled = true;
+  state.loading = true;
   await authStore.ensureValidToken();
   updateFormStore(eventData);
   await navigateTo("/cchar/cchar-3");
@@ -115,7 +114,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       <UInput
         v-model="state.firstName"
         placeholder="Must be less than 25 characters"
-        :disabled="disabled"
+        :disabled="state.disabled"
         type="text"
         required
       />
@@ -124,7 +123,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       <UInput
         v-model="state.lastName"
         placeholder="Must be less than 25 characters"
-        :disabled="disabled"
+        :disabled="state.disabled"
         type="text"
         required
       />
@@ -155,7 +154,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
         color="amber"
         variant="solid"
         class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
         @click="goBack"
       >
         {{ state.prevBtn }}</UButton
@@ -163,7 +162,7 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="loading"
+        :loading="state.loading"
       >
         {{ state.nextBtn }}</UButton
       >
