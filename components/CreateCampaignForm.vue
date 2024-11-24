@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore";
-import type { FormError, FormSubmitEvent } from "#ui/types";
+import { campaignValidate } from "~/utils/campaign-validation";
+import type { FormSubmitEvent } from "#ui/types";
 import type { CampaignForm } from "~/types/types";
 
 const authStore = useAuthStore();
@@ -15,14 +16,6 @@ const state = reactive({
   disabled: false,
   buttonText: "Create Campaign",
 });
-
-const validate = (state: CampaignForm): FormError[] => {
-  const errors = [];
-  if (!state.name) errors.push({ path: "name", message: "Required" });
-  if (state.name && state.name.length > 100)
-    errors.push({ path: "name", message: "Must be less than 100 characters" });
-  return errors;
-};
 
 async function onSubmit(event: FormSubmitEvent<CampaignForm>) {
   state.disabled = true;
@@ -70,7 +63,7 @@ async function onSubmit(event: FormSubmitEvent<CampaignForm>) {
 </script>
 
 <template>
-  <UForm :validate="validate" :state="state" @submit.prevent="onSubmit">
+  <UForm :validate="campaignValidate" :state="state" @submit.prevent="onSubmit">
     <UFormGroup label="Campaign Name" name="name" class="mb-4">
       <UInput
         v-model="state.name"
