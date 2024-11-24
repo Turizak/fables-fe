@@ -129,8 +129,19 @@ export type CampaignForm = {
 };
 
 export type CharacterForm = {
-  ruleset: string;
-  campaign: string;
+  ruleset?: string
+  campaign?: string
+  firstName?: string
+  lastName?: string
+  class?: string
+  race?: string
+  hair?: string;
+  skin?: string;
+  eyes?: string;
+  height?: number;
+  weight?: number;
+  age?: number;
+  gender?: string;
 };
 
 export type NPCForm = {

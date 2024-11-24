@@ -2,17 +2,9 @@
 
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
+import type { CharacterForm } from "~/types/types";
 import { useAuthStore, useFormStore } from "#imports";
 
-type CharacterForm = {
-  hair: string;
-  skin: string;
-  eyes: string;
-  height: number;
-  weight: number;
-  age: number;
-  gender: string;
-};
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const formStore = useFormStore();

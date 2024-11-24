@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from "#ui/types";
-import type { ApiResponse, Race, Class } from "~/types/types";
+import type { ApiResponse, Race, Class, CharacterForm } from "~/types/types";
 import { useAuthStore, useFormStore } from "#imports";
-
-type CharacterForm = {
-  firstName: string;
-  lastName: string;
-  class: string;
-  race: string;
-};
 
 const authStore = useAuthStore();
 const formStore = useFormStore();
@@ -44,14 +37,6 @@ if (raceDataError.value) {
   console.error("Error fetching campaigns:", raceDataError.value);
 }
 
-const races = computed(
-  () =>
-    raceData.value?.data.races.map((race) => ({
-      label: race.name,
-      value: race.index,
-    })) ?? [],
-);
-
 const { data: classData, error: classDataError } = await useFetch<
   ApiResponse<{ classes: Class[] }>
 >("/ruleset/5e/classes", {
@@ -65,6 +50,14 @@ const { data: classData, error: classDataError } = await useFetch<
 if (classDataError.value) {
   console.error("Error fetching campaigns:", classDataError.value);
 }
+
+const races = computed(
+  () =>
+    raceData.value?.data.races.map((race) => ({
+      label: race.name,
+      value: race.index,
+    })) ?? [],
+);
 
 const classes = computed(
   () =>
