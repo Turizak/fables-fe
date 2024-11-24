@@ -13,9 +13,6 @@ const state = reactive({
   lastName: undefined,
   class: undefined,
   race: undefined,
-});
-
-const buttonText = reactive({
   nextBtn: "Next Step: Appearance",
   prevBtn: "Go Back",
 });
@@ -161,14 +158,14 @@ async function onSubmit(event: FormSubmitEvent<CharacterForm>) {
         :loading="loading"
         @click="goBack"
       >
-        {{ buttonText.prevBtn }}</UButton
+        {{ state.prevBtn }}</UButton
       >
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
         :loading="loading"
       >
-        {{ buttonText.nextBtn }}</UButton
+        {{ state.nextBtn }}</UButton
       >
     </div>
   </UForm>
