@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore, useFormStore } from "#imports";
-import { characterValidate2 } from "~/utils/character-validation-2";
+import { characterValidate2 } from "~/utils/validation/character-validation-2";
 import type { FormSubmitEvent } from "#ui/types";
 import type { ApiResponse, Race, Class, CharacterForm } from "~/types/types";
 

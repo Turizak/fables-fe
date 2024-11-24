@@ -1,4 +1,6 @@
 <script setup>
+import CreateCampaignForm from "~/components/forms/CreateCampaignForm.vue";
+
 definePageMeta({
   middleware: "fresh-token",
 });

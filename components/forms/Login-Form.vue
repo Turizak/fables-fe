@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore";
-import { loginValidate } from "~/utils/login-validation";
+import { loginValidate } from "~/utils/validation/login-validation";
 import type { FormSubmitEvent } from "#ui/types";
 import type { AuthResponse, FormData } from "~/types/types";
 

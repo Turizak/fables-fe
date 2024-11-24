@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validate } from '../utils/create-account-validation'
+import { validate } from '../utils/validation/create-account-validation'
 import type { FormType } from '~/types/types'
 
 describe('Form Validation', () => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 import type { CharacterForm, ApiResponse, Campaign } from "~/types/types";
-import { characterValidate } from "~/utils/character-validation";
+import { characterValidate } from "~/utils/validation/character-validation";
 import { useAuthStore, useFormStore } from "#imports";
 
 const config = useRuntimeConfig();
