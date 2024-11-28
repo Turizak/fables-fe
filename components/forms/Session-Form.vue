@@ -2,12 +2,7 @@
 import { useRoute } from "vue-router";
 import { format } from "date-fns";
 import type { FormSubmitEvent } from "#ui/types";
-import type {
-  ApiResponse,
-  AuthResponse,
-  CampaignAll,
-  SessionForm,
-} from "~/types/types";
+import type { ApiResponse, CampaignAll, SessionForm } from "~/types/types";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
@@ -61,7 +56,7 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
   const dateOccured = setToStartOfDayUTC(event.data.dateOccured);
   await authStore.ensureValidToken();
   try {
-    const response: AuthResponse = await $fetch(
+    await $fetch(
       config.public.baseURL + "/campaign/" + uuid + "/session/create",
       {
         method: "POST",
