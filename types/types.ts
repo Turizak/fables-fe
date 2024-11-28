@@ -283,3 +283,19 @@ export type Race = {
   subraces: Subrace[];
   url: string;
 };
+
+// Session
+
+export type Session = {
+  session: {
+    sessionId: number;
+    uuid: string;
+    campaignUuid: string;
+    creatorUuid: string;
+    partyUuids: string[];
+    dateOccured: Timestamp;
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
+  }
+
+};
