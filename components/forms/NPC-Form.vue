@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { npcValidate } from "~/utils/validation/npc-validation";
 import type { FormSubmitEvent } from "#ui/types";
-import type {
-  ApiResponse,
-  AuthResponse,
-  NPCForm,
-  Class,
-  Race,
-} from "~/types/types";
+import type { ApiResponse, NPCForm, Class, Race } from "~/types/types";
 import { useAuthStore } from "#imports";
 
 const config = useRuntimeConfig();
@@ -85,32 +79,28 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
   state.backButton = "";
   await authStore.ensureValidToken();
   try {
-    const response: AuthResponse = await $fetch(
-      config.public.baseURL + "/campaign/" + uuid + "/npc/create",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-          "Content-Type": "application/json",
-        },
-        body: {
-          firstName: event.data.firstName,
-          lastName: event.data.lastName,
-          class: event.data.class,
-          race: event.data.race,
-          description: event.data.description,
-          isQuestBoss: event.data.isQuestBoss,
-        },
+    await $fetch(config.public.baseURL + "/campaign/" + uuid + "/npc/create", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+        "Content-Type": "application/json",
       },
-    );
-    console.log(response);
+      body: {
+        firstName: event.data.firstName,
+        lastName: event.data.lastName,
+        class: event.data.class,
+        race: event.data.race,
+        description: event.data.description,
+        isQuestBoss: event.data.isQuestBoss,
+      },
+    });
     state.submitButton = "Success!";
     toast.add({
       title: "NPC Added!",
       icon: "i-material-symbols-light:check-circle",
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("Error creating NPC: ", error);
     toast.add({
       title: "There was an error - please try again",
       color: "red",

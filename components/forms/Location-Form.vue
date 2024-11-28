@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import { locationValidate } from "~/utils/validation/location-validation";
 import type { FormSubmitEvent } from "#ui/types";
-import type { AuthResponse, LocationForm } from "~/types/types";
+import type { LocationForm } from "~/types/types";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
@@ -32,7 +32,7 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   state.backButton = "";
   await authStore.ensureValidToken();
   try {
-    const response: AuthResponse = await $fetch(
+    await $fetch(
       config.public.baseURL + "/campaign/" + uuid + "/location/create",
       {
         method: "POST",
@@ -46,14 +46,13 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
         },
       },
     );
-    console.log(response);
     state.submitButton = "Success!";
     toast.add({
       title: "Location Added!",
       icon: "i-heroicons-check-circle-solid",
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("Error creating location:", error);
     toast.add({
       title: "There was an error - please try again",
       color: "red",

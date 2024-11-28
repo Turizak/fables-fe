@@ -23,14 +23,10 @@ async function onSubmit(event: FormSubmitEvent<CampaignForm>) {
   state.buttonText = "Creating...";
   await authStore.ensureValidToken();
   try {
-    const response = await $fetch<{
-      status: string;
-      message: string;
-      data: CampaignForm;
-    }>(config.public.baseURL + "/campaign/create", {
+    const { data, error } = await useFetch<AuthResponse>("/campaign/create", {
+      baseURL: config.public.baseURL,
       method: "POST",
       headers: {
-        Authorization: `Bearer ${authStore.token}`,
         "Content-Type": "application/json",
       },
       body: {
@@ -39,14 +35,16 @@ async function onSubmit(event: FormSubmitEvent<CampaignForm>) {
         maxPlayers: event.data.maxPlayers,
       },
     });
-    console.log(response);
-    state.buttonText = "Success!";
-    toast.add({
-      title: "Campaign Created!",
-      icon: "i-material-symbols-light:check-circle",
-    });
-  } catch (err) {
-    console.error(err);
+    if (error.value) throw error.value;
+    if (data.value) {
+      state.buttonText = "Success!";
+      toast.add({
+        title: "Campaign Created!",
+        icon: "i-material-symbols-light:check-circle",
+      });
+    }
+  } catch (error) {
+    console.error("Error creating campaign:", error?.statusCode);
     toast.add({
       title: "There was an error - please try again",
       color: "red",
