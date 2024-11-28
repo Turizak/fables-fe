@@ -23,42 +23,30 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
   state.loginButton = "Logging In...";
   state.createAccountButton = "";
   try {
-    const response: AuthResponse = await $fetch(
-      config.public.baseURL + "/account/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: {
-          email: event.data.email,
-          password: event.data.password,
-        },
+    const { data, error } = await useFetch<AuthResponse>("/account/login", {
+      baseURL: config.public.baseURL,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
-    authStore.setToken(response.data.tokens.accessToken);
-    authStore.setRefreshToken(response.data.tokens.refreshToken);
-    await navigateTo("/");
-  } catch (error: unknown) {
-    if (error && typeof error === "object" && "response" in error) {
-      const errResponse = (
-        error as {
-          response: {
-            _data: { message: string; status: number; statusText: string };
-          };
-        }
-      ).response;
-      toast.add({
-        title: `${errResponse._data.message}`,
-        color: "red",
-        icon: "i-material-symbols-light:cancel",
-      });
-      console.error(
-        `Error: ${errResponse._data.status}, ${errResponse._data.statusText}`,
-      );
-    } else {
-      console.error(error);
+      body: {
+        email: event.data.email,
+        password: event.data.password,
+      },
+    });
+    if (error.value) throw error.value;
+    if (data.value) {
+      authStore.setToken(response.data.tokens.accessToken);
+      authStore.setRefreshToken(response.data.tokens.refreshToken);
+      await navigateTo("/");
     }
+  } catch (error) {
+    console.error("Login error:", error?.statusCode || "Unknown error");
+    toast.add({
+      title: `Login failed: ${error?.statusCode}`,
+      color: "red",
+      icon: "i-material-symbols-light:cancel",
+    });
   } finally {
     state.loading = false;
     state.disabled = false;
