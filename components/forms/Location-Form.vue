@@ -51,8 +51,8 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
       title: "Location Added!",
       icon: "i-heroicons-check-circle-solid",
     });
-  } catch (err) {
-    console.error("Error creating location:", err);
+  } catch (error) {
+    console.error("Error creating location:", error);
     toast.add({
       title: "There was an error - please try again",
       color: "red",

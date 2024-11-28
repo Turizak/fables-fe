@@ -23,7 +23,7 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
   state.loginButton = "Logging In...";
   state.createAccountButton = "";
   try {
-    const { data, error } = await useFetch<AuthResponse>("/account/login", {
+    const response = await $fetch<AuthResponse>("/account/login", {
       baseURL: config.public.baseURL,
       method: "POST",
       headers: {
@@ -34,16 +34,13 @@ async function onSubmit(event: FormSubmitEvent<FormData>) {
         password: event.data.password,
       },
     });
-    if (error.value) throw error.value;
-    if (data.value) {
-      authStore.setToken(response.data.tokens.accessToken);
-      authStore.setRefreshToken(response.data.tokens.refreshToken);
-      await navigateTo("/");
-    }
+    authStore.setToken(response.data.tokens.accessToken);
+    authStore.setRefreshToken(response.data.tokens.refreshToken);
+    await navigateTo("/");
   } catch (error) {
-    console.error("Login error:", error?.statusCode || "Unknown error");
+    console.error("Login Error: ", error);
     toast.add({
-      title: `Login failed: ${error?.statusCode}`,
+      title: "Login Failed",
       color: "red",
       icon: "i-material-symbols-light:cancel",
     });
