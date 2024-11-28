@@ -23,7 +23,7 @@ async function onSubmit(event: FormSubmitEvent<CampaignForm>) {
   state.buttonText = "Creating...";
   await authStore.ensureValidToken();
   try {
-    const response = await $fetch<{
+    await $fetch<{
       status: string;
       message: string;
       data: CampaignForm;
@@ -39,14 +39,13 @@ async function onSubmit(event: FormSubmitEvent<CampaignForm>) {
         maxPlayers: event.data.maxPlayers,
       },
     });
-    console.log(response);
     state.buttonText = "Success!";
     toast.add({
       title: "Campaign Created!",
       icon: "i-material-symbols-light:check-circle",
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error creating campaign:", err);
     toast.add({
       title: "There was an error - please try again",
       color: "red",
