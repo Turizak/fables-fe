@@ -2,13 +2,14 @@
 import { useRoute } from "vue-router";
 import { format } from "date-fns";
 import type { FormSubmitEvent } from "#ui/types";
+import { sessionValidate } from "~/utils/validation/session-validation";
 import type { ApiResponse, CampaignAll, SessionForm } from "~/types/types";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const toast = useToast();
 const route = useRoute();
-const uuid = route.params.uuid;
+const campaignUuid = route.params.campaignUuid;
 
 const state = reactive({
   dateOccured: undefined,
@@ -20,7 +21,7 @@ const state = reactive({
 });
 
 const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
-  `/campaign/${uuid}/all`,
+  `/campaign/${campaignUuid}/all`,
   {
     baseURL: config.public.baseURL,
     headers: {
@@ -34,7 +35,7 @@ const characters = computed(() => apiResponse.value?.data.characters ?? []);
 
 async function goBack() {
   await authStore.ensureValidToken();
-  await navigateTo(`/campaign/${uuid}/view-campaign`);
+  await navigateTo(`/campaign/${campaignUuid}/view-campaign`);
 }
 
 function setToStartOfDayUTC(dateInput: string | number | Date): string {
@@ -57,7 +58,7 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
   await authStore.ensureValidToken();
   try {
     await $fetch(
-      config.public.baseURL + "/campaign/" + uuid + "/session/create",
+      config.public.baseURL + "/campaign/" + campaignUuid + "/session/create",
       {
         method: "POST",
         headers: {
@@ -70,7 +71,6 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
         },
       },
     );
-    console.log(response);
     state.submitButton = "Success!";
     toast.add({
       title: "Session Added!",
