@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { ApiResponse, CampaignAll } from "~/types/types";
+import type { ApiResponse, Session } from "~/types/types";
 import { format } from "date-fns";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
 
 const route = useRoute();
-const uuid = route.params.uuid;
+const campaignUuid = route.params.campaignUuid;
+const sessionUuid = route.params.sessionUuid;
 
 definePageMeta({
   middleware: "fresh-token",
@@ -14,8 +15,8 @@ definePageMeta({
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
-const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
-  `/campaign/${uuid}/all`,
+const { data: apiResponse } = await useFetch<ApiResponse<Session>>(
+  `/campaign/${campaignUuid}/session/${sessionUuid}`,
   {
     baseURL: config.public.baseURL,
     headers: {
@@ -25,32 +26,15 @@ const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
   },
 );
 
+const session = computed(() => apiResponse.value?.data?.session ?? null);
+
 const links = [
   {
-    label: "Character",
+    label: "Note",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
-  },
-  {
-    label: "Location",
-    labelClass: "text-lg",
-    icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${uuid}/add-location`,
-  },
-  {
-    label: "NPC",
-    labelClass: "text-lg",
-    icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${uuid}/add-npc`,
-  },
-  {
-    label: "Session",
-    labelClass: "text-lg",
-    icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${uuid}/add-session`,
   },
 ];
-
 const items = [
   {
     label: "Characters",
@@ -70,19 +54,7 @@ const items = [
     defaultOpen: false,
     slot: "npcs",
   },
-  {
-    label: "Sessions",
-    icon: "i-material-symbols-light:calendar-month",
-    defaultOpen: false,
-    slot: "sessions",
-  },
 ];
-
-const campaign = computed(() => apiResponse.value?.data.campaign ?? null);
-const characters = computed(() => apiResponse.value?.data.characters ?? []);
-const locations = computed(() => apiResponse.value?.data.locations ?? []);
-const npcs = computed(() => apiResponse.value?.data.npcs ?? []);
-const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
 </script>
 
 <template>
@@ -93,10 +65,10 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
     />
     <UCard>
       <template #header>
-        <h2 v-if="campaign" class="text-5xl">
-          {{ campaign.name }}
+        <h2 v-if="session" class="text-5xl">
+          {{ format(new Date(session.dateOccured.time), "MMM-dd, yyyy") }}
         </h2>
-        <p v-else>Loading campaign data...</p>
+        <p v-else>Loading session data...</p>
       </template>
       <UAccordion multiple :items="items">
         <template #item="{ item }">
@@ -104,13 +76,12 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
             {{ item.description }}
           </p>
         </template>
-
         <template #characters>
-          <div
+          <!-- <div
             v-if="characters.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
-          >
-            <div v-for="character in characters" :key="character.uuid">
+          > -->
+          <!-- <div v-for="character in characters" :key="character.uuid">
               <UTooltip>
                 <template #text>
                   <p>{{ character.race + " " + character.class }}</p>
@@ -121,10 +92,10 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
               </UTooltip>
             </div>
           </div>
-          <p v-else>No characters found.</p>
+          <p v-else>No characters found.</p> -->
         </template>
         <template #locations>
-          <div
+          <!-- <div
             v-if="locations.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
           >
@@ -141,10 +112,10 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
               </UTooltip>
             </UButton>
           </div>
-          <p v-else>No locations found.</p>
+          <p v-else>No locations found.</p> -->
         </template>
         <template #npcs>
-          <div
+          <!-- <div
             v-if="npcs.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
           >
@@ -156,25 +127,8 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
                 {{ npc.firstName + " " + npc.lastName }}
               </UTooltip>
             </UButton>
-          </div>
-          <p v-else>No NPCs found.</p>
-        </template>
-        <template #sessions>
-          <div
-            v-if="sessions.length > 0"
-            class="flex flex-row flex-wrap flex-grow-0 gap-2"
-          >
-            <UButton
-              v-for="session in sessions"
-              :key="session.uuid"
-              class="text-md mt-2"
-            >
-              <p>
-                {{ format(new Date(session.dateOccured.time), "MMM-dd, yyyy") }}
-              </p>
-            </UButton>
-          </div>
-          <p v-else>No sessions found.</p>
+          </div> -->
+          <!-- <p v-else>No NPCs found.</p> -->
         </template>
       </UAccordion>
     </UCard>
