@@ -9,20 +9,23 @@ const authStore = useAuthStore();
 const toast = useToast();
 
 const route = useRoute();
-const uuid = route.params.uuid;
+const campaignUuid = route.params.campaignUuid;
+const sessionUuid = route.params.sessionUuid;
 
 const state = reactive({
   location: undefined,
   description: undefined,
   submitButton: "Add Location",
-  backButton: "View Campaign",
+  backButton: "View Session",
   loading: false,
   disabled: false,
 });
 
 async function goBack() {
   await authStore.ensureValidToken();
-  await navigateTo(`/campaign/${uuid}/view-campaign`);
+  await navigateTo(
+    `/campaign/${campaignUuid}/session/${sessionUuid}/view-session`,
+  );
 }
 
 async function onSubmit(event: FormSubmitEvent<LocationForm>) {
@@ -33,7 +36,7 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   await authStore.ensureValidToken();
   try {
     await $fetch(
-      config.public.baseURL + "/campaign/" + uuid + "/location/create",
+      config.public.baseURL + "/campaign/" + campaignUuid + "/location/create",
       {
         method: "POST",
         headers: {

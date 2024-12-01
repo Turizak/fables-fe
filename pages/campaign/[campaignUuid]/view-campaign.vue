@@ -32,16 +32,10 @@ const links = [
     icon: "i-material-symbols-light:add-circle",
   },
   {
-    label: "Location",
+    label: "Quest",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/add-location`,
-  },
-  {
-    label: "NPC",
-    labelClass: "text-lg",
-    icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/add-npc`,
+    // to: `/campaign/${campaignUuid}/add-npc`,
   },
   {
     label: "Session",
@@ -71,6 +65,12 @@ const items = [
     slot: "npcs",
   },
   {
+    label: "Quests",
+    icon: "i-material-symbols-light:swords-rounded",
+    defaultOpen: false,
+    slot: "quests",
+  },
+  {
     label: "Sessions",
     icon: "i-material-symbols-light:calendar-month",
     defaultOpen: false,
@@ -87,16 +87,20 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
 
 <template>
   <div class="text-center p-2">
-    <UHorizontalNavigation
-      :links="links"
-      class="flex justify-around border-gray-200 dark:border-gray-800"
-    />
-    <UCard>
+    <UCard class="mt-2">
       <template #header>
-        <h2 v-if="campaign" class="text-5xl">
+        <h2 v-if="campaign" class="text-5xl mb-4">
           {{ campaign.name }}
         </h2>
         <p v-else>Loading campaign data...</p>
+        <UDivider
+          label="Add To Campaign"
+          :ui="{ label: 'text-primary-500 dark:text-primary-400' }"
+        />
+        <UHorizontalNavigation
+          :links="links"
+          class="flex justify-around border-gray-200 dark:border-gray-800 mt-2"
+        />
       </template>
       <UAccordion multiple :items="items">
         <template #item="{ item }">
@@ -148,7 +152,7 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
             v-if="npcs.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
           >
-            <UButton v-for="npc in npcs" :key="npc.uuid" class="text-md mt-2">
+            <UButton v-for="npc in npcs" :key="npc.uuid" class="text-md my-2">
               <UTooltip>
                 <template #text>
                   <p>{{ npc.description }}</p>

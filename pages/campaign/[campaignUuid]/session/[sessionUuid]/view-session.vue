@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiResponse, Session } from "~/types/types";
+import type { ApiResponse, Campaign, Session } from "~/types/types";
 import { format } from "date-fns";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
@@ -15,7 +15,7 @@ definePageMeta({
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
-const { data: apiResponse } = await useFetch<ApiResponse<Session>>(
+const { data: sessionData } = await useFetch<ApiResponse<Session>>(
   `/campaign/${campaignUuid}/session/${sessionUuid}`,
   {
     baseURL: config.public.baseURL,
@@ -26,13 +26,42 @@ const { data: apiResponse } = await useFetch<ApiResponse<Session>>(
   },
 );
 
-const session = computed(() => apiResponse.value?.data?.session ?? null);
+const { data: campaignData } = await useFetch<ApiResponse<Campaign>>(
+  `/campaign/${campaignUuid}`,
+  {
+    baseURL: config.public.baseURL,
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+      "Content-Type": "application/json",
+    },
+  },
+);
+
+const session = computed(() => sessionData.value?.data?.session ?? null);
+const campaign = computed(() => campaignData.value?.data.campaign ?? null);
 
 const links = [
+  {
+    label: "Character",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+  },
+  {
+    label: "Location",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${campaignUuid}/session/${sessionUuid}/add-location`,
+  },
   {
     label: "Note",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
+  },
+  {
+    label: "NPC",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${campaignUuid}/session/${sessionUuid}/add-npc`,
   },
 ];
 const items = [
@@ -49,6 +78,12 @@ const items = [
     slot: "locations",
   },
   {
+    label: "Notes",
+    icon: "i-material-symbols-light:note-stack-rounded",
+    defaultOpen: false,
+    slot: "notes",
+  },
+  {
     label: "NPCs",
     icon: "i-material-symbols-light:chat-bubble",
     defaultOpen: false,
@@ -59,15 +94,27 @@ const items = [
 
 <template>
   <div class="text-center p-2">
-    <UHorizontalNavigation
-      :links="links"
-      class="flex justify-around border-gray-200 dark:border-gray-800"
-    />
-    <UCard>
+    <UCard class="mt-2">
       <template #header>
-        <h2 v-if="session" class="text-5xl">
-          {{ format(new Date(session.dateOccured.time), "MMM-dd, yyyy") }}
+        <h2 v-if="campaign" class="text-4xl mb-4">
+          {{ campaign.name }}
         </h2>
+        <p v-else>Error loading campaign</p>
+        <UDivider
+          label="Add To Session"
+          :ui="{ label: 'text-primary-500 dark:text-primary-400' }"
+        />
+        <UHorizontalNavigation
+          :links="links"
+          class="flex justify-around border-gray-200 dark:border-gray-800 mb-2"
+        />
+        <UDivider
+          label="Session Date"
+          :ui="{ label: 'text-primary-500 dark:text-primary-400' }"
+        />
+        <h3 v-if="session" class="text-4xl mt-2">
+          {{ format(new Date(session.dateOccured.time), "MMM-dd, yyyy") }}
+        </h3>
         <p v-else>Loading session data...</p>
       </template>
       <UAccordion multiple :items="items">
