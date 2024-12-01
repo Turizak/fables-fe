@@ -87,16 +87,20 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
 
 <template>
   <div class="text-center p-2">
-    <UHorizontalNavigation
-      :links="links"
-      class="flex justify-around border-gray-200 dark:border-gray-800"
-    />
-    <UCard>
+    <UCard class="mt-2">
       <template #header>
-        <h2 v-if="campaign" class="text-5xl">
+        <h2 v-if="campaign" class="text-5xl mb-4">
           {{ campaign.name }}
         </h2>
         <p v-else>Loading campaign data...</p>
+        <UDivider
+          label="Add To Campaign"
+          :ui="{ label: 'text-primary-500 dark:text-primary-400' }"
+        />
+        <UHorizontalNavigation
+          :links="links"
+          class="flex justify-around border-gray-200 dark:border-gray-800 mt-2"
+        />
       </template>
       <UAccordion multiple :items="items">
         <template #item="{ item }">

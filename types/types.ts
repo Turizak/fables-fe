@@ -20,17 +20,19 @@ export type AuthResponse = {
 };
 
 export type Campaign = {
-  uuid: string;
-  name: string;
-  creatorUuid: string;
-  dmUuid: string;
-  partyUuids: string[];
-  completed: boolean;
-  active: boolean;
-  ruleset: string;
-  maxPlayers: number;
-  created: Timestamp;
-  lastUpdated: Timestamp | null;
+  campaign: {
+    uuid: string;
+    name: string;
+    creatorUuid: string;
+    dmUuid: string;
+    partyUuids: string[];
+    completed: boolean;
+    active: boolean;
+    ruleset: string;
+    maxPlayers: number;
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
+  }
 };
 
 export type CampaignAll = {
