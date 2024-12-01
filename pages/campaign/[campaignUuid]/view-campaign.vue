@@ -44,6 +44,12 @@ const links = [
     to: `/campaign/${campaignUuid}/add-npc`,
   },
   {
+    label: "Quest",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+    // to: `/campaign/${campaignUuid}/add-npc`,
+  },
+  {
     label: "Session",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
@@ -69,6 +75,12 @@ const items = [
     icon: "i-material-symbols-light:chat-bubble",
     defaultOpen: false,
     slot: "npcs",
+  },
+  {
+    label: "Quests",
+    icon: "i-material-symbols-light:swords-rounded",
+    defaultOpen: false,
+    slot: "quests",
   },
   {
     label: "Sessions",
@@ -148,7 +160,7 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
             v-if="npcs.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
           >
-            <UButton v-for="npc in npcs" :key="npc.uuid" class="text-md mt-2">
+            <UButton v-for="npc in npcs" :key="npc.uuid" class="text-md my-2">
               <UTooltip>
                 <template #text>
                   <p>{{ npc.description }}</p>
