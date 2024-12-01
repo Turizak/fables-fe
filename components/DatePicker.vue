@@ -67,6 +67,10 @@ function onDayClick(event) {
   --vc-gray-900: rgb(var(--color-gray-900));
 }
 
+.vc-container {
+  font-family: "EB Garamond", ui-serif;
+}
+
 .vc-primary {
   --vc-accent-50: rgb(var(--color-primary-50));
   --vc-accent-100: rgb(var(--color-primary-100));

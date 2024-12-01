@@ -30,9 +30,26 @@ const session = computed(() => apiResponse.value?.data?.session ?? null);
 
 const links = [
   {
+    label: "Character",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+  },
+  {
+    label: "Location",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${campaignUuid}/session/${sessionUuid}/add-location`,
+  },
+  {
     label: "Note",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
+  },
+  {
+    label: "NPC",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${campaignUuid}/session/${sessionUuid}/add-npc`,
   },
 ];
 const items = [
@@ -47,6 +64,12 @@ const items = [
     icon: "i-material-symbols-light:location-on",
     defaultOpen: false,
     slot: "locations",
+  },
+  {
+    label: "Notes",
+    icon: "i-material-symbols-light:note-stack-rounded",
+    defaultOpen: false,
+    slot: "notes",
   },
   {
     label: "NPCs",

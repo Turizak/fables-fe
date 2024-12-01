@@ -32,18 +32,6 @@ const links = [
     icon: "i-material-symbols-light:add-circle",
   },
   {
-    label: "Location",
-    labelClass: "text-lg",
-    icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/add-location`,
-  },
-  {
-    label: "NPC",
-    labelClass: "text-lg",
-    icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/add-npc`,
-  },
-  {
     label: "Quest",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
