@@ -32,7 +32,7 @@ export type Campaign = {
     maxPlayers: number;
     created: Timestamp;
     lastUpdated: Timestamp | null;
-  }
+  };
 };
 
 export type CampaignAll = {
@@ -46,8 +46,8 @@ export type CampaignAll = {
     active: boolean;
     ruleset: string;
     maxPlayers: number;
-    created: Timestamp
-    lastUpdated: Timestamp | null
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
   };
   characters: Array<{
     uuid: string;
@@ -67,8 +67,8 @@ export type CampaignAll = {
     ruleset: string;
     public: boolean;
     gender: string | null;
-    created: Timestamp,
-    lastUpdated: Timestamp | null
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
   }>;
   locations: Array<{
     uuid: string;
@@ -76,8 +76,8 @@ export type CampaignAll = {
     creatorUuid: string;
     name: string;
     description: string;
-    created: Timestamp
-    lastUpdated: Timestamp | null
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
   }>;
   npcs: Array<{
     uuid: string;
@@ -89,19 +89,19 @@ export type CampaignAll = {
     class: string;
     description: string;
     isQuestBoss: boolean;
-    created: Timestamp
-    lastUpdated: Timestamp | null
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
   }>;
   sessions: Array<{
-      sessionId: number,
-      uuid: string,
-      campaignUuid: string,
-      creatorUuid: string,
-      partyUuids: string[],
-      dateOccured: Timestamp,
-      created: Timestamp,
-      lastUpdated: Timestamp | null
-}>
+    sessionId: number;
+    uuid: string;
+    campaignUuid: string;
+    creatorUuid: string;
+    partyUuids: string[];
+    dateOccured: Timestamp;
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
+  }>;
 };
 
 export type Character = {
@@ -120,8 +120,8 @@ export type Character = {
   skinColor: string;
   hairColor: string;
   ruleset: string;
-  created: Timestamp
-  lastUpdated: Timestamp | null
+  created: Timestamp;
+  lastUpdated: Timestamp | null;
 };
 
 export type CampaignForm = {
@@ -131,12 +131,12 @@ export type CampaignForm = {
 };
 
 export type CharacterForm = {
-  ruleset?: string
-  campaign?: string
-  firstName?: string
-  lastName?: string
-  class?: string
-  race?: string
+  ruleset?: string;
+  campaign?: string;
+  firstName?: string;
+  lastName?: string;
+  class?: string;
+  race?: string;
   hair?: string;
   skin?: string;
   eyes?: string;
@@ -153,17 +153,23 @@ export type NPCForm = {
   class: string;
   description: string;
   isQuestBoss: boolean;
-}
+};
 
 export type LocationForm = {
   location: string;
   description: string;
-}
+};
 
 export type SessionForm = {
   partyUuids: string[];
   dateOccured: string;
-}
+};
+
+export type NoteForm = {
+  campaign: string;
+  session: string;
+  note: string;
+};
 
 export type FormData = {
   email: string;
@@ -218,11 +224,11 @@ export type Class = {
   index: string;
   name: string;
   hit_die: number;
-  class_levels: string;  // URL to class levels
+  class_levels: string; // URL to class levels
   multi_classing: MultiClassing;
   subclasses: Subclass[];
-  spellcasting: null | string;  // Could be string or null depending on whether spellcasting is defined
-  spells: string;  // Can be a string, possibly URLs or other data related to spells
+  spellcasting: null | string; // Could be string or null depending on whether spellcasting is defined
+  spells: string; // Can be a string, possibly URLs or other data related to spells
   url: string;
 };
 
@@ -298,6 +304,7 @@ export type Session = {
     dateOccured: Timestamp;
     created: Timestamp;
     lastUpdated: Timestamp | null;
-  }
+  };
 
+  // Notes
 };
