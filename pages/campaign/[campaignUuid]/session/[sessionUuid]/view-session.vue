@@ -56,6 +56,7 @@ const links = [
     label: "Note",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${campaignUuid}/session/${sessionUuid}/add-note`,
   },
   {
     label: "NPC",
