@@ -171,6 +171,12 @@ export type NoteForm = {
   note: string;
 };
 
+export type QuestForm = {
+  campaign: string;
+  name: string;
+  description: string
+}
+
 export type FormData = {
   email: string;
   password: string;
@@ -308,3 +314,5 @@ export type Session = {
 
   // Notes
 };
+
+// Quests

@@ -14,7 +14,7 @@ const { campaign } = defineProps<Props<Campaign>>();
       <h3 class="text-xl">{{ campaign.name }}</h3>
     </template>
     <div class="flex gap-2">
-      <UIcon name="heroicons:user-group-solid" class="w-5 h-5" />
+      <UIcon name="material-symbols-light:groups" class="w-5 h-5" />
       <p>Party Size: {{ campaign.maxPlayers || "0" }}</p>
     </div>
     <div class="flex gap-2">

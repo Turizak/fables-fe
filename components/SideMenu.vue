@@ -1,6 +1,17 @@
 <script setup>
 const isOpen = ref(false);
 const slideover = useSlideover();
+
+const items = [
+  {
+    label: "Campaigns",
+    icon: "i-material-symbols-light:globe",
+    defaultOpen: false,
+    slot: "campaigns",
+    size: "xl",
+    color: "white",
+  },
+];
 </script>
 
 <template>
@@ -24,68 +35,42 @@ const slideover = useSlideover();
           </NuxtLink>
         </li>
         <li>
-          <div class="flex p-2 ml-2 gap-2 bg-gray-700">
-            <UIcon name="material-symbols-light:globe" class="w-5 h-5 mt-1" />
-            <p class="text-xl">Campaigns</p>
+          <div class="bg-gray-700">
+            <UAccordion multiple :items="items">
+              <template #item="{ item }">
+                {{ item.description }}
+              </template>
+              <template #campaigns>
+                <li>
+                  <NuxtLink to="/create-campaign" @click="slideover.close">
+                    <div
+                      class="flex py-2 pl-4 gap-2 text-white hover:bg-green-400 hover:text-black hover:cursor-pointer"
+                    >
+                      <UIcon
+                        name="material-symbols-light:add-box"
+                        class="w-5 h-5 mt-1 ml-4"
+                        color="white"
+                      />
+                      <p class="text-lg">Create a Campaign</p>
+                    </div>
+                  </NuxtLink>
+                </li>
+                <li>
+                  <NuxtLink to="/view-campaigns" @click="slideover.close">
+                    <div
+                      class="flex py-2 pl-4 gap-2 text-white hover:bg-green-400 hover:text-black hover:cursor-pointer"
+                    >
+                      <UIcon
+                        name="material-symbols-light:folder-open-rounded"
+                        class="w-5 h-5 mt-1 ml-4"
+                      />
+                      <p class="text-lg">View Campaigns</p>
+                    </div>
+                  </NuxtLink>
+                </li>
+              </template>
+            </UAccordion>
           </div>
-        </li>
-        <li>
-          <NuxtLink to="/create-campaign" @click="slideover.close">
-            <div
-              class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
-            >
-              <UIcon
-                name="material-symbols-light:add-box"
-                class="w-5 h-5 mt-1 ml-4"
-              />
-              <p class="text-lg">Create a Campaign</p>
-            </div>
-          </NuxtLink>
-        </li>
-        <li>
-          <NuxtLink to="/view-campaigns" @click="slideover.close">
-            <div
-              class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
-            >
-              <UIcon
-                name="material-symbols-light:folder-open-rounded"
-                class="w-5 h-5 mt-1 ml-4"
-              />
-              <p class="text-lg">View Campaigns</p>
-            </div>
-          </NuxtLink>
-        </li>
-        <li>
-          <div class="flex p-2 ml-2 gap-2 bg-gray-700">
-            <UIcon name="heroicons:user-group-solid" class="w-5 h-5 mt-1" />
-            <p class="text-xl">Characters</p>
-          </div>
-        </li>
-        <li>
-          <NuxtLink to="/cchar/cchar-1" @click="slideover.close">
-            <div
-              class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
-            >
-              <UIcon
-                name="material-symbols-light:add-box"
-                class="w-5 h-5 mt-1 ml-4"
-              />
-              <p class="text-lg">Create a Character</p>
-            </div>
-          </NuxtLink>
-        </li>
-        <li>
-          <NuxtLink to="/view-characters" @click="slideover.close">
-            <div
-              class="flex p-2 ml-2 gap-2 hover:bg-green-400 hover:text-black hover:cursor-pointer"
-            >
-              <UIcon
-                name="material-symbols-light:folder-open-rounded"
-                class="w-5 h-5 mt-1 ml-4"
-              />
-              <p class="text-lg">View Characters</p>
-            </div>
-          </NuxtLink>
         </li>
         <li>
           <div

@@ -97,10 +97,13 @@ const items = [
   <div class="text-center p-2">
     <UCard class="mt-2">
       <template #header>
-        <h2 v-if="campaign" class="text-4xl mb-4">
-          {{ campaign.name }}
-        </h2>
-        <p v-else>Error loading campaign</p>
+        <ULink :to="`/campaign/${campaignUuid}/view-campaign`">
+          <h2 v-if="campaign" class="text-4xl mb-4 hover:underline">
+            {{ campaign.name }}
+          </h2>
+          <p v-else>Error loading campaign</p>
+        </ULink>
+
         <UDivider
           label="Add To Session"
           :ui="{ label: 'text-primary-500 dark:text-primary-400' }"
