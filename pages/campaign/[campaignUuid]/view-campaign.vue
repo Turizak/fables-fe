@@ -35,7 +35,7 @@ const links = [
     label: "Quest",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
-    // to: `/campaign/${campaignUuid}/add-npc`,
+    to: `/campaign/${campaignUuid}/add-quest`,
   },
   {
     label: "Session",
