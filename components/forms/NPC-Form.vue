@@ -16,7 +16,6 @@ const state = reactive({
   class: undefined,
   race: undefined,
   description: undefined,
-  isQuestBoss: false,
   submitButton: "Add NPC",
   backButton: "Back to Campaign",
   disabled: false,
@@ -116,7 +115,6 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
     state.race = undefined;
     state.class = undefined;
     state.description = undefined;
-    state.isQuestBoss = false;
   }
 }
 </script>
@@ -163,18 +161,13 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
         />
       </UFormGroup>
     </div>
-    <UFormGroup label="Description" name="description" class="mb-4">
+    <UFormGroup label="Description" name="description" class="mb-2">
       <UTextarea
         v-model="state.description"
         placeholder="100 character limit"
         :disabled="state.disabled"
       />
     </UFormGroup>
-    <UCheckbox
-      v-model="state.isQuestBoss"
-      name="isQuestBoss"
-      label="Quest Boss"
-    />
     <UButton
       block
       color="amber"
