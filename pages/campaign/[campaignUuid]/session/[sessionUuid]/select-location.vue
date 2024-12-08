@@ -43,7 +43,7 @@ const locations = computed(
 <template>
   <div>
     <h1 class="flex justify-center text-5xl p-2 mb-2">Select Location</h1>
-    <UForm>
+    <UForm class="w-[260px] mt-2" :state="state" @submit.prevent="onSubmit">
       <UFormGroup>
         <USelect
           v-if="locations.length > 0"
