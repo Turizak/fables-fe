@@ -311,8 +311,21 @@ export type Session = {
     created: Timestamp;
     lastUpdated: Timestamp | null;
   };
-
-  // Notes
 };
+  // Notes
 
 // Quests
+
+// Location
+
+export type Location = {
+  location: {
+    uuid: string,
+    campaignUuid: string,
+    creatorUuid: string,
+    name: string,
+    description: string,
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
+  }
+}
