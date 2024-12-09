@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import type ApiResponse from "~/types/types";
 import { useRoute } from "vue-router";
-// import type { FormSubmitEvent } from "#ui/types";
+import { useAuthStore, useLocationStore } from "#imports";
+import type { FormSubmitEvent } from "#ui/types";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
+const locationStore = useLocationStore();
+const toast = useToast();
 const route = useRoute();
 
 const campaignUuid = route.params.campaignUuid;
@@ -12,7 +15,6 @@ const sessionUuid = route.params.sessionUuid;
 
 const state = reactive({
   location: undefined,
-  locationUuid: undefined,
   loading: false,
   disable: false,
   submitButton: "Add location to session",
@@ -47,6 +49,7 @@ async function onSubmit(event: FormSubmitEvent) {
   state.submitButton = "Adding...";
   state.backButton = "";
   await authStore.ensureValidToken();
+  locationStore.addLocation(event.data.location);
   try {
     await $fetch(
       config.public.baseURL +
@@ -62,7 +65,7 @@ async function onSubmit(event: FormSubmitEvent) {
           "Content-Type": "application/json",
         },
         body: {
-          locationUuids: [event.data.location],
+          locationUuids: locationStore.locations,
         },
       },
     );

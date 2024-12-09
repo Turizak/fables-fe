@@ -2,7 +2,7 @@
 import type { ApiResponse, Campaign, Session } from "~/types/types";
 import { format } from "date-fns";
 import { useRoute } from "vue-router";
-import { useAuthStore } from "~/stores/authStore";
+import { useAuthStore, useLocationStore } from "#imports";
 
 const route = useRoute();
 const campaignUuid = route.params.campaignUuid;
@@ -14,6 +14,7 @@ definePageMeta({
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
+const locationStore = useLocationStore();
 
 const { data: sessionDataAll } = await useFetch<ApiResponse<SessionAll>>(
   `/campaign/${campaignUuid}/session/${sessionUuid}/all`,
@@ -53,6 +54,11 @@ const campaign = computed(() => campaignData.value?.data.campaign ?? null);
 const characters = computed(() => sessionDataAll.value?.data.characters ?? []);
 const locations = computed(() => sessionDataAll.value?.data.locations ?? []);
 const npcs = computed(() => sessionDataAll.value?.data.npcs ?? []);
+
+onMounted(() => {
+  const locationUuids = locations.value.map((location) => location.uuid);
+  locationStore.setLocations(locationUuids);
+});
 
 const links = [
   {
