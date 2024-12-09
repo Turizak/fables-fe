@@ -301,17 +301,24 @@ export type Race = {
 // Session
 
 export type Session = {
-  session: {
     sessionId: number;
     uuid: string;
     campaignUuid: string;
     creatorUuid: string;
     partyUuids: string[];
+    locationUuids: string[];
+    npcUuids: string[];
     dateOccured: Timestamp;
     created: Timestamp;
     lastUpdated: Timestamp | null;
   };
-};
+
+export type SessionAll = {
+  characters: Character[],
+  locations: Location[],
+  npcs: Character[],
+  session: Session[]
+}
   // Notes
 
 // Quests
@@ -319,7 +326,6 @@ export type Session = {
 // Location
 
 export type Location = {
-  location: {
     uuid: string,
     campaignUuid: string,
     creatorUuid: string,
@@ -327,5 +333,4 @@ export type Location = {
     description: string,
     created: Timestamp;
     lastUpdated: Timestamp | null;
-  }
 }

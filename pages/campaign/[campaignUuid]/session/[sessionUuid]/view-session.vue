@@ -15,6 +15,17 @@ definePageMeta({
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
+const { data: sessionDataAll } = await useFetch<ApiResponse<SessionAll>>(
+  `/campaign/${campaignUuid}/session/${sessionUuid}/all`,
+  {
+    baseURL: config.public.baseURL,
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+      "Content-Type": "application/json",
+    },
+  },
+);
+
 const { data: sessionData } = await useFetch<ApiResponse<Session>>(
   `/campaign/${campaignUuid}/session/${sessionUuid}`,
   {
@@ -39,6 +50,9 @@ const { data: campaignData } = await useFetch<ApiResponse<Campaign>>(
 
 const session = computed(() => sessionData.value?.data?.session ?? null);
 const campaign = computed(() => campaignData.value?.data.campaign ?? null);
+const characters = computed(() => sessionDataAll.value?.data.characters ?? []);
+const locations = computed(() => sessionDataAll.value?.data.locations ?? []);
+const npcs = computed(() => sessionDataAll.value?.data.npcs ?? []);
 
 const links = [
   {
@@ -128,11 +142,11 @@ const items = [
           </p>
         </template>
         <template #characters>
-          <!-- <div
+          <div
             v-if="characters.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
-          > -->
-          <!-- <div v-for="character in characters" :key="character.uuid">
+          >
+            <div v-for="character in characters" :key="character.uuid">
               <UTooltip>
                 <template #text>
                   <p>{{ character.race + " " + character.class }}</p>
@@ -143,16 +157,17 @@ const items = [
               </UTooltip>
             </div>
           </div>
-          <p v-else>No characters found.</p> -->
+          <p v-else>No characters found.</p>
         </template>
         <template #locations>
-          <!-- <div
+          <div
             v-if="locations.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
           >
             <UButton
               v-for="location in locations"
               :key="location.uuid"
+              :to="`/campaign/${campaignUuid}/location/${location.uuid}/view-location`"
               class="text-md my-2"
             >
               <UTooltip>
@@ -163,10 +178,10 @@ const items = [
               </UTooltip>
             </UButton>
           </div>
-          <p v-else>No locations found.</p> -->
+          <p v-else>No locations found.</p>
         </template>
         <template #npcs>
-          <!-- <div
+          <div
             v-if="npcs.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
           >
@@ -178,8 +193,8 @@ const items = [
                 {{ npc.firstName + " " + npc.lastName }}
               </UTooltip>
             </UButton>
-          </div> -->
-          <!-- <p v-else>No NPCs found.</p> -->
+          </div>
+          <p v-else>No NPCs found.</p>
         </template>
       </UAccordion>
     </UCard>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import NoteForm from "~/components/forms/Note-Form.vue";
+import CreateNoteForm from "~/components/forms/create/Create-Note-Form.vue";
 definePageMeta({
   middleware: "fresh-token",
 });
@@ -8,6 +8,6 @@ definePageMeta({
 <template>
   <div>
     <h1 class="flex justify-center text-5xl p-2">Add Note</h1>
-    <NoteForm />
+    <CreateNoteForm />
   </div>
 </template>

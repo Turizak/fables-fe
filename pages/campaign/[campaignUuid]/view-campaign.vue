@@ -135,12 +135,8 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
             <UButton
               v-for="location in locations"
               :key="location.uuid"
+              :to="`/campaign/${campaignUuid}/location/${location.uuid}/view-location`"
               class="text-md my-2"
-              @click="
-                navigateTo(
-                  `/campaign/${campaignUuid}/location/${location.uuid}/view-location`,
-                )
-              "
             >
               <UTooltip>
                 <template #text>
