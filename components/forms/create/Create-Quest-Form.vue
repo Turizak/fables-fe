@@ -12,21 +12,14 @@ const state = reactive({
   name: undefined,
   description: undefined,
   submitButton: "Create Quest",
-  backButton: "Back to Campaign",
   disabled: false,
   loading: false,
 });
-
-async function goBack() {
-  await authStore.ensureValidToken();
-  await navigateTo(`/campaign/${campaignUuid}/view-campaign`);
-}
 
 async function onSubmit(event: FormSubmitEvent<QuestForm>) {
   state.loading = true;
   state.disabled = true;
   state.submitButton = "Adding...";
-  state.backButton = "";
   await authStore.ensureValidToken();
   try {
     await $fetch("https://httpbin.org/post", {
@@ -60,7 +53,6 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
     state.description = undefined;
     state.name = undefined;
     state.submitButton = "Create Note";
-    state.backButton = "Back to Session";
   }
 }
 </script>
@@ -91,16 +83,6 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
     <UFormGroup label="Description" name="description" class="mb-4">
       <UTextarea v-model="state.description" :disabled="state.disabled" />
     </UFormGroup>
-    <UButton
-      block
-      color="amber"
-      variant="solid"
-      class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-      :loading="state.loading"
-      @click="goBack"
-    >
-      {{ state.backButton }}</UButton
-    >
     <UButton
       type="submit"
       class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"

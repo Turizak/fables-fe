@@ -30,17 +30,11 @@ const state = reactive({
   location: undefined,
   description: undefined,
   submitButton: "Update Location",
-  backButton: "View Campaign",
   loading: true,
   updateButtonDisabled: true,
   locationDisabled: true,
   descriptionDisabled: true,
 });
-
-async function goBack() {
-  await authStore.ensureValidToken();
-  await navigateTo(`/campaign/${campaignUuid}/view-campaign`);
-}
 
 function enableLocation() {
   state.locationDisabled = !state.locationDisabled;
@@ -71,7 +65,6 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   state.locationDisabled = true;
   state.descriptionDisabled = true;
   state.submitButton = "Adding...";
-  state.backButton = "";
   await authStore.ensureValidToken();
   try {
     const response = await $fetch(
@@ -114,7 +107,6 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
     state.locationDisabled = true;
     state.descriptionDisabled = true;
     state.submitButton = "Update Location";
-    state.backButton = "View Campaign";
   }
 }
 </script>
@@ -162,17 +154,6 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
           </UButtonGroup>
         </div>
       </UFormGroup>
-      <UButton
-        block
-        color="amber"
-        variant="solid"
-        class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="state.loading"
-        @click="goBack"
-      >
-        {{ state.backButton }}</UButton
-      >
-
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"

@@ -10,23 +10,14 @@ const toast = useToast();
 
 const route = useRoute();
 const campaignUuid = route.params.campaignUuid;
-const sessionUuid = route.params.sessionUuid;
 
 const state = reactive({
   location: undefined,
   description: undefined,
-  submitButton: "Add Location",
-  backButton: "View Session",
+  submitButton: "Create Location",
   loading: false,
   disabled: false,
 });
-
-async function goBack() {
-  await authStore.ensureValidToken();
-  await navigateTo(
-    `/campaign/${campaignUuid}/session/${sessionUuid}/view-session`,
-  );
-}
 
 async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   state.loading = true;
@@ -64,8 +55,7 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   } finally {
     state.loading = false;
     state.disabled = false;
-    state.submitButton = "Add Location";
-    state.backButton = "View Campaign";
+    state.submitButton = "Create Location";
     state.location = undefined;
     state.description = undefined;
   }
@@ -86,16 +76,6 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
       <UFormGroup label="Description" name="description" class="mb-4">
         <UTextarea v-model="state.description" :disabled="state.disabled" />
       </UFormGroup>
-      <UButton
-        block
-        color="amber"
-        variant="solid"
-        class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="state.loading"
-        @click="goBack"
-      >
-        {{ state.backButton }}</UButton
-      >
 
       <UButton
         type="submit"

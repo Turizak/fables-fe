@@ -15,7 +15,6 @@ const state = reactive({
   dateOccured: undefined,
   partyUuids: [] as string[],
   submitButton: "Add Session",
-  backButton: "View Campaign",
   loading: false,
   disabled: false,
 });
@@ -33,11 +32,6 @@ const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
 
 const characters = computed(() => apiResponse.value?.data.characters ?? []);
 
-async function goBack() {
-  await authStore.ensureValidToken();
-  await navigateTo(`/campaign/${campaignUuid}/view-campaign`);
-}
-
 function setToStartOfDayUTC(dateInput: string | number | Date): string {
   const date = new Date(dateInput); // Convert input to Date
   if (isNaN(date.getTime())) {
@@ -53,7 +47,6 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
   state.loading = true;
   state.disabled = true;
   state.submitButton = "Adding...";
-  state.backButton = "";
   const dateOccured = setToStartOfDayUTC(event.data.dateOccured);
   await authStore.ensureValidToken();
   try {
@@ -87,7 +80,6 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
     state.loading = false;
     state.disabled = false;
     state.submitButton = "Add Session";
-    state.backButton = "View Campaign";
     state.partyUuids = [];
     state.dateOccured = undefined;
   }
@@ -140,18 +132,6 @@ async function onSubmit(event: FormSubmitEvent<SessionForm>) {
         </div>
         <p v-else>No characters found.</p>
       </UFormGroup>
-
-      <UButton
-        block
-        color="amber"
-        variant="solid"
-        class="p-2 box-border text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="state.loading"
-        @click="goBack"
-      >
-        {{ state.backButton }}</UButton
-      >
-
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"

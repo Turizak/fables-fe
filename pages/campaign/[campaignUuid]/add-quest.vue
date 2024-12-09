@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import QuestForm from "~/components/forms/Quest-Form.vue";
+import CreateQuestForm from "~/components/forms/create/Create-Quest-Form.vue";
 definePageMeta({
   middleware: "fresh-token",
 });
@@ -8,6 +8,6 @@ definePageMeta({
 <template>
   <div>
     <h1 class="flex justify-center text-5xl p-2">Add Quest</h1>
-    <QuestForm />
+    <CreateQuestForm />
   </div>
 </template>
