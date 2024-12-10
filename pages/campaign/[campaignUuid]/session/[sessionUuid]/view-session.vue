@@ -82,7 +82,7 @@ const links = [
     label: "NPC",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/session/${sessionUuid}/add-npc`,
+    to: `/campaign/${campaignUuid}/session/${sessionUuid}/select-npc`,
   },
 ];
 const items = [

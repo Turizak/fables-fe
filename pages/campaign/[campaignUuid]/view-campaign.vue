@@ -27,11 +27,6 @@ const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
 
 const links = [
   {
-    label: "Character",
-    labelClass: "text-lg",
-    icon: "i-material-symbols-light:add-circle",
-  },
-  {
     label: "Quest",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",

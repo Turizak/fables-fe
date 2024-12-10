@@ -14,16 +14,16 @@ const campaignUuid = route.params.campaignUuid;
 const sessionUuid = route.params.sessionUuid;
 
 const state = reactive({
-  location: undefined,
+  npc: undefined,
   loading: false,
   disable: false,
-  submitButton: "Add location to session",
-  createButton: "Create a new location",
+  submitButton: "Add NPC to session",
+  createButton: "Create a new NPC",
 });
 
 const { data: apiResponse, error } = await useFetch<
-  ApiResponse<{ locations: Location[] }>
->(`/campaign/${campaignUuid}/locations`, {
+  ApiResponse<{ npcs: NPC[] }>
+>(`/campaign/${campaignUuid}/npcs`, {
   baseURL: config.public.baseURL,
   headers: {
     Authorization: `Bearer ${authStore.token}`,
@@ -32,14 +32,14 @@ const { data: apiResponse, error } = await useFetch<
 });
 
 if (error.value) {
-  console.error("Error fetching locations:", error.value);
+  console.error("Error fetching npcs:", error.value);
 }
 
-const locations = computed(
+const npcs = computed(
   () =>
-    apiResponse.value?.data.locations.map((location) => ({
-      label: location.name,
-      value: location.uuid,
+    apiResponse.value?.data.npcs.map((npc) => ({
+      label: npc.firstName + " " + npc.lastName,
+      value: npc.uuid,
     })) ?? [],
 );
 
@@ -49,7 +49,7 @@ async function onSubmit(event: FormSubmitEvent) {
   state.submitButton = "Adding...";
   state.backButton = "";
   await authStore.ensureValidToken();
-  sessionStore.addLocation(event.data.location);
+  sessionStore.addNpc(event.data.npc);
   try {
     await $fetch(
       config.public.baseURL +
@@ -65,13 +65,13 @@ async function onSubmit(event: FormSubmitEvent) {
           "Content-Type": "application/json",
         },
         body: {
-          locationUuids: sessionStore.locations,
+          npcUuids: sessionStore.npcs,
         },
       },
     );
     state.submitButton = "Success!";
     toast.add({
-      title: "Location Added!",
+      title: "NPC Added!",
       icon: "i-material-symbols-light:check-circle",
     });
   } catch (error) {
@@ -84,8 +84,8 @@ async function onSubmit(event: FormSubmitEvent) {
   } finally {
     state.loading = false;
     state.disabled = false;
-    state.submitButton = "Create Location";
-    state.location = undefined;
+    state.submitButton = "Create NPC";
+    state.npc = undefined;
   }
 }
 </script>
@@ -95,10 +95,10 @@ async function onSubmit(event: FormSubmitEvent) {
     <UForm class="w-[260px] mt-2" :state="state" @submit.prevent="onSubmit">
       <UFormGroup>
         <USelect
-          v-if="locations.length > 0"
-          v-model="state.location"
-          :options="locations"
-          label="Select a Location"
+          v-if="npcs.length > 0"
+          v-model="state.npc"
+          :options="npcs"
+          label="Select an NPC"
           class="w-full"
         />
       </UFormGroup>
@@ -116,7 +116,7 @@ async function onSubmit(event: FormSubmitEvent) {
           class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
           color="blue"
           variant="solid"
-          :to="`/campaign/${campaignUuid}/create-location`"
+          :to="`/campaign/${campaignUuid}/create-npc`"
           :loading="state.loading"
           :disabled="state.disabled"
         >
