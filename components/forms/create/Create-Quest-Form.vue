@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
 import type { QuestForm } from "~/types/types.ts";
 
@@ -91,4 +91,4 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
       {{ state.submitButton }}</UButton
     >
   </UForm>
-</template>
+</template> -->

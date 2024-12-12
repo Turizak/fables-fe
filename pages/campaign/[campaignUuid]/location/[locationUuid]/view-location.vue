@@ -2,7 +2,7 @@
 import { useRoute } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
 import { locationValidate } from "~/utils/validation/location-validation";
-import type { Location, apiResponse, LocationForm } from "~/types/types";
+import type { LocationForm, LocationResponse } from "~/types/types";
 import type { FormSubmitEvent } from "#ui/types";
 
 const route = useRoute();
@@ -27,8 +27,8 @@ const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
 const state = reactive({
-  location: undefined,
-  description: undefined,
+  location: "",
+  description: "",
   submitButton: "Update Location",
   loading: true,
   updateButtonDisabled: true,
@@ -46,7 +46,7 @@ function enableDescription() {
   state.updateButtonDisabled = !state.updateButtonDisabled;
 }
 
-const { data: apiResponse } = await useFetch<ApiResponse<Location>>(
+const { data: apiResponse } = await useFetch<LocationResponse>(
   `/campaign/${campaignUuid}/location/${locationUuid}`,
   {
     baseURL: config.public.baseURL,
@@ -67,15 +67,11 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   state.submitButton = "Adding...";
   await authStore.ensureValidToken();
   try {
-    const response = await $fetch(
-      config.public.baseURL +
-        "/campaign/" +
-        campaignUuid +
-        "/location/" +
-        locationUuid +
-        "/update",
+    const response = await $fetch<LocationResponse>(
+      `/campaign/${campaignUuid}/location/${locationUuid}/update`,
       {
         method: "PATCH",
+        baseURL: config.public.baseURL,
         headers: {
           Authorization: `Bearer ${authStore.token}`,
           "Content-Type": "application/json",

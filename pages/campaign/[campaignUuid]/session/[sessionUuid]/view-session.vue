@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { ApiResponse, Campaign, Session } from "~/types/types";
+import type {
+  ApiResponse,
+  CampaignResponse,
+  Session,
+  SessionAll,
+} from "~/types/types";
 import { format } from "date-fns";
 import { useRoute } from "vue-router";
 import { useAuthStore, useLocationStore } from "#imports";
@@ -38,7 +43,7 @@ const { data: sessionData } = await useFetch<ApiResponse<Session>>(
   },
 );
 
-const { data: campaignData } = await useFetch<ApiResponse<Campaign>>(
+const { data: campaignData } = await useFetch<CampaignResponse>(
   `/campaign/${campaignUuid}`,
   {
     baseURL: config.public.baseURL,
@@ -65,6 +70,7 @@ const links = [
     label: "Character",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${campaignUuid}/session/${sessionUuid}/select-character`,
   },
   {
     label: "Location",

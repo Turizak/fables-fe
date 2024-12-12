@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { validate } from "~/utils/validation/create-account-validation";
 import type { FormSubmitEvent } from "#ui/types";
 import type { FormType } from "~/types/types";
 

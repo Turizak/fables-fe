@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type ApiResponse from "~/types/types";
+import type { ApiResponse, Character } from "~/types/types";
 import { useRoute } from "vue-router";
 import { useAuthStore, useLocationStore } from "#imports";
 import type { FormSubmitEvent } from "#ui/types";
@@ -16,13 +16,13 @@ const sessionUuid = route.params.sessionUuid;
 const state = reactive({
   npc: undefined,
   loading: false,
-  disable: false,
+  disabled: false,
   submitButton: "Add NPC to session",
   createButton: "Create a new NPC",
 });
 
 const { data: apiResponse, error } = await useFetch<
-  ApiResponse<{ npcs: NPC[] }>
+  ApiResponse<{ npcs: Character[] }>
 >(`/campaign/${campaignUuid}/npcs`, {
   baseURL: config.public.baseURL,
   headers: {
@@ -43,11 +43,10 @@ const npcs = computed(
     })) ?? [],
 );
 
-async function onSubmit(event: FormSubmitEvent) {
+async function onSubmit(event: FormSubmitEvent<{ npc: string }>) {
   state.loading = true;
   state.disabled = true;
   state.submitButton = "Adding...";
-  state.backButton = "";
   await authStore.ensureValidToken();
   sessionStore.addNpc(event.data.npc);
   try {

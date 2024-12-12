@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiResponse, Campaign } from "~/types/types";
+import type { CampaignsResponse } from "~/types/types";
 
 definePageMeta({
   middleware: "fresh-token",
@@ -8,15 +8,16 @@ definePageMeta({
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 
-const { data: apiResponse } = await useFetch<
-  ApiResponse<{ campaigns: Campaign[] }>
->("/account/campaigns", {
-  baseURL: config.public.baseURL,
-  headers: {
-    Authorization: `Bearer ${authStore.token}`,
-    "Content-Type": "application/json",
+const { data: apiResponse } = await useFetch<CampaignsResponse>(
+  "/account/campaigns",
+  {
+    baseURL: config.public.baseURL,
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+      "Content-Type": "application/json",
+    },
   },
-});
+);
 
 const campaigns = computed(() => apiResponse.value?.data.campaigns ?? []);
 </script>
