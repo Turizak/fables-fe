@@ -19,20 +19,21 @@ export type AuthResponse = {
   timestamp: string;
 };
 
+export type CampaignResponse = ApiResponse<{ campaign: Campaign }>;
+export type CampaignsResponse = ApiResponse<{ campaigns: Campaign[] }>;
+
 export type Campaign = {
-  campaign: {
-    uuid: string;
-    name: string;
-    creatorUuid: string;
-    dmUuid: string;
-    partyUuids: string[];
-    completed: boolean;
-    active: boolean;
-    ruleset: string;
-    maxPlayers: number;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-  };
+  uuid: string;
+  name: string;
+  creatorUuid: string;
+  dmUuid: string;
+  partyUuids: string[] | null;
+  completed: boolean;
+  active: boolean;
+  ruleset: string;
+  maxPlayers: number;
+  created: Timestamp;
+  lastUpdated: Timestamp | null;
 };
 
 export type CampaignAll = {
@@ -174,8 +175,8 @@ export type NoteForm = {
 export type QuestForm = {
   campaign: string;
   name: string;
-  description: string
-}
+  description: string;
+};
 
 export type FormData = {
   email: string;
@@ -301,6 +302,7 @@ export type Race = {
 // Session
 
 export type Session = {
+  session: {
     sessionId: number;
     uuid: string;
     campaignUuid: string;
@@ -312,25 +314,61 @@ export type Session = {
     created: Timestamp;
     lastUpdated: Timestamp | null;
   };
+};
 
 export type SessionAll = {
-  characters: Character[],
-  locations: Location[],
-  npcs: Character[],
-  session: Session[]
-}
-  // Notes
-
-// Quests
+  characters: Character[];
+  locations: Location[];
+  npcs: NPC[];
+  session: Session[];
+};
 
 // Location
 
 export type Location = {
-    uuid: string,
-    campaignUuid: string,
-    creatorUuid: string,
-    name: string,
-    description: string,
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-}
+  uuid: string;
+  campaignUuid: string;
+  creatorUuid: string;
+  name: string;
+  description: string;
+  created: Timestamp;
+  lastUpdated: Timestamp | null;
+};
+
+export type LocationResponse = {
+  data: {
+    location: Location;
+  };
+  message: string;
+  status: number;
+  statusText: string;
+  timestamp: string;
+};
+
+// NPC
+export type NPCResponse = {
+  data: {
+    npc: NPC;
+  };
+  message: string;
+  status: number;
+  statusText: string;
+  timestamp: string;
+};
+
+export type NPC = {
+  uuid: string;
+  campaignUuid: string;
+  creatorUuid: string;
+  firstName: string;
+  lastName: string;
+  race: string;
+  class: string;
+  description: string;
+  isQuestBoss: boolean;
+  questBossUuid: string | null;
+};
+
+// Notes
+
+// Quests

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ApiResponse, Location } from "~/types/types";
+import type { ApiResponse, CampaignAll } from "~/types/types";
 import { useRoute } from "vue-router";
 import { useAuthStore, useLocationStore } from "#imports";
 import type { FormSubmitEvent } from "#ui/types";
@@ -14,42 +14,42 @@ const campaignUuid = route.params.campaignUuid;
 const sessionUuid = route.params.sessionUuid;
 
 const state = reactive({
-  location: undefined,
+  character: undefined,
   loading: false,
   disabled: false,
-  submitButton: "Add location to session",
-  createButton: "Create a new location",
+  submitButton: "Add Character to session",
+  createButton: "Create a new character",
 });
 
-const { data: apiResponse, error } = await useFetch<
-  ApiResponse<{ locations: Location[] }>
->(`/campaign/${campaignUuid}/locations`, {
-  baseURL: config.public.baseURL,
-  headers: {
-    Authorization: `Bearer ${authStore.token}`,
-    "Content-Type": "application/json",
+const { data: apiResponse, error } = await useFetch<ApiResponse<CampaignAll>>(
+  `/campaign/${campaignUuid}/all`,
+  {
+    baseURL: config.public.baseURL,
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+      "Content-Type": "application/json",
+    },
   },
-});
+);
 
 if (error.value) {
-  console.error("Error fetching locations:", error.value);
+  console.error("Error fetching npcs:", error.value);
 }
 
-const locations = computed(
+const characters = computed(
   () =>
-    apiResponse.value?.data.locations.map((location) => ({
-      label: location.name,
-      value: location.uuid,
+    apiResponse.value?.data.characters.map((character) => ({
+      label: character.firstName + " " + character.lastName,
+      value: character.uuid,
     })) ?? [],
 );
 
-async function onSubmit(event: FormSubmitEvent<{ location: string }>) {
+async function onSubmit(event: FormSubmitEvent<{ character: string }>) {
   state.loading = true;
   state.disabled = true;
   state.submitButton = "Adding...";
   await authStore.ensureValidToken();
-  const location = event.data.location;
-  sessionStore.addLocation(location);
+  sessionStore.addNpc(event.data.character);
   try {
     await $fetch(
       config.public.baseURL +
@@ -65,13 +65,13 @@ async function onSubmit(event: FormSubmitEvent<{ location: string }>) {
           "Content-Type": "application/json",
         },
         body: {
-          locationUuids: sessionStore.locations,
+          npcUuids: sessionStore.npcs,
         },
       },
     );
     state.submitButton = "Success!";
     toast.add({
-      title: "Location Added!",
+      title: "NPC Added!",
       icon: "i-material-symbols-light:check-circle",
     });
   } catch (error) {
@@ -84,8 +84,8 @@ async function onSubmit(event: FormSubmitEvent<{ location: string }>) {
   } finally {
     state.loading = false;
     state.disabled = false;
-    state.submitButton = "Create Location";
-    state.location = undefined;
+    state.submitButton = "Create NPC";
+    state.character = undefined;
   }
 }
 </script>
@@ -95,10 +95,10 @@ async function onSubmit(event: FormSubmitEvent<{ location: string }>) {
     <UForm class="w-[260px] mt-2" :state="state" @submit.prevent="onSubmit">
       <UFormGroup>
         <USelect
-          v-if="locations.length > 0"
-          v-model="state.location"
-          :options="locations"
-          label="Select a Location"
+          v-if="characters.length > 0"
+          v-model="state.character"
+          :options="characters"
+          label="Select an NPC"
           class="w-full"
         />
       </UFormGroup>
@@ -116,7 +116,7 @@ async function onSubmit(event: FormSubmitEvent<{ location: string }>) {
           class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
           color="blue"
           variant="solid"
-          :to="`/campaign/${campaignUuid}/create-location`"
+          :to="`/cchar/cchar-1`"
           :loading="state.loading"
           :disabled="state.disabled"
         >

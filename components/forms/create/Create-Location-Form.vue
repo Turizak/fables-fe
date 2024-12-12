@@ -23,7 +23,6 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   state.loading = true;
   state.disabled = true;
   state.submitButton = "Adding...";
-  state.backButton = "";
   await authStore.ensureValidToken();
   try {
     await $fetch(

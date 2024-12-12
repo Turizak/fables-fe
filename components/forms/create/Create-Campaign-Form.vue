@@ -2,7 +2,7 @@
 import { useAuthStore } from "~/stores/authStore";
 import { campaignValidate } from "~/utils/validation/campaign-validation";
 import type { FormSubmitEvent } from "#ui/types";
-import type { CampaignForm } from "~/types/types";
+import type { CampaignForm, AuthResponse } from "~/types/types";
 
 const authStore = useAuthStore();
 const config = useRuntimeConfig();
@@ -44,7 +44,7 @@ async function onSubmit(event: FormSubmitEvent<CampaignForm>) {
       });
     }
   } catch (error) {
-    console.error("Error creating campaign:", error?.statusCode);
+    console.error("Error creating campaign:", error);
     toast.add({
       title: "There was an error - please try again",
       color: "red",

@@ -1,4 +1,5 @@
-<script setup>
+<script setup lang="ts">
+import CharForm1 from "~/components/forms/create/Char-Form-1.vue";
 definePageMeta({
   middleware: "fresh-token",
 });
