@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
-import { locationValidate } from "~/utils/validation/location-validation";
+import { npcValidate } from "~/utils/validation/npc-validation";
 import type { LocationForm, LocationResponse } from "~/types/types";
 import type { FormSubmitEvent } from "#ui/types";
-
-const route = useRoute();
-const toast = useToast();
-
-const campaignUuid = route.params.campaignUuid;
-const npcUuid = route.params.npcUuid;
 
 definePageMeta({
   middleware: "fresh-token",
@@ -28,6 +22,10 @@ onMounted(() => {
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
+const route = useRoute();
+const toast = useToast();
+const campaignUuid = route.params.campaignUuid;
+const npcUuid = route.params.npcUuid;
 
 const state = reactive({
   firstName: "",
@@ -35,7 +33,7 @@ const state = reactive({
   race: "",
   class: "",
   description: "",
-  submitButton: "Update Location",
+  submitButton: "Update NPC",
   loading: true,
   updateButtonDisabled: true,
   firstNameDisabled: true,
@@ -78,6 +76,50 @@ const { data: apiResponse } = await useFetch<LocationResponse>(
   },
 );
 
+const { data: raceData, error: raceDataError } = await useFetch<
+  ApiResponse<{ races: Race[] }>
+>("/ruleset/5e/races", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
+  },
+});
+
+if (raceDataError.value) {
+  console.error("Error fetching campaigns:", raceDataError.value);
+}
+
+const { data: classData, error: classDataError } = await useFetch<
+  ApiResponse<{ classes: Class[] }>
+>("/ruleset/5e/classes", {
+  baseURL: config.public.baseURL,
+  headers: {
+    Authorization: `Bearer ${authStore.token}`,
+    "Content-Type": "application/json",
+  },
+});
+
+if (classDataError.value) {
+  console.error("Error fetching campaigns:", classDataError.value);
+}
+
+const races = computed(
+  () =>
+    raceData.value?.data.races.map((race) => ({
+      label: race.name,
+      value: race.index,
+    })) ?? [],
+);
+
+const classes = computed(
+  () =>
+    classData.value?.data.classes.map((foo) => ({
+      label: foo.name,
+      value: foo.index,
+    })) ?? [],
+);
+
 async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   state.loading = true;
   state.updateButtonDisabled = true;
@@ -99,7 +141,10 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
           "Content-Type": "application/json",
         },
         body: {
-          name: event.data.location,
+          firstName: event.data.firstName,
+          lastName: event.data.lastName,
+          class: event.data.class,
+          race: event.data.race,
           description: event.data.description,
         },
       },
@@ -112,7 +157,7 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
 
     state.submitButton = "Success!";
     toast.add({
-      title: "Location Updated!",
+      title: "NPC Updated!",
       icon: "material-symbols-light:check-circle",
     });
   } catch (error) {
@@ -130,25 +175,26 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
     state.raceDisabled = true;
     state.classDisabled = true;
     state.descriptionDisabled = true;
-    state.submitButton = "Update Location";
+    state.submitButton = "Update NPC";
   }
 }
 </script>
 
 <template>
-  <div class="flex justify-center">
-    <UForm
-      class="w-[260px] mt-2"
-      :validate="locationValidate"
-      :state="state"
-      @submit.prevent="onSubmit"
-    >
-      <UFormGroup label="First Name" name="firstName" class="mb-4">
+  <UForm
+    class="w-[360px] mt-2"
+    :validate="npcValidate"
+    :state="state"
+    @submit.prevent="onSubmit"
+  >
+    <div class="grid grid-cols-2 gap-4">
+      <UFormGroup label="First Name" name="firstName" class="mb-2">
         <div class="flex">
           <UButtonGroup orientation="horizontal" class="flex-grow">
             <UInput
               v-model="state.firstName"
               :disabled="state.firstNameDisabled"
+              type="text"
               class="flex-grow"
             />
             <UButton
@@ -160,12 +206,13 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
           </UButtonGroup>
         </div>
       </UFormGroup>
-      <UFormGroup label="Last Name" name="lastName" class="mb-4">
+      <UFormGroup label="Last Name" name="lastName" class="mb-2">
         <div class="flex">
           <UButtonGroup orientation="horizontal" class="flex-grow">
             <UInput
               v-model="state.lastName"
               :disabled="state.lastNameDisabled"
+              type="text"
               class="flex-grow"
             />
             <UButton
@@ -177,31 +224,15 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
           </UButtonGroup>
         </div>
       </UFormGroup>
-      <UFormGroup label="Race" name="race" class="mb-4">
-        <div class="flex">
-          <UButtonGroup orientation="horizontal" class="flex-grow">
-            <UInput
-              v-model="state.race"
-              :disabled="state.raceDisabled"
-              class="flex-grow"
-            />
-            <UButton
-              icon="material-symbols-light:edit-square-rounded"
-              size="sm"
-              color="primary"
-              @click="enableRace"
-            />
-          </UButtonGroup>
-        </div>
-      </UFormGroup>
-
       <UFormGroup label="Class" name="class" class="mb-4">
         <div class="flex">
           <UButtonGroup orientation="horizontal" class="flex-grow">
-            <UTextarea
+            <USelect
               v-model="state.class"
+              :options="classes"
               :disabled="state.classDisabled"
               class="flex-grow"
+              required
             />
             <UButton
               icon="material-symbols-light:edit-square-rounded"
@@ -212,31 +243,50 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
           </UButtonGroup>
         </div>
       </UFormGroup>
-      <UFormGroup label="Description" name="description" class="mb-4">
+      <UFormGroup label="Race" name="race" class="mb-4">
         <div class="flex">
           <UButtonGroup orientation="horizontal" class="flex-grow">
-            <UTextarea
-              v-model="state.description"
-              :disabled="state.descriptionDisabled"
+            <USelect
+              v-model="state.race"
+              :options="races"
+              :disabled="state.raceDisabled"
               class="flex-grow"
+              required
             />
             <UButton
               icon="material-symbols-light:edit-square-rounded"
               size="sm"
               color="primary"
-              @click="enableDescription"
+              @click="enableRace"
             />
           </UButtonGroup>
         </div>
       </UFormGroup>
-      <UButton
-        type="submit"
-        class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
-        :loading="state.loading"
-        :disabled="state.updateButtonDisabled"
-      >
-        {{ state.submitButton }}</UButton
-      >
-    </UForm>
-  </div>
+    </div>
+    <UFormGroup label="Description" name="description" class="mb-4">
+      <div class="flex">
+        <UButtonGroup orientation="horizontal" class="flex-grow">
+          <UTextarea
+            v-model="state.description"
+            :disabled="state.descriptionDisabled"
+            class="flex-grow"
+          />
+          <UButton
+            icon="material-symbols-light:edit-square-rounded"
+            size="sm"
+            color="primary"
+            @click="enableDescription"
+          />
+        </UButtonGroup>
+      </div>
+    </UFormGroup>
+    <UButton
+      type="submit"
+      class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"
+      :loading="state.loading"
+      :disabled="state.updateButtonDisabled"
+    >
+      {{ state.submitButton }}</UButton
+    >
+  </UForm>
 </template>
