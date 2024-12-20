@@ -197,7 +197,12 @@ const items = [
             v-if="npcs.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
           >
-            <UButton v-for="npc in npcs" :key="npc.uuid" class="text-md mt-2">
+            <UButton
+              v-for="npc in npcs"
+              :key="npc.uuid"
+              :to="`/campaign/${campaignUuid}/npc/${npc.uuid}/view-npc`"
+              class="text-md mt-2"
+            >
               <UTooltip>
                 <template #text>
                   <p>{{ npc.description }}</p>
