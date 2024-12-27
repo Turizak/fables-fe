@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from "#ui/types";
-import type { QuestForm } from "~/types/types.ts";
+import type { NPCResponse, QuestForm } from "~/types/types.ts";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
@@ -13,22 +13,24 @@ const state = reactive({
   name: undefined,
   description: undefined,
   questGiver: undefined,
-  questBoss: undefined,
+  bossUuids: undefined,
+  startingSessionUuid: undefined,
   submitButton: "Create Quest",
   createButton: "Create a new NPC",
   disabled: false,
   loading: false,
 });
 
-const { data: apiResponse, error } = await useFetch<
-  ApiResponse<{ npcs: Character[] }>
->(`/campaign/${campaignUuid}/npcs`, {
-  baseURL: config.public.baseURL,
-  headers: {
-    Authorization: `Bearer ${authStore.token}`,
-    "Content-Type": "application/json",
+const { data: apiResponse, error } = await useFetch<NPCResponse>(
+  `/campaign/${campaignUuid}/npcs`,
+  {
+    baseURL: config.public.baseURL,
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+      "Content-Type": "application/json",
+    },
   },
-});
+);
 
 if (error.value) {
   console.error("Error fetching npcs:", error.value);
@@ -41,7 +43,7 @@ const questGivers = computed(
       value: npc.uuid,
     })) ?? [],
 );
-const questBosses = computed(() => [
+const bossUuids = computed(() => [
   { label: "None", value: null },
   ...(apiResponse.value?.data.npcs.map((npc) => ({
     label: npc.firstName + " " + npc.lastName,
@@ -62,9 +64,12 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
         "Content-Type": "application/json",
       },
       body: {
-        campaign: event.data.campaign,
-        session: event.data.session,
-        note: event.data.note,
+        name: event.data.name,
+        description: event.data.description,
+        questGiver: event.data.questGiver.value,
+        bossUuids: event.data.bossUuids
+          ? event.data.bossUuids.map((boss) => boss.value)
+          : null,
       },
     });
     state.submitButton = "Success!";
@@ -84,30 +89,26 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
     state.disabled = false;
     state.campaign = campaignUuid;
     state.questGiver = undefined;
-    state.questBoss = undefined;
+    state.bossUuids = undefined;
     state.description = undefined;
     state.name = undefined;
-    state.submitButton = "Create Note";
+    state.submitButton = "Create Quest";
     state.createButton = "Create a new NPC";
   }
 }
 </script>
 <template>
   <UForm :state="state" @submit.prevent="onSubmit">
-    <div>
-      <UFormGroup label="Campaign" name="campaign" class="hidden">
-        <div>
-          <USelect
-            v-model="state.campaign"
-            :options="[state.campaign]"
-            label="Select a Campaign"
-            class="w-full"
-            disabled
-          />
-        </div>
-      </UFormGroup>
-    </div>
-    <UFormGroup label="Quest Name" name="name" class="my-4">
+    <UFormGroup label="Campaign" name="campaign" class="hidden">
+      <USelect
+        v-model="state.campaign"
+        :options="[state.campaign]"
+        label="Select a Campaign"
+        class="w-full"
+        disabled
+      />
+    </UFormGroup>
+    <UFormGroup label="Quest Name" name="name" class="mb-4">
       <UInput
         v-model="state.name"
         :disabled="state.disabled"
@@ -115,11 +116,8 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
         required
       />
     </UFormGroup>
-    <UFormGroup label="Description" name="description" class="mb-4">
-      <UTextarea v-model="state.description" :disabled="state.disabled" />
-    </UFormGroup>
     <UFormGroup label="Quest Giver" name="questGiver" class="mb-4">
-      <USelect
+      <USelectMenu
         v-if="questGivers.length > 0"
         v-model="state.questGiver"
         :options="questGivers"
@@ -128,11 +126,16 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
         required
       />
     </UFormGroup>
-    <UFormGroup label="Quest Boss" name="questBoss" class="mb-4">
-      <USelect
-        v-if="questBosses.length > 0"
-        v-model="state.questBoss"
-        :options="questBosses"
+    <UFormGroup label="Description" name="description" class="mb-4">
+      <UTextarea v-model="state.description" :disabled="state.disabled" />
+    </UFormGroup>
+    <UFormGroup label="Quest Boss(es)" name="questBoss" class="mb-2">
+      <USelectMenu
+        v-if="bossUuids.length > 0"
+        v-model="state.bossUuids"
+        :options="bossUuids"
+        multiple
+        searchable
         label="Select an NPC"
         class="w-full"
       />

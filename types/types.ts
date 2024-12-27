@@ -125,6 +125,22 @@ export type Character = {
   lastUpdated: Timestamp | null;
 };
 
+// NPC
+export type NPCResponse = ApiResponse<{ npcs: NPC[] }>;
+
+export type NPC = {
+  uuid: string;
+  campaignUuid: string;
+  creatorUuid: string;
+  firstName: string;
+  lastName: string;
+  race: string;
+  class: string;
+  description: string;
+  isQuestBoss: boolean;
+  questBossUuid: string | null;
+};
+
 export type CampaignForm = {
   name: string | undefined;
   ruleset: string;
@@ -173,9 +189,15 @@ export type NoteForm = {
 };
 
 export type QuestForm = {
-  campaign: string;
-  name: string;
-  description: string;
+  name: string,
+  description: string,
+  questGiver: { label: string, value: string }
+  rewardUuids: string[] | null,
+  locationUuids: string[] | null,
+  npcUuids: string[] | null,
+  partyUuids: string[] | null,
+  bossUuids: { label: string, value: string }[],
+  startingSessionUuid: string
 };
 
 export type FormData = {
@@ -345,29 +367,7 @@ export type LocationResponse = {
   timestamp: string;
 };
 
-// NPC
-export type NPCResponse = {
-  data: {
-    npc: NPC;
-  };
-  message: string;
-  status: number;
-  statusText: string;
-  timestamp: string;
-};
 
-export type NPC = {
-  uuid: string;
-  campaignUuid: string;
-  creatorUuid: string;
-  firstName: string;
-  lastName: string;
-  race: string;
-  class: string;
-  description: string;
-  isQuestBoss: boolean;
-  questBossUuid: string | null;
-};
 
 // Notes
 
