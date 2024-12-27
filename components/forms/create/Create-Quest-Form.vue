@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { format } from "date-fns";
 import type { FormSubmitEvent } from "#ui/types";
-import type { NPCResponse, QuestForm } from "~/types/types.ts";
+import type {
+  NPCResponse,
+  SessionsResponse,
+  QuestForm,
+} from "~/types/types.ts";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
@@ -21,35 +26,55 @@ const state = reactive({
   loading: false,
 });
 
-const { data: apiResponse, error } = await useFetch<NPCResponse>(
-  `/campaign/${campaignUuid}/npcs`,
-  {
+const { data: npcResponse, error: npcResponseError } =
+  await useFetch<NPCResponse>(`/campaign/${campaignUuid}/npcs`, {
     baseURL: config.public.baseURL,
     headers: {
       Authorization: `Bearer ${authStore.token}`,
       "Content-Type": "application/json",
     },
-  },
-);
+  });
 
-if (error.value) {
-  console.error("Error fetching npcs:", error.value);
+if (npcResponseError.value) {
+  console.error("Error fetching npcs:", npcResponseError.value);
+}
+
+const { data: sessionsResponse, error: sessionsResponseError } =
+  await useFetch<SessionsResponse>(`/campaign/${campaignUuid}/sessions`, {
+    baseURL: config.public.baseURL,
+    headers: {
+      Authorization: `Bearer ${authStore.token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+if (sessionsResponseError.value) {
+  console.error("Error fetching npcs:", sessionsResponseError.value);
 }
 
 const questGivers = computed(
   () =>
-    apiResponse.value?.data.npcs.map((npc) => ({
+    npcResponse.value?.data.npcs.map((npc) => ({
       label: npc.firstName + " " + npc.lastName,
       value: npc.uuid,
     })) ?? [],
 );
+
 const bossUuids = computed(() => [
   { label: "None", value: null },
-  ...(apiResponse.value?.data.npcs.map((npc) => ({
+  ...(npcResponse.value?.data.npcs.map((npc) => ({
     label: npc.firstName + " " + npc.lastName,
     value: npc.uuid,
   })) ?? []),
 ]);
+
+const sessions = computed(
+  () =>
+    sessionsResponse.value?.data.sessions.map((session) => ({
+      label: format(new Date(session.dateOccured.time), "MMM-dd, yyyy"),
+      value: session.uuid,
+    })) ?? [],
+);
 
 async function onSubmit(event: FormSubmitEvent<QuestForm>) {
   state.loading = true;
@@ -69,7 +94,8 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
         questGiver: event.data.questGiver.value,
         bossUuids: event.data.bossUuids
           ? event.data.bossUuids.map((boss) => boss.value)
-          : null,
+          : [],
+        startingSessionUuid: event.data.startingSessionUuid.value,
       },
     });
     state.submitButton = "Success!";
@@ -89,6 +115,7 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
     state.disabled = false;
     state.campaign = campaignUuid;
     state.questGiver = undefined;
+    state.startingSessionUuid = undefined;
     state.bossUuids = undefined;
     state.description = undefined;
     state.name = undefined;
@@ -121,7 +148,21 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
         v-if="questGivers.length > 0"
         v-model="state.questGiver"
         :options="questGivers"
+        searchable
         label="Select an NPC"
+        class="w-full"
+        required
+      />
+    </UFormGroup>
+    <UFormGroup
+      label="Starting Session"
+      name="startingSessionUuid"
+      class="mb-4"
+    >
+      <USelectMenu
+        v-if="sessions.length > 0"
+        v-model="state.startingSessionUuid"
+        :options="sessions"
         class="w-full"
         required
       />

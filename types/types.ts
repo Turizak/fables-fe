@@ -36,6 +36,12 @@ export type Campaign = {
   lastUpdated: Timestamp | null;
 };
 
+export type CampaignForm = {
+  name: string | undefined;
+  ruleset: string;
+  maxPlayers: number;
+};
+
 export type CampaignAll = {
   campaign: {
     uuid: string;
@@ -140,11 +146,42 @@ export type NPC = {
   isQuestBoss: boolean;
   questBossUuid: string | null;
 };
+export type NPCForm = {
+  firstName: string;
+  lastName: string;
+  race: string;
+  class: string;
+  description: string;
+  isQuestBoss: boolean;
+};
 
-export type CampaignForm = {
-  name: string | undefined;
-  ruleset: string;
-  maxPlayers: number;
+// Session
+export type SessionResponse = ApiResponse<{ session: Session }>;
+export type SessionsResponse = ApiResponse<{ sessions: Session[] }>;
+
+export type Session = {
+    sessionId: number;
+    uuid: string;
+    campaignUuid: string;
+    creatorUuid: string;
+    partyUuids: string[];
+    locationUuids: string[];
+    npcUuids: string[];
+    dateOccured: Timestamp;
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
+};
+
+export type SessionAll = {
+  characters: Character[];
+  locations: Location[];
+  npcs: NPC[];
+  session: Session[];
+};
+
+export type SessionForm = {
+  partyUuids: string[];
+  dateOccured: string;
 };
 
 export type CharacterForm = {
@@ -163,24 +200,12 @@ export type CharacterForm = {
   gender?: string;
 };
 
-export type NPCForm = {
-  firstName: string;
-  lastName: string;
-  race: string;
-  class: string;
-  description: string;
-  isQuestBoss: boolean;
-};
-
 export type LocationForm = {
   location: string;
   description: string;
 };
 
-export type SessionForm = {
-  partyUuids: string[];
-  dateOccured: string;
-};
+
 
 export type NoteForm = {
   campaign: string;
@@ -197,7 +222,7 @@ export type QuestForm = {
   npcUuids: string[] | null,
   partyUuids: string[] | null,
   bossUuids: { label: string, value: string }[],
-  startingSessionUuid: string
+  startingSessionUuid: { label: string, value: string }
 };
 
 export type FormData = {
@@ -321,30 +346,6 @@ export type Race = {
   url: string;
 };
 
-// Session
-
-export type Session = {
-  session: {
-    sessionId: number;
-    uuid: string;
-    campaignUuid: string;
-    creatorUuid: string;
-    partyUuids: string[];
-    locationUuids: string[];
-    npcUuids: string[];
-    dateOccured: Timestamp;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-  };
-};
-
-export type SessionAll = {
-  characters: Character[];
-  locations: Location[];
-  npcs: NPC[];
-  session: Session[];
-};
-
 // Location
 
 export type Location = {
@@ -366,9 +367,3 @@ export type LocationResponse = {
   statusText: string;
   timestamp: string;
 };
-
-
-
-// Notes
-
-// Quests
