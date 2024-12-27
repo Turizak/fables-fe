@@ -84,6 +84,7 @@ async function onSubmit(event: FormSubmitEvent<{ npc: string }>) {
     state.loading = false;
     state.disabled = false;
     state.submitButton = "Create NPC";
+    state.createButton = "Create a new NPC";
     state.npc = undefined;
   }
 }

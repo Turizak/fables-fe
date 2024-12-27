@@ -2,7 +2,13 @@
 import { useRoute } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
 import { npcValidate } from "~/utils/validation/npc-validation";
-import type { LocationForm, LocationResponse } from "~/types/types";
+import type {
+  ApiResponse,
+  NPCForm,
+  Race,
+  Class,
+  NPCResponse,
+} from "~/types/types";
 import type { FormSubmitEvent } from "#ui/types";
 
 definePageMeta({
@@ -65,7 +71,7 @@ function enableDescription() {
   state.updateButtonDisabled = !state.updateButtonDisabled;
 }
 
-const { data: apiResponse } = await useFetch<LocationResponse>(
+const { data: apiResponse } = await useFetch<NPCResponse>(
   `/campaign/${campaignUuid}/npc/${npcUuid}`,
   {
     baseURL: config.public.baseURL,
@@ -120,7 +126,7 @@ const classes = computed(
     })) ?? [],
 );
 
-async function onSubmit(event: FormSubmitEvent<LocationForm>) {
+async function onSubmit(event: FormSubmitEvent<NPCForm>) {
   state.loading = true;
   state.updateButtonDisabled = true;
   state.firstNameDisabled = true;
@@ -131,7 +137,7 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   state.submitButton = "Adding...";
   await authStore.ensureValidToken();
   try {
-    const response = await $fetch<LocationResponse>(
+    const response = await $fetch<NPCResponse>(
       `/campaign/${campaignUuid}/npc/${npcUuid}/update`,
       {
         method: "PATCH",

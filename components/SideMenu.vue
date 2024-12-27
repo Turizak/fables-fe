@@ -37,9 +37,6 @@ const items = [
         <li>
           <div class="bg-gray-700">
             <UAccordion multiple :items="items">
-              <template #item="{ item }">
-                {{ item.description }}
-              </template>
               <template #campaigns>
                 <li>
                   <NuxtLink to="/create-campaign" @click="slideover.close">

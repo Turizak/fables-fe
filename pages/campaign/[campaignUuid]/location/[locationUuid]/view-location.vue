@@ -4,6 +4,7 @@ import { useAuthStore } from "~/stores/authStore";
 import { locationValidate } from "~/utils/validation/location-validation";
 import type { LocationForm, LocationResponse } from "~/types/types";
 import type { FormSubmitEvent } from "#ui/types";
+import { UButtonGroup } from "#build/components";
 
 const route = useRoute();
 const toast = useToast();
@@ -56,8 +57,6 @@ const { data: apiResponse } = await useFetch<LocationResponse>(
     },
   },
 );
-
-// const location = computed(() => apiResponse.value?.data.location ?? null);
 
 async function onSubmit(event: FormSubmitEvent<LocationForm>) {
   state.loading = true;
@@ -150,6 +149,7 @@ async function onSubmit(event: FormSubmitEvent<LocationForm>) {
           </UButtonGroup>
         </div>
       </UFormGroup>
+
       <UButton
         type="submit"
         class="p-2 box-border w-full text-white inline-flex h-[35px] items-center justify-center rounded-[4px] font-medium leading-none shadow-[0_2px_10px] focus:shadow-[0_0_0_2px] focus:shadow-black focus:outline-none mt-[20px]"

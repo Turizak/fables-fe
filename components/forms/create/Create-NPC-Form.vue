@@ -8,7 +8,7 @@ const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const toast = useToast();
 const route = useRoute();
-const uuid = route.params.uuid;
+const campaignUuid = route.params.campaignUuid;
 
 const state = reactive({
   firstName: undefined,
@@ -68,7 +68,7 @@ const classes = computed(
 
 async function goBack() {
   await authStore.ensureValidToken();
-  await navigateTo(`/campaign/${uuid}/view-campaign`);
+  await navigateTo(`/campaign/${campaignUuid}/view-campaign`);
 }
 
 async function onSubmit(event: FormSubmitEvent<NPCForm>) {
@@ -78,21 +78,24 @@ async function onSubmit(event: FormSubmitEvent<NPCForm>) {
   state.backButton = "";
   await authStore.ensureValidToken();
   try {
-    await $fetch(config.public.baseURL + "/campaign/" + uuid + "/npc/create", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-        "Content-Type": "application/json",
+    await $fetch(
+      config.public.baseURL + "/campaign/" + campaignUuid + "/npc/create",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+          "Content-Type": "application/json",
+        },
+        body: {
+          firstName: event.data.firstName,
+          lastName: event.data.lastName,
+          class: event.data.class,
+          race: event.data.race,
+          description: event.data.description,
+          isQuestBoss: event.data.isQuestBoss,
+        },
       },
-      body: {
-        firstName: event.data.firstName,
-        lastName: event.data.lastName,
-        class: event.data.class,
-        race: event.data.race,
-        description: event.data.description,
-        isQuestBoss: event.data.isQuestBoss,
-      },
-    });
+    );
     state.submitButton = "Success!";
     toast.add({
       title: "NPC Added!",

@@ -2,7 +2,7 @@
 import type {
   ApiResponse,
   CampaignResponse,
-  Session,
+  SessionResponse,
   SessionAll,
 } from "~/types/types";
 import { format } from "date-fns";
@@ -32,7 +32,7 @@ const { data: sessionDataAll } = await useFetch<ApiResponse<SessionAll>>(
   },
 );
 
-const { data: sessionData } = await useFetch<ApiResponse<Session>>(
+const { data: sessionData } = await useFetch<SessionResponse>(
   `/campaign/${campaignUuid}/session/${sessionUuid}`,
   {
     baseURL: config.public.baseURL,
@@ -54,7 +54,9 @@ const { data: campaignData } = await useFetch<CampaignResponse>(
   },
 );
 
-const session = computed(() => sessionData.value?.data?.session ?? null);
+const session = computed(
+  () => sessionData.value?.data?.session.dateOccured ?? null,
+);
 const campaign = computed(() => campaignData.value?.data.campaign ?? null);
 const characters = computed(() => sessionDataAll.value?.data.characters ?? []);
 const locations = computed(() => sessionDataAll.value?.data.locations ?? []);
@@ -143,7 +145,7 @@ const items = [
           :ui="{ label: 'text-primary-500 dark:text-primary-400' }"
         />
         <h3 v-if="session" class="text-4xl mt-2">
-          {{ format(new Date(session.dateOccured.time), "MMM-dd, yyyy") }}
+          {{ format(new Date(session.time), "MMM-dd, yyyy") }}
         </h3>
         <p v-else>Loading session data...</p>
       </template>
