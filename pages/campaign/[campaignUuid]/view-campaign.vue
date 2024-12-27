@@ -77,6 +77,7 @@ const campaign = computed(() => apiResponse.value?.data.campaign ?? null);
 const characters = computed(() => apiResponse.value?.data.characters ?? []);
 const locations = computed(() => apiResponse.value?.data.locations ?? []);
 const npcs = computed(() => apiResponse.value?.data.npcs ?? []);
+const quests = computed(() => apiResponse.value?.data.quests ?? []);
 const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
 </script>
 
@@ -159,6 +160,27 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
                   <p>{{ npc.description }}</p>
                 </template>
                 {{ npc.firstName + " " + npc.lastName }}
+              </UTooltip>
+            </UButton>
+          </div>
+          <p v-else>No NPCs found.</p>
+        </template>
+        <template #quests>
+          <div
+            v-if="quests.length > 0"
+            class="flex flex-row flex-wrap flex-grow-0 gap-2"
+          >
+            <UButton
+              v-for="quest in quests"
+              :key="quest.uuid"
+              :to="`/campaign/${campaignUuid}/npc/${quest.uuid}/view-quest`"
+              class="text-md my-2"
+            >
+              <UTooltip>
+                <template #text>
+                  <p>{{ quest.description }}</p>
+                </template>
+                {{ quest.name }}
               </UTooltip>
             </UButton>
           </div>

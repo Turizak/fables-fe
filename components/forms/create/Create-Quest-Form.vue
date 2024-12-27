@@ -97,29 +97,32 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
   state.submitButton = "Adding...";
   await authStore.ensureValidToken();
   try {
-    await $fetch("https://httpbin.org/post", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-        "Content-Type": "application/json",
+    await $fetch(
+      config.public.baseURL + "/campaign/" + campaignUuid + "/quest/create",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+          "Content-Type": "application/json",
+        },
+        body: {
+          name: event.data.name,
+          description: event.data.description,
+          questGiver: event.data.questGiver.value,
+          bossUuids: event.data.bossUuids
+            ? event.data.bossUuids.map((boss) => boss.value)
+            : [],
+          startingSessionUuid: event.data.startingSessionUuid.value,
+        },
       },
-      body: {
-        name: event.data.name,
-        description: event.data.description,
-        questGiver: event.data.questGiver.value,
-        bossUuids: event.data.bossUuids
-          ? event.data.bossUuids.map((boss) => boss.value)
-          : [],
-        startingSessionUuid: event.data.startingSessionUuid.value,
-      },
-    });
+    );
     state.submitButton = "Success!";
     toast.add({
-      title: "Note Created!",
+      title: "Quest Created!",
       icon: "i-material-symbols-light:check-circle",
     });
   } catch (error) {
-    console.error("Error creating note: ", error);
+    console.error("Error creating quest: ", error);
     toast.add({
       title: "There was an error - please try again",
       color: "red",

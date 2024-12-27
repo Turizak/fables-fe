@@ -99,6 +99,24 @@ export type CampaignAll = {
     created: Timestamp;
     lastUpdated: Timestamp | null;
   }>;
+  quests: Array<{
+    uuid: string;
+    campaignUuid: string;
+    creatorUuid: string;
+    name: string;
+    description: string;
+    questGiver: string;
+    rewardUuids: string[];
+    locationUuids: string[];
+    npcUuids: string[];
+    partyUuids: string[];
+    bossUuids: string[];
+    startingSessionUuid: string;
+    endingSessionUuid: string;
+    status: string;
+    created: Timestamp;
+    lastUpdated: Timestamp | null;
+  }>
   sessions: Array<{
     sessionId: number;
     uuid: string;
