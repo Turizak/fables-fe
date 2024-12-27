@@ -2,7 +2,7 @@
 import { format } from "date-fns";
 import type { FormSubmitEvent } from "#ui/types";
 import type {
-  NPCResponse,
+  NPCsResponse,
   SessionsResponse,
   QuestForm,
 } from "~/types/types.ts";
@@ -42,7 +42,7 @@ const links = [
 ];
 
 const { data: npcResponse, error: npcResponseError } =
-  await useFetch<NPCResponse>(`/campaign/${campaignUuid}/npcs`, {
+  await useFetch<NPCsResponse>(`/campaign/${campaignUuid}/npcs`, {
     baseURL: config.public.baseURL,
     headers: {
       Authorization: `Bearer ${authStore.token}`,

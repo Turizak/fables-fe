@@ -1,3 +1,17 @@
+export type Props<T> = {
+  data: T;
+};
+
+export type Timestamp = {
+  time: string;
+  valid: boolean;
+};
+
+export type TimestampFields = {
+  created: Timestamp;
+  lastUpdated: Timestamp | null
+}
+
 export type ApiResponse<T> = {
   data: T;
   message: string;
@@ -21,8 +35,17 @@ export type AuthResponse = {
 
 export type CampaignResponse = ApiResponse<{ campaign: Campaign }>;
 export type CampaignsResponse = ApiResponse<{ campaigns: Campaign[] }>;
+export type LocationResponse = ApiResponse<{ location: Location}>
+export type LocationsResponse = ApiResponse<{ locations: Location[]}>
+export type NPCResponse = ApiResponse<{ npc: NPC}>
+export type NPCsResponse = ApiResponse<{ npcs: NPC[] }>;
+export type QuestResponse = ApiResponse<{ quest: Quest}>
+export type QuestsResponse = ApiResponse<{ quests: Quest[]}>
+export type SessionResponse = ApiResponse<{ session: Session }>;
+export type SessionsResponse = ApiResponse<{ sessions: Session[] }>;
 
-export type Campaign = {
+// Campaign
+export type Campaign = TimestampFields & {
   uuid: string;
   name: string;
   creatorUuid: string;
@@ -32,8 +55,6 @@ export type Campaign = {
   active: boolean;
   ruleset: string;
   maxPlayers: number;
-  created: Timestamp;
-  lastUpdated: Timestamp | null;
 };
 
 export type CampaignForm = {
@@ -43,93 +64,16 @@ export type CampaignForm = {
 };
 
 export type CampaignAll = {
-  campaign: {
-    uuid: string;
-    name: string;
-    creatorUuid: string;
-    dmUuid: string;
-    partyUuids: string[];
-    completed: boolean;
-    active: boolean;
-    ruleset: string;
-    maxPlayers: number;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-  };
-  characters: Array<{
-    uuid: string;
-    campaignUuid: string;
-    creatorUuid: string;
-    ownerUuid: string;
-    firstName: string;
-    lastName: string;
-    race: string;
-    class: string;
-    age: number;
-    height: number;
-    weight: number;
-    eyeColor: string;
-    skinColor: string;
-    hairColor: string;
-    ruleset: string;
-    public: boolean;
-    gender: string | null;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-  }>;
-  locations: Array<{
-    uuid: string;
-    campaignUuid: string;
-    creatorUuid: string;
-    name: string;
-    description: string;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-  }>;
-  npcs: Array<{
-    uuid: string;
-    campaignUuid: string;
-    creatorUuid: string;
-    firstName: string;
-    lastName: string;
-    race: string;
-    class: string;
-    description: string;
-    isQuestBoss: boolean;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-  }>;
-  quests: Array<{
-    uuid: string;
-    campaignUuid: string;
-    creatorUuid: string;
-    name: string;
-    description: string;
-    questGiver: string;
-    rewardUuids: string[];
-    locationUuids: string[];
-    npcUuids: string[];
-    partyUuids: string[];
-    bossUuids: string[];
-    startingSessionUuid: string;
-    endingSessionUuid: string;
-    status: string;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-  }>
-  sessions: Array<{
-    sessionId: number;
-    uuid: string;
-    campaignUuid: string;
-    creatorUuid: string;
-    partyUuids: string[];
-    dateOccured: Timestamp;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-  }>;
+  campaign: Campaign;
+  characters: Character[];
+  locations: Location[];
+  npcs: NPC[];
+  quests: Quest[];
+  sessions: Session[];
 };
 
-export type Character = {
+// Character
+export type Character = TimestampFields & {
   uuid: string;
   campaignUuid: string;
   creatorUuid: string;
@@ -145,13 +89,45 @@ export type Character = {
   skinColor: string;
   hairColor: string;
   ruleset: string;
-  created: Timestamp;
-  lastUpdated: Timestamp | null;
+};
+
+export type CharacterForm = {
+  ruleset?: string;
+  campaign?: string;
+  firstName?: string;
+  lastName?: string;
+  class?: string;
+  race?: string;
+  hair?: string;
+  skin?: string;
+  eyes?: string;
+  height?: number;
+  weight?: number;
+  age?: number;
+  gender?: string;
+};
+
+// Location
+export type Location = TimestampFields & {
+  uuid: string;
+  campaignUuid: string;
+  creatorUuid: string;
+  name: string;
+  description: string;
+};
+
+export type LocationForm = {
+  location: string;
+  description: string;
+};
+
+export type NoteForm = {
+  campaign: string;
+  session: string;
+  note: string;
 };
 
 // NPC
-export type NPCResponse = ApiResponse<{ npcs: NPC[] }>;
-
 export type NPC = {
   uuid: string;
   campaignUuid: string;
@@ -173,63 +149,23 @@ export type NPCForm = {
   isQuestBoss: boolean;
 };
 
-// Session
-export type SessionResponse = ApiResponse<{ session: Session }>;
-export type SessionsResponse = ApiResponse<{ sessions: Session[] }>;
-
-export type Session = {
-    sessionId: number;
-    uuid: string;
-    campaignUuid: string;
-    creatorUuid: string;
-    partyUuids: string[];
-    locationUuids: string[];
-    npcUuids: string[];
-    dateOccured: Timestamp;
-    created: Timestamp;
-    lastUpdated: Timestamp | null;
-};
-
-export type SessionAll = {
-  characters: Character[];
-  locations: Location[];
-  npcs: NPC[];
-  session: Session[];
-};
-
-export type SessionForm = {
-  partyUuids: string[];
-  dateOccured: string;
-};
-
-export type CharacterForm = {
-  ruleset?: string;
-  campaign?: string;
-  firstName?: string;
-  lastName?: string;
-  class?: string;
-  race?: string;
-  hair?: string;
-  skin?: string;
-  eyes?: string;
-  height?: number;
-  weight?: number;
-  age?: number;
-  gender?: string;
-};
-
-export type LocationForm = {
-  location: string;
+// Quest
+export type Quest = TimestampFields & {
+  uuid: string;
+  campaignUuid: string;
+  creatorUuid: string;
+  name: string;
   description: string;
-};
-
-
-
-export type NoteForm = {
-  campaign: string;
-  session: string;
-  note: string;
-};
+  questGiver: string;
+  rewardUuids: string[];
+  locationUuids: string[];
+  npcUuids: string[];
+  partyUuids: string[];
+  bossUuids: string[];
+  startingSessionUuid: string;
+  endingSessionUuid: string;
+  status: string;
+}
 
 export type QuestForm = {
   name: string,
@@ -243,6 +179,30 @@ export type QuestForm = {
   startingSessionUuid: { label: string, value: string }
 };
 
+// Session
+export type Session = TimestampFields & {
+    sessionId: number;
+    uuid: string;
+    campaignUuid: string;
+    creatorUuid: string;
+    partyUuids: string[];
+    locationUuids: string[];
+    npcUuids: string[];
+    dateOccured: Timestamp;
+};
+
+export type SessionForm = {
+  partyUuids: string[];
+  dateOccured: string;
+};
+
+export type SessionAll = {
+  characters: Character[];
+  locations: Location[];
+  npcs: NPC[];
+  session: Session[];
+};
+
 export type FormData = {
   email: string;
   password: string;
@@ -252,15 +212,6 @@ export type FormType = {
   email: string;
   createPassword: string;
   confirmPassword: string | undefined;
-};
-
-export type Props<T> = {
-  data: T;
-};
-
-export type Timestamp = {
-  time: string;
-  valid: boolean;
 };
 
 // Classes
@@ -364,24 +315,3 @@ export type Race = {
   url: string;
 };
 
-// Location
-
-export type Location = {
-  uuid: string;
-  campaignUuid: string;
-  creatorUuid: string;
-  name: string;
-  description: string;
-  created: Timestamp;
-  lastUpdated: Timestamp | null;
-};
-
-export type LocationResponse = {
-  data: {
-    location: Location;
-  };
-  message: string;
-  status: number;
-  statusText: string;
-  timestamp: string;
-};

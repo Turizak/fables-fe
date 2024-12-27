@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { locationValidate } from "~/utils/validation/location-validation";
+
 import type { FormSubmitEvent } from "#ui/types";
 import type { LocationForm } from "~/types/types";
 
