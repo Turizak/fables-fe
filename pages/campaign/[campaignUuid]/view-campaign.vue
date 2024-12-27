@@ -30,13 +30,13 @@ const links = [
     label: "Quest",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/add-quest`,
+    to: `/campaign/${campaignUuid}/create-quest`,
   },
   {
     label: "Session",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/add-session`,
+    to: `/campaign/${campaignUuid}/create-session`,
   },
 ];
 
