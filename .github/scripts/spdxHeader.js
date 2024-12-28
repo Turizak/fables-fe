@@ -1,51 +1,135 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'node:fs';
+import path from 'node:path';
 
 // Configuration
-const targetDirectory = './src'; // Directory to process
-const spdxHeader = '// SPDX-License-Identifier: Apache-2.0\n';
+const CONFIG = {
+  targetDirectories: ['../../components', '../../utils', '../../pages', '../../stores'],
+  spdxHeader: '// SPDX-License-Identifier: Apache-2.0\n',
+  allowedExtensions: ['.vue', '.ts'],
+  isDryRun: process.argv.includes('--dry-run'),
+};
 
-// Function to recursively process files
-function addHeaderToFiles(directory) {
-  const entries = fs.readdirSync(directory, { withFileTypes: true });
-
-  entries.forEach((entry) => {
-    const fullPath = path.join(directory, entry.name);
-
-    if (entry.isDirectory()) {
-      // Recurse into subdirectories
-      addHeaderToFiles(fullPath);
-    } else if (entry.isFile() && shouldProcessFile(entry.name)) {
-      // Process file
-      addHeaderToFile(fullPath);
+// Function to validate if directories exist
+function validateDirectories(directories) {
+  directories.forEach((directory) => {
+    try {
+      const stats = fs.statSync(directory);
+      if (!stats.isDirectory()) {
+        throw new Error(`${directory} is not a directory`);
+      }
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        throw new Error(`Directory ${directory} does not exist`);
+      }
+      throw error;
     }
   });
 }
 
+// Function to recursively process files in a directory
+function addHeaderToFiles(directory) {
+  try {
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+    let modifiedFiles = 0;
+    let skippedFiles = 0;
+
+    entries.forEach((entry) => {
+      const fullPath = path.join(directory, entry.name);
+      try {
+        if (entry.isDirectory()) {
+          const { modified, skipped } = addHeaderToFiles(fullPath);
+          modifiedFiles += modified;
+          skippedFiles += skipped;
+        } else if (entry.isFile() && shouldProcessFile(entry.name)) {
+          const result = addHeaderToFile(fullPath);
+          if (result.wouldModify) modifiedFiles++;
+          if (result.skipped) skippedFiles++;
+        }
+      } catch (error) {
+        console.error(`Error processing ${fullPath}:`, error.message);
+      }
+    });
+
+    return { modified: modifiedFiles, skipped: skippedFiles };
+  } catch (error) {
+    console.error(`Error reading directory ${directory}:`, error.message);
+    throw error;
+  }
+}
+
 // Function to check if a file should be processed
 function shouldProcessFile(fileName) {
-  // Add logic to filter file types (e.g., only .js, .ts, .css, etc.)
-  const allowedExtensions = ['.js', '.ts', '.jsx', '.tsx', '.py', '.java']; // Add extensions as needed
-  return allowedExtensions.includes(path.extname(fileName));
+  return CONFIG.allowedExtensions.includes(path.extname(fileName));
 }
 
 // Function to add SPDX header to a file
 function addHeaderToFile(filePath) {
-  const fileContent = fs.readFileSync(filePath, 'utf8');
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf8');
 
-  // Check if the file already has the SPDX header
-  if (fileContent.startsWith(spdxHeader)) {
-    console.log(`Header already exists in ${filePath}`);
-    return;
+    // Check if the file already has any variation of the SPDX header
+    if (fileContent.includes('SPDX-License-Identifier: Apache-2.0')) {
+      console.log(`[SKIP] Header already exists in ${filePath}`);
+      return { skipped: true, wouldModify: false };
+    }
+
+    const updatedContent = CONFIG.spdxHeader + fileContent;
+
+    if (CONFIG.isDryRun) {
+      console.log(`[DRY RUN] Would add header to ${filePath}`);
+      return { skipped: false, wouldModify: true };
+    }
+
+    // Create backup before modification
+    const backupPath = `${filePath}.bak`;
+    fs.writeFileSync(backupPath, fileContent, 'utf8');
+
+    // Prepend the SPDX header
+    fs.writeFileSync(filePath, updatedContent, 'utf8');
+
+    // Remove backup after successful write
+    fs.unlinkSync(backupPath);
+
+    console.log(`[ADDED] Header added to ${filePath}`);
+    return { skipped: false, wouldModify: true };
+  } catch (error) {
+    console.error(`Error processing file ${filePath}:`, error.message);
+    throw error;
   }
-
-  // Prepend the SPDX header
-  const updatedContent = spdxHeader + fileContent;
-  fs.writeFileSync(filePath, updatedContent, 'utf8');
-  console.log(`Added header to ${filePath}`);
 }
 
-// Run the script
-console.log(`Adding SPDX headers to files in: ${targetDirectory}`);
-addHeaderToFiles(targetDirectory);
-console.log('SPDX header addition completed.');
+// Main execution
+try {
+  console.log(`SPDX Header Addition Tool`);
+  console.log(`Mode: ${CONFIG.isDryRun ? 'DRY RUN' : 'LIVE'}`);
+  console.log(`Target Directories: ${CONFIG.targetDirectories.join(', ')}`);
+  console.log(`File Types: ${CONFIG.allowedExtensions.join(', ')}`);
+  console.log('----------------------------------------');
+
+  validateDirectories(CONFIG.targetDirectories);
+
+  let totalModified = 0;
+  let totalSkipped = 0;
+
+  CONFIG.targetDirectories.forEach((directory) => {
+    console.log(`Processing directory: ${directory}`);
+    const { modified, skipped } = addHeaderToFiles(directory);
+    totalModified += modified;
+    totalSkipped += skipped;
+  });
+
+  console.log('----------------------------------------');
+  console.log('Summary:');
+  console.log(`Files that would be modified: ${totalModified}`);
+  console.log(`Files skipped (header exists): ${totalSkipped}`);
+
+  if (CONFIG.isDryRun) {
+    console.log('\nThis was a dry run. No files were modified.');
+    console.log('To apply changes, run without --dry-run flag.');
+  }
+
+  process.exit(0);
+} catch (error) {
+  console.error('Script failed:', error.message);
+  process.exit(1);
+}
