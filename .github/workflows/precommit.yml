@@ -1,4 +1,4 @@
-name: Formatting
+name: Pre-Commit
 
 permissions: read-all
 on:
@@ -25,3 +25,5 @@ jobs:
         run: npx prettier . --write
       - name: Run ESLint
         run: npx eslint .
+      - name: Run Vitest
+        run: npm run test -- --run
