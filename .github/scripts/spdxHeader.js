@@ -44,3 +44,8 @@ function addHeaderToFile(filePath) {
   fs.writeFileSync(filePath, updatedContent, 'utf8');
   console.log(`Added header to ${filePath}`);
 }
+
+// Run the script
+console.log(`Adding SPDX headers to files in: ${targetDirectory}`);
+addHeaderToFiles(targetDirectory);
+console.log('SPDX header addition completed.');
