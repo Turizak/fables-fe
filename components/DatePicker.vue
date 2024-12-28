@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup>
 import { DatePicker as VCalendarDatePicker } from "v-calendar";
 import "v-calendar/dist/style.css";

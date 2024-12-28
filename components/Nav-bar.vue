@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup>
 import { useAuthStore } from "~/stores/authStore";
 import SideMenu from "./SideMenu.vue";

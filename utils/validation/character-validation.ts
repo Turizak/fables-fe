@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import type { CharacterForm } from "~/types/types";
 import type { FormError } from "#ui/types";
 

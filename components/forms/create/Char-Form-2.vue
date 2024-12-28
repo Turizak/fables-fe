@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import { useAuthStore, useFormStore } from "#imports";
 import { characterValidate2 } from "~/utils/validation/character-validation-2";

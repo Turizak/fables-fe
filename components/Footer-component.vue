@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <template>
   <footer class="bg-green-400 text-black py-2 mt-auto">
     <div

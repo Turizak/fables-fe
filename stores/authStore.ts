@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import jwtDecode from "jwt-decode";

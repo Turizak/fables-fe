@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <template>
   <nav class="flex bg-green-400 text-black">
     <div class="p-2">

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import type { ApiResponse, CampaignAll } from "~/types/types";
 import { format } from "date-fns";

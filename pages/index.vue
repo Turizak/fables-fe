@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore";
 import type { AuthResponse } from "~/types/types";

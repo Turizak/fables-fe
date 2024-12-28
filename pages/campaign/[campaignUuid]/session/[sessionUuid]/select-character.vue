@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import SelectCharacterForm from "~/components/forms/select/Select-Character-Form.vue";
 definePageMeta({

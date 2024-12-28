@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 import { defineStore } from "pinia";
 
 export const useLocationStore = defineStore("locationStore", {

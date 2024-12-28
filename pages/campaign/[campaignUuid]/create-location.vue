@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import CreateLocationForm from "~/components/forms/create/Create-Location-Form.vue";
 definePageMeta({

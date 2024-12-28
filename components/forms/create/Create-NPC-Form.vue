@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import { npcValidate } from "~/utils/validation/npc-validation";
 import type { FormSubmitEvent } from "#ui/types";

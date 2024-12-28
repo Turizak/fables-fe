@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/authStore";
 import { loginValidate } from "~/utils/validation/login-validation";

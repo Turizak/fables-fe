@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import CreateSessionForm from "~/components/forms/create/Create-Session-Form.vue";
 definePageMeta({

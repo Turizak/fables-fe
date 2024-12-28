@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup>
 import CreateCampaignForm from "~/components/forms/create/Create-Campaign-Form.vue";
 

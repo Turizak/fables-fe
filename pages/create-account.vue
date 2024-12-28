@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import CreateAccountForm from "~/components/forms/create/Create-Account-Form.vue";
 

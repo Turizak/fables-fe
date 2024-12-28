@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup>
 const isOpen = ref(false);
 const slideover = useSlideover();

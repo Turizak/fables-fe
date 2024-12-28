@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import CreateNPCForm from "~/components/forms/create/Create-NPC-Form.vue";
 definePageMeta({

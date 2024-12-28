@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import CharForm1 from "~/components/forms/create/Char-Form-1.vue";
 definePageMeta({

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import CreateNoteForm from "~/components/forms/create/Create-Note-Form.vue";
 definePageMeta({
