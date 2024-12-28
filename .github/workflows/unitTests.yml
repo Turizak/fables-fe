@@ -1,5 +1,6 @@
 name: Unit Tests
 
+permissions: read-all
 on:
   push:
     branches:
