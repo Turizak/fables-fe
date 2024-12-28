@@ -1,5 +1,4 @@
 name: Pre-Commit
-
 permissions: read-all
 on:
   push:
@@ -8,7 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  common-setup: &common-setup
+  precommit:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -18,24 +18,12 @@ jobs:
           cache: "npm"
       - name: Install project dependencies
         run: npm ci
-
-  linting:
-    runs-on: ubuntu-latest
-    steps:
-      <<: *common-setup
+      
       - name: Run ESLint
         run: npx eslint .
-
-  formatting:
-    runs-on: ubuntu-latest
-    steps:
-      <<: *common-setup
+        
       - name: Run Prettier
         run: npx prettier . --write
-
-  testing:
-    runs-on: ubuntu-latest
-    steps:
-      <<: *common-setup
+        
       - name: Run Vitest
         run: npm run test -- --run
