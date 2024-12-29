@@ -3,7 +3,7 @@ import path from 'node:path';
 
 // Configuration
 const CONFIG = {
-  targetDirectories: ['../components', '../utils', '../pages', '../stores'],
+  targetDirectories: ['~/../components', '~/../utils', '~/../pages', '~/../stores'],
   spdxHeader: '// SPDX-License-Identifier: Apache-2.0\n',
   allowedExtensions: ['.vue', '.ts'],
   isDryRun: process.argv.includes('--dry-run'),
