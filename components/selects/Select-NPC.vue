@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import type { LocationsResponse } from "~/types/types";
+import type { NPCsResponse } from "~/types/types";
 
 const config = useRuntimeConfig();
 const authStore = useAuthStore();
 const route = useRoute();
 const campaignUuid = route.params.campaignUuid;
 
-const location = ref([]);
+const npc = ref([]);
 
-const { data: apiResponse, error } = await useFetch<LocationsResponse>(
-  `/campaign/${campaignUuid}/locations`,
+const { data: apiResponse, error } = await useFetch<NPCsResponse>(
+  `/campaign/${campaignUuid}/npcs`,
   {
     baseURL: config.public.baseURL,
     headers: {
@@ -23,19 +23,19 @@ if (error.value) {
   console.error("Error fetching locations:", error.value);
 }
 
-const locations = computed(
+const npcs = computed(
   () =>
-    apiResponse.value?.data.locations.map((location) => ({
-      label: location.name,
-      value: location.uuid,
+    apiResponse.value?.data.npcs.map((npc) => ({
+      label: npc.firstName + " " + npc.lastName,
+      value: npc.uuid,
     })) ?? [],
 );
 </script>
 <template>
   <USelectMenu
-    v-if="locations.length > 0"
-    v-model="location"
-    :options="locations"
+    v-if="npcs.length > 0"
+    v-model="npc"
+    :options="npcs"
     class="w-full"
     multiple
     searchable
