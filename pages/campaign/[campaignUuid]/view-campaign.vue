@@ -28,12 +28,6 @@ const { data: apiResponse } = await useFetch<ApiResponse<CampaignAll>>(
 
 const links = [
   {
-    label: "Quest",
-    labelClass: "text-lg",
-    icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/create-quest`,
-  },
-  {
     label: "Session",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
@@ -42,6 +36,12 @@ const links = [
 ];
 
 const items = [
+  {
+    label: "Sessions",
+    icon: "i-material-symbols-light:calendar-month",
+    defaultOpen: true,
+    slot: "sessions",
+  },
   {
     label: "Characters",
     icon: "i-material-symbols-light:groups",
@@ -65,12 +65,6 @@ const items = [
     icon: "i-material-symbols-light:swords-rounded",
     defaultOpen: false,
     slot: "quests",
-  },
-  {
-    label: "Sessions",
-    icon: "i-material-symbols-light:calendar-month",
-    defaultOpen: false,
-    slot: "sessions",
   },
 ];
 
@@ -105,7 +99,28 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
             {{ item.description }}
           </p>
         </template>
-
+        <template #sessions>
+          <div
+            v-if="sessions.length > 0"
+            class="flex flex-row flex-wrap flex-grow-0 gap-2"
+          >
+            <UButton
+              v-for="session in sessions"
+              :key="session.uuid"
+              class="text-md my-2"
+              @click="
+                navigateTo(
+                  `/campaign/${campaignUuid}/session/${session.uuid}/view-session`,
+                )
+              "
+            >
+              <p>
+                {{ format(new Date(session.dateOccured.time), "MMM-dd, yyyy") }}
+              </p>
+            </UButton>
+          </div>
+          <p v-else>No sessions found.</p>
+        </template>
         <template #characters>
           <div
             v-if="characters.length > 0"
@@ -145,27 +160,6 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
           </div>
           <p v-else>No locations found.</p>
         </template>
-        <template #npcs>
-          <div
-            v-if="npcs.length > 0"
-            class="flex flex-row flex-wrap flex-grow-0 gap-2"
-          >
-            <UButton
-              v-for="npc in npcs"
-              :key="npc.uuid"
-              :to="`/campaign/${campaignUuid}/npc/${npc.uuid}/view-npc`"
-              class="text-md my-2"
-            >
-              <UTooltip>
-                <template #text>
-                  <p>{{ npc.description }}</p>
-                </template>
-                {{ npc.firstName + " " + npc.lastName }}
-              </UTooltip>
-            </UButton>
-          </div>
-          <p v-else>No NPCs found.</p>
-        </template>
         <template #quests>
           <div
             v-if="quests.length > 0"
@@ -187,27 +181,26 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
           </div>
           <p v-else>No NPCs found.</p>
         </template>
-        <template #sessions>
+        <template #npcs>
           <div
-            v-if="sessions.length > 0"
+            v-if="npcs.length > 0"
             class="flex flex-row flex-wrap flex-grow-0 gap-2"
           >
             <UButton
-              v-for="session in sessions"
-              :key="session.uuid"
-              class="text-md mt-2"
-              @click="
-                navigateTo(
-                  `/campaign/${campaignUuid}/session/${session.uuid}/view-session`,
-                )
-              "
+              v-for="npc in npcs"
+              :key="npc.uuid"
+              :to="`/campaign/${campaignUuid}/npc/${npc.uuid}/view-npc`"
+              class="text-md my-2"
             >
-              <p>
-                {{ format(new Date(session.dateOccured.time), "MMM-dd, yyyy") }}
-              </p>
+              <UTooltip>
+                <template #text>
+                  <p>{{ npc.description }}</p>
+                </template>
+                {{ npc.firstName + " " + npc.lastName }}
+              </UTooltip>
             </UButton>
           </div>
-          <p v-else>No sessions found.</p>
+          <p v-else>No NPCs found.</p>
         </template>
       </UAccordion>
     </UCard>
