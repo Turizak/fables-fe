@@ -160,27 +160,6 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
           </div>
           <p v-else>No locations found.</p>
         </template>
-        <template #quests>
-          <div
-            v-if="quests.length > 0"
-            class="flex flex-row flex-wrap flex-grow-0 gap-2"
-          >
-            <UButton
-              v-for="quest in quests"
-              :key="quest.uuid"
-              :to="`/campaign/${campaignUuid}/npc/${quest.uuid}/view-quest`"
-              class="text-md my-2"
-            >
-              <UTooltip>
-                <template #text>
-                  <p>{{ quest.description }}</p>
-                </template>
-                {{ quest.name }}
-              </UTooltip>
-            </UButton>
-          </div>
-          <p v-else>No NPCs found.</p>
-        </template>
         <template #npcs>
           <div
             v-if="npcs.length > 0"
@@ -201,6 +180,27 @@ const sessions = computed(() => apiResponse.value?.data.sessions ?? []);
             </UButton>
           </div>
           <p v-else>No NPCs found.</p>
+        </template>
+        <template #quests>
+          <div
+            v-if="quests.length > 0"
+            class="flex flex-row flex-wrap flex-grow-0 gap-2"
+          >
+            <UButton
+              v-for="quest in quests"
+              :key="quest.uuid"
+              :to="`/campaign/${campaignUuid}/quest/${quest.uuid}/view-quest`"
+              class="text-md my-2"
+            >
+              <UTooltip>
+                <template #text>
+                  <p>{{ quest.description }}</p>
+                </template>
+                {{ quest.name }}
+              </UTooltip>
+            </UButton>
+          </div>
+          <p v-else>No Quests found.</p>
         </template>
       </UAccordion>
     </UCard>

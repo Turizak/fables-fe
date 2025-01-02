@@ -36,7 +36,6 @@ const npcs = computed(
     v-if="npcs.length > 0"
     v-model="npc"
     :options="npcs"
-    class="w-full"
     multiple
     searchable
     required
