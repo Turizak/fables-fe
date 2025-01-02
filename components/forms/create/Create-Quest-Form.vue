@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
-import { format } from "date-fns";
+import SelectNPC from "~/components/selects/Select-NPC.vue";
+import SelectSession from "~/components/selects/Select-Session.vue";
 import type { FormSubmitEvent } from "#ui/types";
-import type {
-  NPCsResponse,
-  SessionsResponse,
-  QuestForm,
-} from "~/types/types.ts";
+import type { QuestForm } from "~/types/types.ts";
 import { questValidate } from "~/utils/validation/quest-validation";
 
 const config = useRuntimeConfig();
@@ -20,7 +17,6 @@ const state = reactive({
   name: undefined,
   description: undefined,
   questGiver: undefined,
-  bossUuids: undefined,
   startingSessionUuid: undefined,
   submitButton: "Create Quest",
   disabled: false,
@@ -41,56 +37,6 @@ const links = [
     to: `/campaign/${campaignUuid}/create-session`,
   },
 ];
-
-const { data: npcResponse, error: npcResponseError } =
-  await useFetch<NPCsResponse>(`/campaign/${campaignUuid}/npcs`, {
-    baseURL: config.public.baseURL,
-    headers: {
-      Authorization: `Bearer ${authStore.token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-if (npcResponseError.value) {
-  console.error("Error fetching npcs:", npcResponseError.value);
-}
-
-const { data: sessionsResponse, error: sessionsResponseError } =
-  await useFetch<SessionsResponse>(`/campaign/${campaignUuid}/sessions`, {
-    baseURL: config.public.baseURL,
-    headers: {
-      Authorization: `Bearer ${authStore.token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-if (sessionsResponseError.value) {
-  console.error("Error fetching npcs:", sessionsResponseError.value);
-}
-
-const questGivers = computed(
-  () =>
-    npcResponse.value?.data.npcs.map((npc) => ({
-      label: npc.firstName + " " + npc.lastName,
-      value: npc.uuid,
-    })) ?? [],
-);
-
-const bossUuids = computed(() => [
-  { label: "None", value: null },
-  ...(npcResponse.value?.data.npcs.map((npc) => ({
-    label: npc.firstName + " " + npc.lastName,
-    value: npc.uuid,
-  })) ?? []),
-]);
-
-const sessions = computed(
-  () =>
-    sessionsResponse.value?.data.sessions.map((session) => ({
-      label: format(new Date(session.dateOccured.time), "MMM-dd, yyyy"),
-      value: session.uuid,
-    })) ?? [],
-);
 
 async function onSubmit(event: FormSubmitEvent<QuestForm>) {
   state.loading = true;
@@ -135,7 +81,6 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
     state.campaign = campaignUuid;
     state.questGiver = undefined;
     state.startingSessionUuid = undefined;
-    state.bossUuids = undefined;
     state.description = undefined;
     state.name = undefined;
     state.submitButton = "Create Quest";
@@ -175,42 +120,17 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
           />
         </UFormGroup>
         <UFormGroup label="Quest Giver" name="questGiver" class="mb-4">
-          <USelectMenu
-            v-if="questGivers.length > 0"
-            v-model="state.questGiver"
-            :options="questGivers"
-            searchable
-            label="Select an NPC"
-            class="w-full"
-            required
-          />
+          <SelectNPC v-model="state.questGiver" />
         </UFormGroup>
         <UFormGroup
           label="Starting Session"
           name="startingSessionUuid"
           class="mb-4"
         >
-          <USelectMenu
-            v-if="sessions.length > 0"
-            v-model="state.startingSessionUuid"
-            :options="sessions"
-            class="w-full"
-            required
-          />
+          <SelectSession v-model="state.startingSessionUuid" />
         </UFormGroup>
         <UFormGroup label="Description" name="description" class="mb-4">
           <UTextarea v-model="state.description" :disabled="state.disabled" />
-        </UFormGroup>
-        <UFormGroup label="Quest Boss(es)" name="questBoss" class="mb-2">
-          <USelectMenu
-            v-if="bossUuids.length > 0"
-            v-model="state.bossUuids"
-            :options="bossUuids"
-            multiple
-            searchable
-            label="Select an NPC"
-            class="w-full"
-          />
         </UFormGroup>
         <UButton
           type="submit"
