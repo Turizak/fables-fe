@@ -8,7 +8,6 @@ import type {
   NPCResponse,
   QuestResponse,
   SessionResponse,
-  //   NPCsResponse,
 } from "~/types/types";
 
 definePageMeta({
@@ -250,7 +249,7 @@ const fetchLocationDetails = async (locationUuid: string) => {
 const fetchNPCDetails = async (npcUuid: string) => {
   const { data: npcData, error: npcDataError } =
     await useFetch<LocationResponse>(
-      `/campaign/${campaignUuid}/location/${npcUuid}`,
+      `/campaign/${campaignUuid}/npc/${npcUuid}`,
       {
         baseURL: config.public.baseURL,
         headers: {
@@ -269,7 +268,7 @@ const fetchNPCDetails = async (npcUuid: string) => {
 const fetchCharacterDetails = async (characterUuid: string) => {
   const { data: characterData, error: characterDataError } =
     await useFetch<CharacterResponse>(
-      `/campaign/${campaignUuid}/location/${characterUuid}`,
+      `/campaign/${campaignUuid}/character/${characterUuid}`,
       {
         baseURL: config.public.baseURL,
         headers: {
