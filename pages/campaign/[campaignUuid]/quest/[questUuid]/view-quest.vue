@@ -127,11 +127,18 @@ const items = [
   },
 ];
 </script>
+
 <template>
   <div class="text-center p-2">
     <UCard class="mt-2">
       <template #header>
-        <h2 class="text-5xl mb-4">{{ state.name }}</h2>
+        <div v-if="questData">
+          <h2 class="text-5xl mb-4">{{ state.name }}</h2>
+          <p class="text-xl mb-2">{{ state.description }}</p>
+        </div>
+        <div v-else>
+          <p>Loading quest data...</p>
+        </div>
       </template>
       <UAccordion multiple :items="items">
         <template #item="{ item }">
@@ -140,16 +147,25 @@ const items = [
           </p>
         </template>
         <template #giver>
-          <p class="mb-4">{{ state.questGiver }}</p>
+          <UButton
+            :to="`/campaign/${campaignUuid}/npc/${state.questGiverUuid}/view-npc`"
+            class="mb-4"
+            >{{ state.questGiver }}</UButton
+          >
         </template>
         <template #bosses>
           <div>
             <p v-if="state.bossUuids.length < 1" class="mb-4">
               No bosses found.
             </p>
-            <p v-for="bossUuid in state.bossUuids" :key="bossUuid" class="mb-4">
+            <UButton
+              v-for="bossUuid in state.bossUuids"
+              :key="bossUuid"
+              :to="`/campaign/${campaignUuid}/npc/${bossUuid}/view-npc`"
+              class="mb-4"
+            >
               {{ bossUuid }}
-            </p>
+            </UButton>
           </div>
         </template>
         <template #locations>
@@ -157,21 +173,27 @@ const items = [
             <p v-if="state.locationUuids.length < 1" class="mb-4">
               No locations found.
             </p>
-            <p
+            <UButton
               v-for="locationUuid in state.locationUuids"
               :key="locationUuid"
+              :to="`/campaign/${campaignUuid}/location/${locationUuid}/view-location`"
               class="mb-4"
             >
               {{ locationUuid }}
-            </p>
+            </UButton>
           </div>
         </template>
         <template #npcs>
           <div>
             <p v-if="state.npcUuids.length < 1" class="mb-4">No NPCs found.</p>
-            <p v-for="npcUuid in state.npcUuids" :key="npcUuid" class="mb-4">
+            <UButton
+              v-for="npcUuid in state.npcUuids"
+              :key="npcUuid"
+              :to="`/campaign/${campaignUuid}/npc/${npcUuid}/view-npc`"
+              class="mb-4"
+            >
               {{ npcUuid }}
-            </p>
+            </UButton>
           </div>
         </template>
         <template #party>
@@ -179,13 +201,13 @@ const items = [
             <p v-if="state.partyUuids.length < 1" class="mb-2">
               No party found.
             </p>
-            <p
+            <UButton
               v-for="characterUuid in state.partyUuids"
               :key="characterUuid"
               class="mb-2"
             >
               {{ characterUuid }}
-            </p>
+            </UButton>
           </div>
         </template>
       </UAccordion>
