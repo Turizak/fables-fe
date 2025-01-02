@@ -93,6 +93,12 @@ const links = [
     icon: "i-material-symbols-light:add-circle",
     to: `/campaign/${campaignUuid}/session/${sessionUuid}/select-npc`,
   },
+  {
+    label: "Quest",
+    labelClass: "text-lg",
+    icon: "i-material-symbols-light:add-circle",
+    to: `/campaign/${campaignUuid}/create-quest`,
+  },
 ];
 const items = [
   {
@@ -116,6 +122,12 @@ const items = [
   {
     label: "NPCs",
     icon: "i-material-symbols-light:chat-bubble",
+    defaultOpen: false,
+    slot: "npcs",
+  },
+  {
+    label: "Quests",
+    icon: "i-material-symbols-light:swords-rounded",
     defaultOpen: false,
     slot: "npcs",
   },
