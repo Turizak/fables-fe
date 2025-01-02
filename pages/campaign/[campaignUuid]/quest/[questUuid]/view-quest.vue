@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useAuthStore } from "~/stores/authStore";
+import { format } from "date-fns";
 import type {
-  QuestResponse,
+  CharacterResponse,
+  LocationResponse,
   NPCResponse,
+  QuestResponse,
+  SessionResponse,
   //   NPCsResponse,
 } from "~/types/types";
 
@@ -11,15 +15,154 @@ definePageMeta({
   middleware: "fresh-token",
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (questData.value) {
     state.name = questData.value?.data.quest.name ?? "";
     state.description = questData.value?.data.quest.description ?? "";
     state.questGiverUuid = questData.value?.data.quest.questGiver ?? "";
-    state.bossUuids = questData.value?.data.quest.bossUuids ?? [];
     state.locationUuids = questData.value?.data.quest.locationUuids ?? [];
     state.npcUuids = questData.value?.data.quest.npcUuids ?? [];
     state.partyUuids = questData.value?.data.quest.partyUuids ?? [];
+    state.bossUuids = questData.value?.data.quest.bossUuids ?? [];
+    state.startingSessionUuid =
+      questData.value?.data.quest.startingSessionUuid ?? "";
+    state.endingSessionUuid =
+      questData.value?.data.quest.endingSessionUuid ?? "";
+  }
+
+  // Fetch questGiver by UUID
+  if (state.questGiverUuid.length > 0) {
+    const { data: questGiverData, error: questGiverDataError } =
+      await useFetch<NPCResponse>(
+        `/campaign/${campaignUuid}/npc/${state.questGiverUuid}`,
+        {
+          baseURL: config.public.baseURL,
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    if (questGiverDataError.value) {
+      console.error(
+        "Error fetching quest giver details:",
+        questGiverDataError.value,
+      );
+      return;
+    }
+    state.questGiver =
+      questGiverData.value?.data.npc.firstName +
+      " " +
+      questGiverData.value?.data.npc.lastName;
+  }
+
+  // Fetch location by UUID
+  if (state.locationUuids.length > 0) {
+    const fetchedLocationDetails = await Promise.all(
+      state.locationUuids.map(async (locationUuid) => {
+        const locationDetails = await fetchLocationDetails(locationUuid);
+        return locationDetails;
+      }),
+    );
+    state.locationDetails = fetchedLocationDetails.filter(
+      (details) => details !== null,
+    );
+  }
+
+  // Fetch NPC by UUID
+  if (state.npcUuids.length > 0) {
+    const fetchedNPCDetails = await Promise.all(
+      state.npcUuids.map(async (npcUuid) => {
+        const npcDetails = await fetchNPCDetails(npcUuid);
+        return npcDetails;
+      }),
+    );
+    state.locationDetails = fetchedNPCDetails.filter(
+      (details) => details !== null,
+    );
+  }
+
+  // Fetch Character by UUID
+  if (state.partyUuids.length > 0) {
+    const fetchedCharacterDetails = await Promise.all(
+      state.partyUuids.map(async (characterUuid) => {
+        const characterDetails = await fetchCharacterDetails(characterUuid);
+        return characterDetails;
+      }),
+    );
+    state.characterDetails = fetchedCharacterDetails.filter(
+      (details) => details !== null,
+    );
+  }
+
+  // Fetch all bosses by bossUuid
+  if (state.bossUuids.length > 0) {
+    const fetchedBossDetails = await Promise.all(
+      state.bossUuids.map(async (bossUuid) => {
+        const bossDetails = await fetchBossDetails(bossUuid);
+        return bossDetails;
+      }),
+    );
+    state.bossDetails = fetchedBossDetails.filter(
+      (details) => details !== null,
+    );
+  }
+
+  // Fetch starting session by UUID
+  if (state.startingSessionUuid.length > 0) {
+    const { data: startingSessionData, error: startingSessionDataError } =
+      await useFetch<SessionResponse>(
+        `/campaign/${campaignUuid}/session/${state.startingSessionUuid}`,
+        {
+          baseURL: config.public.baseURL,
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    if (startingSessionDataError.value) {
+      console.error(
+        "Error fetching starting session details:",
+        startingSessionDataError.value,
+      );
+      return;
+    }
+    const dateOccured =
+      startingSessionData.value?.data.session.dateOccured.time;
+    if (dateOccured) {
+      state.startingSession = format(new Date(dateOccured), "MMM-dd, yyyy");
+    } else {
+      console.error("Invalid date received for starting session");
+    }
+  }
+
+  // Fetch ending session by UUID
+  if (state.endingSessionUuid.length > 0) {
+    const { data: endingSessionData, error: endingSessionDataError } =
+      await useFetch<SessionResponse>(
+        `/campaign/${campaignUuid}/session/${state.endingSessionUuid}`,
+        {
+          baseURL: config.public.baseURL,
+          headers: {
+            Authorization: `Bearer ${authStore.token}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    if (endingSessionDataError.value) {
+      console.error(
+        "Error fetching ending session details:",
+        endingSessionDataError.value,
+      );
+      return;
+    }
+    const dateOccured = endingSessionData.value?.data.session.dateOccured.time;
+    if (dateOccured) {
+      state.startingSession = format(new Date(dateOccured), "MMM-dd, yyyy");
+    } else {
+      console.error("Invalid date received for starting session");
+    }
   }
   state.loading = false;
 });
@@ -36,10 +179,17 @@ const state = reactive({
   questGiver: "",
   questGiverUuid: "",
   bossUuids: [] as string[],
+  bossDetails: [] as NPCResponse[],
   locationUuids: [] as string[],
+  locationDetails: [] as LocationResponse[],
   npcUuids: [] as string[],
+  npcDetails: [] as string[],
   partyUuids: [] as string[],
-  startingSession: undefined,
+  characterDetails: [] as CharacterResponse[],
+  startingSession: "",
+  startingSessionUuid: "",
+  endingSession: "Present",
+  endingSessionUuid: "",
   disabled: false,
   loading: false,
 });
@@ -60,19 +210,28 @@ if (questDataError.value) {
   console.error("Error fetching quests:", questDataError.value);
 }
 
-watch(
-  () => state.questGiverUuid,
-  (newQuestGiver) => {
-    if (newQuestGiver) {
-      fetchQuestGiverDetails(newQuestGiver);
-    }
-  },
-);
+const fetchBossDetails = async (bossUuid: string) => {
+  const { data: bossData, error: bossDataError } = await useFetch<NPCResponse>(
+    `/campaign/${campaignUuid}/npc/${bossUuid}`,
+    {
+      baseURL: config.public.baseURL,
+      headers: {
+        Authorization: `Bearer ${authStore.token}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  if (bossDataError.value) {
+    console.error("Error fetching boss details:", bossDataError.value);
+    return null;
+  }
+  return bossData.value;
+};
 
-const fetchQuestGiverDetails = async (questGiverUuid: string) => {
-  const { data: questGiverData, error: questGiverDataError } =
-    await useFetch<NPCResponse>(
-      `/campaign/${campaignUuid}/npc/${questGiverUuid}`,
+const fetchLocationDetails = async (locationUuid: string) => {
+  const { data: locationData, error: locationDataError } =
+    await useFetch<LocationResponse>(
+      `/campaign/${campaignUuid}/location/${locationUuid}`,
       {
         baseURL: config.public.baseURL,
         headers: {
@@ -81,19 +240,51 @@ const fetchQuestGiverDetails = async (questGiverUuid: string) => {
         },
       },
     );
-  if (questGiverDataError.value) {
-    console.error(
-      "Error fetching quest giver details:",
-      questGiverDataError.value,
-    );
-    return;
+  if (locationDataError.value) {
+    console.error("Error fetching location details:", locationDataError.value);
+    return null;
   }
-
-  state.questGiver =
-    questGiverData.value?.data.npc.firstName +
-    " " +
-    questGiverData.value?.data.npc.lastName;
+  return locationData.value;
 };
+
+const fetchNPCDetails = async (npcUuid: string) => {
+  const { data: npcData, error: npcDataError } =
+    await useFetch<LocationResponse>(
+      `/campaign/${campaignUuid}/location/${npcUuid}`,
+      {
+        baseURL: config.public.baseURL,
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+  if (npcDataError.value) {
+    console.error("Error fetching location details:", npcDataError.value);
+    return null;
+  }
+  return npcData.value;
+};
+
+const fetchCharacterDetails = async (characterUuid: string) => {
+  const { data: characterData, error: characterDataError } =
+    await useFetch<CharacterResponse>(
+      `/campaign/${campaignUuid}/location/${characterUuid}`,
+      {
+        baseURL: config.public.baseURL,
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+  if (characterDataError.value) {
+    console.error("Error fetching location details:", characterDataError.value);
+    return null;
+  }
+  return characterData.value;
+};
+
 const items = [
   {
     label: "Giver",
@@ -135,6 +326,9 @@ const items = [
         <div v-if="questData">
           <h2 class="text-5xl mb-4">{{ state.name }}</h2>
           <p class="text-xl mb-2">{{ state.description }}</p>
+          <p class="text-xl mb-2">
+            {{ state.startingSession + " - " + state.endingSession }}
+          </p>
         </div>
         <div v-else>
           <p>Loading quest data...</p>
@@ -155,31 +349,31 @@ const items = [
         </template>
         <template #bosses>
           <div>
-            <p v-if="state.bossUuids.length < 1" class="mb-4">
+            <p v-if="state.bossDetails.length < 1" class="mb-4">
               No bosses found.
             </p>
             <UButton
-              v-for="bossUuid in state.bossUuids"
-              :key="bossUuid"
-              :to="`/campaign/${campaignUuid}/npc/${bossUuid}/view-npc`"
+              v-for="(boss, index) in state.bossDetails"
+              :key="index"
+              :to="`/campaign/${campaignUuid}/npc/${boss.data.npc.uuid}/view-npc`"
               class="mb-4"
             >
-              {{ bossUuid }}
+              {{ boss.data.npc.firstName + " " + boss.data.npc.lastName }}
             </UButton>
           </div>
         </template>
         <template #locations>
           <div>
-            <p v-if="state.locationUuids.length < 1" class="mb-4">
+            <p v-if="state.locationDetails.length < 1" class="mb-4">
               No locations found.
             </p>
             <UButton
-              v-for="locationUuid in state.locationUuids"
-              :key="locationUuid"
-              :to="`/campaign/${campaignUuid}/location/${locationUuid}/view-location`"
+              v-for="(location, index) in state.locationDetails"
+              :key="index"
+              :to="`/campaign/${campaignUuid}/location/${location.data.location.uuid}/view-location`"
               class="mb-4"
             >
-              {{ locationUuid }}
+              {{ location.data.location.name }}
             </UButton>
           </div>
         </template>

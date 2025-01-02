@@ -35,6 +35,7 @@ export type AuthResponse = {
 
 export type CampaignResponse = ApiResponse<{ campaign: Campaign }>;
 export type CampaignsResponse = ApiResponse<{ campaigns: Campaign[] }>;
+export type CharacterResponse = ApiResponse<{ character: Character[] }>
 export type LocationResponse = ApiResponse<{ location: Location}>
 export type LocationsResponse = ApiResponse<{ locations: Location[]}>
 export type NPCResponse = ApiResponse<{ npc: NPC}>
