@@ -3,30 +3,29 @@ import path from 'node:path';
 
 // Configuration
 const CONFIG = {
-  targetDirectories: ['/home/runner/work/fables-fe/fables-fe/components', '/home/runner/work/fables-fe/fables-fe/utils', '/home/runner/work/fables-fe/fables-fe/pages', '/home/runner/work/fables-fe/fables-fe/stores'],
+  targetDirectory: './src',
   spdxHeader: '// SPDX-License-Identifier: Apache-2.0\n',
   allowedExtensions: ['.vue', '.ts'],
   isDryRun: process.argv.includes('--dry-run'),
 };
 
-// Function to validate if directories exist
-function validateDirectories(directories) {
-  directories.forEach((directory) => {
-    try {
-      const stats = fs.statSync(directory);
-      if (!stats.isDirectory()) {
-        throw new Error(`${directory} is not a directory`);
-      }
-    } catch (error) {
-      if (error.code === 'ENOENT') {
-        throw new Error(`Directory ${directory} does not exist`);
-      }
-      throw error;
+// Function to validate the target directory exists
+function validateDirectory(directory) {
+  try {
+    const stats = fs.statSync(directory);
+    if (!stats.isDirectory()) {
+      throw new Error(`${directory} is not a directory`);
     }
-  });
+    return true;
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      throw new Error(`Directory ${directory} does not exist`);
+    }
+    throw error;
+  }
 }
 
-// Function to recursively process files in a directory
+// Function to recursively process files
 function addHeaderToFiles(directory) {
   try {
     const entries = fs.readdirSync(directory, { withFileTypes: true });
@@ -86,10 +85,10 @@ function addHeaderToFile(filePath) {
 
     // Prepend the SPDX header
     fs.writeFileSync(filePath, updatedContent, 'utf8');
-
+    
     // Remove backup after successful write
     fs.unlinkSync(backupPath);
-
+    
     console.log(`[ADDED] Header added to ${filePath}`);
     return { skipped: false, wouldModify: true };
   } catch (error) {
@@ -102,27 +101,18 @@ function addHeaderToFile(filePath) {
 try {
   console.log(`SPDX Header Addition Tool`);
   console.log(`Mode: ${CONFIG.isDryRun ? 'DRY RUN' : 'LIVE'}`);
-  console.log(`Target Directories: ${CONFIG.targetDirectories.join(', ')}`);
+  console.log(`Target Directory: ${CONFIG.targetDirectory}`);
   console.log(`File Types: ${CONFIG.allowedExtensions.join(', ')}`);
   console.log('----------------------------------------');
 
-  validateDirectories(CONFIG.targetDirectories);
-
-  let totalModified = 0;
-  let totalSkipped = 0;
-
-  CONFIG.targetDirectories.forEach((directory) => {
-    console.log(`Processing directory: ${directory}`);
-    const { modified, skipped } = addHeaderToFiles(directory);
-    totalModified += modified;
-    totalSkipped += skipped;
-  });
+  validateDirectory(CONFIG.targetDirectory);
+  const { modified, skipped } = addHeaderToFiles(CONFIG.targetDirectory);
 
   console.log('----------------------------------------');
   console.log('Summary:');
-  console.log(`Files that would be modified: ${totalModified}`);
-  console.log(`Files skipped (header exists): ${totalSkipped}`);
-
+  console.log(`Files that would be modified: ${modified}`);
+  console.log(`Files skipped (header exists): ${skipped}`);
+  
   if (CONFIG.isDryRun) {
     console.log('\nThis was a dry run. No files were modified.');
     console.log('To apply changes, run without --dry-run flag.');
