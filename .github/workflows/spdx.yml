@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: node
           cache: "npm"
 
       - name: Install dependencies
@@ -47,4 +47,4 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "chore: add SPDX headers"
-          git push
+          git push origin main
