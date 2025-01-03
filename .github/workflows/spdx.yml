@@ -1,42 +1,50 @@
 name: Add SPDX Headers
-permissions: read-all
 on:
-  push:
+  pull_request:
     branches:
       - main
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
   add-headers:
-    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Check out repository
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Set up Node.js
-        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
+        uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: 'npm'
       
       - name: Install dependencies
         run: npm ci
-        
-      - name: Install @octokit/rest
-        run: npm install @octokit/rest
       
       - name: Run SPDX header script
-        env:
-          # Use a PAT from a bot account instead of GITHUB_TOKEN
-          GITHUB_TOKEN: ${{ secrets.BOT_PAT }}
         id: spdx-script
         run: |
-          if ! node scripts/spdxHeader; then
+          if ! npm run add-spdx-header; then
             echo "::error::SPDX header script failed to run"
             exit 1
           fi
-
-      # Removed the git commit/push steps since we're now using the fork-based PR approach
+      
+      - name: Check for changes
+        id: git-check
+        if: success() && steps.spdx-script.outcome == 'success'
+        run: |
+          git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+      
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: add SPDX headers"
+          git push
