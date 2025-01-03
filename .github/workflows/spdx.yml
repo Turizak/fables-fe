@@ -1,4 +1,5 @@
 name: Add SPDX Headers
+permissions: read-all
 on:
   pull_request:
     branches:
