@@ -39,3 +39,14 @@ jobs:
         if: success() && steps.spdx-script.outcome == 'success'
         run: |
           git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          BRANCH_NAME="spdx-header-fix-$(date +%Y%m%d%H%M%S)"
+          git checkout -b $BRANCH_NAME
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Add missing SPDX headers"
+          git push origin $BRANCH_NAME
