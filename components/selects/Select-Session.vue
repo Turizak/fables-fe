@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import { format } from "date-fns";
 import type { SessionsResponse } from "~/types/types.ts";
