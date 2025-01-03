@@ -1,5 +1,5 @@
 name: Pre-Commit
-permissions: read-all
+
 on:
   push:
     branches: [main]
@@ -10,34 +10,49 @@ jobs:
   precommit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
-      - name: Use Node.js
-        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
+      - uses: actions/checkout@v3
         with:
-          node-version: node
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }} # Important for pushing changes
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Consistent Node version
           cache: "npm"
+
       - name: Install project dependencies
         run: npm ci
 
       - name: Run SPDX header script
         id: spdx-script
         run: |
-          if ! node spdxHeader; then
+          if ! node scripts/spdxHeader.js; then
             echo "::error::SPDX header script failed to run"
             exit 1
           fi
-      
+
       - name: Check for changes
         id: git-check
         if: success() && steps.spdx-script.outcome == 'success'
         run: |
           git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
-      
+
       - name: Run ESLint
         run: npx eslint .
-        
+
       - name: Run Prettier
         run: npx prettier . --write
-        
+
       - name: Run Vitest
         run: npm run test -- --run
+
+      # Add commit and push if there are changes
+      - name: Commit changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --global user.name 'GitHub Action Bot'
+          git config --global user.email 'action@github.com'
+          git add .
+          git commit -m "Add SPDX headers and formatting changes"
+          git push origin main # Or appropriate branch
