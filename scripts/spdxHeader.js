@@ -3,7 +3,7 @@ import path from 'node:path';
 
 // Configuration
 const CONFIG = {
-  targetDirectory: ['/home/runner/work/fables-fe/fables-fe/components', '/home/runner/work/fables-fe/fables-fe/utils', '/home/runner/work/fables-fe/fables-fe/pages', '/home/runner/work/fables-fe/fables-fe/stores']
+  targetDirectory: ['/home/runner/work/fables-fe/fables-fe/components', '/home/runner/work/fables-fe/fables-fe/utils', '/home/runner/work/fables-fe/fables-fe/pages', '/home/runner/work/fables-fe/fables-fe/stores'],
   spdxHeader: '// SPDX-License-Identifier: Apache-2.0\n',
   allowedExtensions: ['.vue', '.ts'],
   isDryRun: process.argv.includes('--dry-run'),
