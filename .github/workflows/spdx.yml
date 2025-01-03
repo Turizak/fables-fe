@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: node
           cache: "npm"
 
       - name: Install dependencies
@@ -39,12 +39,3 @@ jobs:
         if: success() && steps.spdx-script.outcome == 'success'
         run: |
           git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
-
-      - name: Commit and push changes
-        if: steps.git-check.outputs.changes == 'true'
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "chore: add SPDX headers"
-          git push
