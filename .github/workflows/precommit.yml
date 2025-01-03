@@ -19,6 +19,20 @@ jobs:
       - name: Install project dependencies
         run: npm ci
 
+      - name: Run SPDX header script
+        id: spdx-script
+        run: |
+          if ! node scripts/spdxHeader; then
+            echo "::error::SPDX header script failed to run"
+            exit 1
+          fi
+
+      - name: Check for changes
+        id: git-check
+        if: success() && steps.spdx-script.outcome == 'success'
+        run: |
+          git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+
       - name: Run ESLint
         run: npx eslint .
 
