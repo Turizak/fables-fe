@@ -3,7 +3,7 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch: # Allow manual triggering
 
 jobs:
   add-headers:
@@ -16,30 +16,30 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
-      
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run SPDX header script
         id: spdx-script
         run: |
-          if ! npm run add-spdx-header; then
+          if ! node scripts/spdxHeader; then
             echo "::error::SPDX header script failed to run"
             exit 1
           fi
-      
+
       - name: Check for changes
         id: git-check
         if: success() && steps.spdx-script.outcome == 'success'
         run: |
           git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
-      
+
       - name: Commit and push changes
         if: steps.git-check.outputs.changes == 'true'
         run: |
