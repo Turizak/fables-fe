@@ -5,7 +5,6 @@ import { useAuthStore } from "~/stores/authStore";
 import { locationValidate } from "~/utils/validation/location-validation";
 import type { LocationForm, LocationResponse } from "~/types/types";
 import type { FormSubmitEvent } from "#ui/types";
-import { UButtonGroup } from "#build/components";
 
 const route = useRoute();
 const toast = useToast();
