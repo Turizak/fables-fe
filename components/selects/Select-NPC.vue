@@ -7,7 +7,11 @@ const authStore = useAuthStore();
 const route = useRoute();
 const campaignUuid = route.params.campaignUuid;
 
-const npc = ref([]);
+const state = reactive({
+  firstName: undefined,
+  lastName: undefined,
+  uuid: undefined,
+});
 
 const { data: apiResponse, error } = await useFetch<NPCsResponse>(
   `/campaign/${campaignUuid}/npcs`,
@@ -35,9 +39,8 @@ const npcs = computed(
 <template>
   <USelectMenu
     v-if="npcs.length > 0"
-    v-model="npc"
+    v-model="state.uuid"
     :options="npcs"
-    multiple
     searchable
     required
   />

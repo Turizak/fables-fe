@@ -42,6 +42,7 @@ async function onSubmit(event: FormSubmitEvent<QuestForm>) {
   state.loading = true;
   state.disabled = true;
   state.submitButton = "Adding...";
+  console.log(event.data.questGiver.value);
   await authStore.ensureValidToken();
   try {
     await $fetch(
