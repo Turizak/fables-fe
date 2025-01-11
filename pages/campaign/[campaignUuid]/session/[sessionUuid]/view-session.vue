@@ -97,7 +97,7 @@ const links = [
     label: "Quest",
     labelClass: "text-lg",
     icon: "i-material-symbols-light:add-circle",
-    to: `/campaign/${campaignUuid}/create-quest`,
+    to: `/campaign/${campaignUuid}/session/${sessionUuid}/select-quest`,
   },
 ];
 const items = [
