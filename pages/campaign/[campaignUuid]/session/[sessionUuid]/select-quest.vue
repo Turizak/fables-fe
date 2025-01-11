@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: Apache-2.0
 <script setup lang="ts">
 import SelectQuestForm from "~/components/forms/select/Select-Quest-Form.vue";
 definePageMeta({
