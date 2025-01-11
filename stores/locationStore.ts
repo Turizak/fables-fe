@@ -5,7 +5,8 @@ export const useLocationStore = defineStore("locationStore", {
   state: () => ({
     locations: [] as string[],
     npcs: [] as string[],
-    characters: [] as string[]
+    characters: [] as string[],
+    quests: [] as string[]
 
   }),
   actions: {
@@ -31,6 +32,14 @@ export const useLocationStore = defineStore("locationStore", {
     addCharacter(uuid: string) {
       if (!this.characters.includes(uuid)) {
         this.characters.push(uuid);
+      }
+    },
+    setQuests(uuids: string[]) {
+      this.quests = uuids;
+    },
+    addQuest(uuid: string) {
+      if (!this.quests.includes(uuid)) {
+        this.quests.push(uuid);
       }
     }
   },
