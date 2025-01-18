@@ -6,6 +6,7 @@ import type { NoteForm } from "~/types/types.ts";
 const authStore = useAuthStore();
 const toast = useToast();
 const route = useRoute();
+const config = useRuntimeConfig();
 const campaignUuid = route.params.campaignUuid;
 const sessionUuid = route.params.sessionUuid;
 
@@ -33,18 +34,25 @@ async function onSubmit(event: FormSubmitEvent<NoteForm>) {
   state.backButton = "";
   await authStore.ensureValidToken();
   try {
-    await $fetch("https://httpbin.org/post", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-        "Content-Type": "application/json",
+    await $fetch(
+      config.public.baseURL +
+        "/campaign/" +
+        campaignUuid +
+        "/session/" +
+        sessionUuid +
+        "/note/create",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${authStore.token}`,
+          "Content-Type": "application/json",
+        },
+        body: {
+          title: "Notes",
+          content: event.data.note,
+        },
       },
-      body: {
-        campaign: event.data.campaign,
-        session: event.data.session,
-        note: event.data.note,
-      },
-    });
+    );
     state.submitButton = "Success!";
     toast.add({
       title: "Note Created!",
@@ -63,7 +71,7 @@ async function onSubmit(event: FormSubmitEvent<NoteForm>) {
     state.campaign = campaignUuid;
     state.session = sessionUuid;
     state.note = undefined;
-    state.submitButton = "Create Note";
+    state.submitButton = "Add Note";
     state.backButton = "Back to Session";
   }
 }
@@ -71,7 +79,7 @@ async function onSubmit(event: FormSubmitEvent<NoteForm>) {
 <template>
   <UForm :state="state" @submit.prevent="onSubmit">
     <div>
-      <UFormGroup label="Campaign" name="campaign" class="mb-4">
+      <UFormGroup label="Campaign" name="campaign" class="mb-4 hidden">
         <div>
           <USelect
             v-model="state.campaign"
@@ -82,7 +90,7 @@ async function onSubmit(event: FormSubmitEvent<NoteForm>) {
           />
         </div>
       </UFormGroup>
-      <UFormGroup label="Session" name="session" class="mb-4">
+      <UFormGroup label="Session" name="session" class="mb-4 hidden">
         <div>
           <USelect
             v-model="state.session"
