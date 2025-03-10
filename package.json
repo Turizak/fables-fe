@@ -14,9 +14,9 @@
   },
   "dependencies": {
     "@iconify-json/material-symbols": "^1.2.1",
-    "@nuxt/eslint": "^0.5.7",
+    "@nuxt/eslint": "^1.2.0",
     "@nuxt/types": "^2.18.1",
-    "@nuxt/ui": "^2.18.4",
+    "@nuxt/ui": "^2.21.1",
     "@pinia/nuxt": "^0.5.4",
     "autoprefixer": "^10.4.20",
     "date-fns": "^2.30.0",
@@ -29,11 +29,11 @@
   },
   "devDependencies": {
     "@iconify-json/material-symbols-light": "^1.2.5",
-    "@nuxtjs/tailwindcss": "^6.12.1",
+    "@nuxtjs/tailwindcss": "^6.13.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.10",
-    "vitest": "^2.1.9"
+    "vitest": "^3.0.8"
   }
 }
